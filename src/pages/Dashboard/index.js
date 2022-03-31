@@ -38,12 +38,14 @@ function Dashboard() {
     let tm = 0;
     let ar = [{ mes: 'Inicial', valor: capital }]
 
-    for (let i = 0; i < 12; i++) {
-      tg = (va * rendimentoM) / 100;
-      tm = Number(tg) + Number(va);
-      ar.push({ mes: Number(i) + Number(1), valor: tm.toFixed(2) });
-      va = Number(tm) + Number(quantidade);
+    for (let i = 1; i <= totalMeses; i++) {
+
+      tm = (capital * ((1 + (rendimentoM / 100)) ** i)) + (quantidade * (((((1 + (rendimentoM / 100)) ** i) - 1) / (rendimentoM / 100))));
+      tm = tm.toFixed(2)
+
+      ar.push({ mes: i, valor: tm });
     }
+
     setMeses(ar);
   }
 
