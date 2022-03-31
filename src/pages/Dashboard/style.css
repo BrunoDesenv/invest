@@ -37,6 +37,10 @@
     align-items: center;
   }
 
+  tr{
+    text-align: center;
+  }
+
   .btnCalcular:hover{
     background-color: #fff;
   }

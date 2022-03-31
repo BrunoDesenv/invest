@@ -12,14 +12,14 @@ import './style.css';
 function Dashboard() {
 
   const { signOut } = useContext(AuthContext);
-
-  const [quantidade, setQuantidade] = useState('0');
-  const [capital, setCapital] = useState('0');
-  const [anos, setAnos] = useState('0');
-  const [rendimentoM, setRendimentoM] = useState('0');
-  const [quanto, setQuanto] = useState('0');
-  const [mensal, setMensal] = useState('0');
-  const [rentabilidadeAno, setRentabilidadeAno] = useState('0');
+  const [quantidade, setQuantidade] = useState(0);
+  const [capital, setCapital] = useState(0);
+  const [anos, setAnos] = useState(0);
+  const [rendimentoM, setRendimentoM] = useState(0);
+  const [quanto, setQuanto] = useState(0);
+  const [mensal, setMensal] = useState(0);
+  const [rentabilidadeAno, setRentabilidadeAno] = useState(0);
+  const [tMeses, setMeses] = useState([]);
 
   function calcular() {
 
@@ -33,6 +33,18 @@ function Dashboard() {
     let rendimentoAnual = (rendimentoMensal * 12)
     setRentabilidadeAno(rendimentoAnual.toFixed(2));
 
+    let tg = 0.5;
+    let va = capital;
+    let tm = 0;
+    let ar = [{ mes: 'Inicial', valor: capital }]
+
+    for (let i = 0; i < 12; i++) {
+      tg = (va * rendimentoM) / 100;
+      tm = Number(tg) + Number(va);
+      ar.push({ mes: Number(i) + Number(1), valor: tm.toFixed(2) });
+      va = Number(tm) + Number(quantidade);
+    }
+    setMeses(ar);
   }
 
   return (
@@ -44,7 +56,7 @@ function Dashboard() {
         </Title>
         <div className="container-dash">
 
-          <div class="wrapper">
+          <div className="wrapper">
             <div>
               <p>Valor Inicial</p>
               <input type="text" value={capital} onChange={(e) => setCapital(e.target.value)}></input>
@@ -66,10 +78,7 @@ function Dashboard() {
             </div>
           </div>
 
-
-
-
-          <div class="wrapper">
+          <div className="wrapper">
             <div>
               <p>Saldo Final</p>
               <input type="text" disabled={true} value={quanto}></input>
@@ -83,6 +92,24 @@ function Dashboard() {
               <input type="text" disabled={true} value={rentabilidadeAno}></input>
             </div>
           </div>
+        </div>
+        <div className="container-dash">
+          <table>
+            <tbody>
+              <tr>
+                <th>Mês</th>
+                <th>Valor</th>
+              </tr>
+              {tMeses.map((item) => {
+                return (
+                  <tr key={item.mes}>
+                    <td>{item.mes}</td>
+                    <td>R$ {item.valor}</td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
         </div>
         <div className="container-dash">
           <button className="logout-btn" onClick={() => { signOut() }}>
