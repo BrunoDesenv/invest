@@ -13,12 +13,14 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    border-radius: 10px;
+    box-shadow: 2px 2px 2px 2px rgb(0 0 0 / 24%);
 }
 
 .logo-area {
     display: flex;
     justify-content: center;
-    background-color: #181c3e;
+    background-color: #01346b;
     width: 100%;
 }
 
@@ -38,7 +40,7 @@ form{
 form h1 {
     text-align: center;
     margin-bottom: 0.5em;
-    color: #181c2e;
+    color: #01346b;
 }
 
 .login input {
@@ -55,7 +57,7 @@ form button {
     height: 35px;
     border: 0;
     border-radius: 7px;
-    background-color: #181c2e;
+    background-color: #01346b;
     color: #fff;
     font-size: 1.3em;
 }

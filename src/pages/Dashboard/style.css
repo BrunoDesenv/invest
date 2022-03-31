@@ -1,15 +1,15 @@
 
-.container{
+.container-dash{
     display: flex;
     flex-direction: column;
+    align-items: stretch;
     background-color: #f8f8f8;
     border-radius: 5px;
     padding: .8em;
-    align-items: center;
     margin-bottom: 1em;
   }
   
-  .container input, textarea, selct{
+  .container-dash input, textarea, selct{
     margin-bottom: 1em;
     padding: .7em;
     border:1;
@@ -17,11 +17,11 @@
     max-width: 600px;
   }
 
-  .container input:disabled{
+  .container-dash input:disabled{
     cursor: not-allowed;
   }
 
-  .container label{
+  .container-dash label{
     margin-bottom: .5em;
     font-size: 1.4em;
   }
@@ -40,4 +40,15 @@
   .btnCalcular:hover{
     background-color: #fff;
   }
+  
 
+ .wrapper {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-auto-rows: 100px;
+    }
+ 
+    .wrapper p {
+      margin-bottom: 0.5em;
+    font-size: 1.4em;
+    }

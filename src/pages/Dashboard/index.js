@@ -42,34 +42,54 @@ function Dashboard() {
         <Title nome="Calculo de FII">
           <FiHome size={25} />
         </Title>
-        <div className="container">
+        <div className="container-dash">
 
-          <label>Valor Inicial</label>
-          <input type="text" value={capital} onChange={(e) => setCapital(e.target.value)}></input>
+          <div class="wrapper">
+            <div>
+              <p>Valor Inicial</p>
+              <input type="text" value={capital} onChange={(e) => setCapital(e.target.value)}></input>
+            </div>
+            <div>
+              <p>Aporte Mensal</p>
+              <input type="text" value={quantidade} onChange={(e) => setQuantidade(e.target.value)}></input>
+            </div>
+            <div>
+              <p>Tempo de investimento</p>
+              <input type="text" value={anos} onChange={(e) => setAnos(e.target.value)}></input>
+            </div>
+            <div>
+              <p>Rendimento mensal</p>
+              <input type="text" value={rendimentoM} onChange={(e) => setRendimentoM(e.target.value.replace(',', '.'))}></input>
+            </div>
+            <div>
+              <button className="btnCalcular" onClick={() => { calcular() }}>Calcular</button>
+            </div>
+          </div>
 
-          <label>Aporte Mensal</label>
-          <input type="text" value={quantidade} onChange={(e) => setQuantidade(e.target.value)}></input>
 
-          <label>Tempo de investimento</label>
-          <input type="text" value={anos} onChange={(e) => setAnos(e.target.value)}></input>
 
-          <label>Rendimento mensal</label>
-          <input type="text" value={rendimentoM} onChange={(e) => setRendimentoM(e.target.value.replace(',', '.'))}></input>
 
-          <label>Saldo Final</label>
-          <input type="text" disabled={true} value={quanto}></input>
-
-          <label>Retorno Mensal</label>
-          <input type="text" disabled={true} value={mensal}></input>
-
-          <label>Retorno Anual</label>
-          <input type="text" disabled={true} value={rentabilidadeAno}></input>
-
-          <button className="btnCalcular" onClick={() => { calcular() }}>Calcular</button>
+          <div class="wrapper">
+            <div>
+              <p>Saldo Final</p>
+              <input type="text" disabled={true} value={quanto}></input>
+            </div>
+            <div>
+              <p>Retorno Mensal</p>
+              <input type="text" disabled={true} value={mensal}></input>
+            </div>
+            <div>
+              <p>Retorno Anual</p>
+              <input type="text" disabled={true} value={rentabilidadeAno}></input>
+            </div>
+          </div>
+        </div>
+        <div className="container-dash">
+          <button className="logout-btn" onClick={() => { signOut() }}>
+            Sair
+          </button>
         </div>
       </div>
-
-      <button onClick={() => { signOut() }}>Sair</button>
     </div >
   );
 }

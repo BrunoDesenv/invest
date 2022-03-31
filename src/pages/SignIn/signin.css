@@ -3,7 +3,7 @@
     display:flex;
     justify-content: center;
     align-items: center;
-    background-color: #121212;
+    background-image: url("../../assets/bg1.jpg");
 }
 
 .login {
@@ -18,8 +18,11 @@
 .logo-area {
     display: flex;
     justify-content: center;
-    background-color: #181c3e;
+    background-color: #01346b;
     width: 100%;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    box-shadow: 2px 0px 2px 2px rgb(0 0 0 / 24%);
 }
 
 .logo-area img {
@@ -38,7 +41,7 @@ form{
 form h1 {
     text-align: center;
     margin-bottom: 0.5em;
-    color: #181c2e;
+    color: #01346b;
 }
 
 .login input {
@@ -55,14 +58,14 @@ form button {
     height: 35px;
     border: 0;
     border-radius: 7px;
-    background-color: #181c2e;
+    background-color: #01346b;
     color: #fff;
     font-size: 1.3em;
 }
 
 .login a {
     margin:1.5em 0;
-    color: #000;
+    color: #01346b;
     cursor: pointer;
 }
 
