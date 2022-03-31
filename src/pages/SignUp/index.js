@@ -4,7 +4,7 @@ import './signup.css'
 
 import { AuthContext } from '../../contexts/auth'
 
-import logo from '../../assets/logo.png'
+import logo from '../../assets/logo2.png'
 
 function SignUp() {
   const [nome, setNome] = useState('');
