@@ -27,10 +27,7 @@ function Dashboard() {
   const [mensal, setMensal] = useState(0);
   const [rentabilidadeAno, setRentabilidadeAno] = useState(0);
   const [tMeses, setMeses] = useState([]);
-<<<<<<< HEAD
   const [isCalculated, setIsCalculated] = useState(false);
-=======
->>>>>>> f72105f (Adicionado mais um chart, e os botões de download)
   const [getbarChartPng, { isLoadingBarChart, ref: barChartRef }] = useCurrentPng();
   const [getbarChartStackPng, { ref: barChartStackRef, isLoadingBarChartStack }] = useCurrentPng();
   
