@@ -20,9 +20,9 @@ function Dashboard() {
   const [mensal, setMensal] = useState(0);
   const [rentabilidadeAno, setRentabilidadeAno] = useState(0);
   const [tMeses, setMeses] = useState([]);
+  const [isCalculated, setIsCalculated] = useState(false);
 
   function calcular() {
-
     let totalMeses = anos * 12
     let montante = (capital * ((1 + (rendimentoM / 100)) ** totalMeses)) + (quantidade * (((((1 + (rendimentoM / 100)) ** totalMeses) - 1) / (rendimentoM / 100))));
     setQuanto(montante.toFixed(2));
@@ -47,6 +47,7 @@ function Dashboard() {
     }
 
     setMeses(ar);
+    setIsCalculated(true);
   }
 
   return (
@@ -95,24 +96,26 @@ function Dashboard() {
             </div>
           </div>
         </div>
-        <div className="container-dash">
-          <table>
-            <tbody>
-              <tr>
-                <th>Mês</th>
-                <th>Valor</th>
-              </tr>
-              {tMeses.map((item) => {
-                return (
-                  <tr key={item.mes}>
-                    <td>{item.mes}</td>
-                    <td>R$ {item.valor}</td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        </div>
+        {isCalculated && 
+          <div className="container-dash">
+            <table>
+              <tbody>
+                <tr>
+                  <th>Mês</th>
+                  <th>Valor</th>
+                </tr>
+                {tMeses.map((item) => {
+                  return (
+                    <tr key={item.mes}>
+                      <td>{item.mes}</td>
+                      <td>R$ {item.valor}</td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        }
         <div className="container-dash">
           <button className="logout-btn" onClick={() => { signOut() }}>
             Sair
