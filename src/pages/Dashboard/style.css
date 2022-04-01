@@ -48,6 +48,10 @@
     align-items: center;
   }
 
+  .btnDownload:hover{
+    background-color: #fff;
+  }
+
   tr{
     text-align: center;
   }

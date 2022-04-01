@@ -8,7 +8,11 @@ import { FiHome } from 'react-icons/fi'
 
 import './style.css';
 
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { BarChart, Bar, 
+         LineChart, Line,
+         XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+
+
 import { useCurrentPng } from "recharts-to-png";
 import FileSaver from "file-saver";
 
@@ -23,7 +27,10 @@ function Dashboard() {
   const [mensal, setMensal] = useState(0);
   const [rentabilidadeAno, setRentabilidadeAno] = useState(0);
   const [tMeses, setMeses] = useState([]);
+<<<<<<< HEAD
   const [isCalculated, setIsCalculated] = useState(false);
+=======
+>>>>>>> f72105f (Adicionado mais um chart, e os botões de download)
   const [getbarChartPng, { isLoadingBarChart, ref: barChartRef }] = useCurrentPng();
   const [getbarChartStackPng, { ref: barChartStackRef, isLoadingBarChartStack }] = useCurrentPng();
   
