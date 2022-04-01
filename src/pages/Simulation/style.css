@@ -1,0 +1,87 @@
+
+.container-dash{
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    background-color: #f8f8f8;
+    border-radius: 5px;
+    padding: .8em;
+    margin-bottom: 1em;
+  }
+  
+  .container-dash input, textarea, selct{
+    margin-bottom: 1em;
+    padding: .7em;
+    border:1;
+    border-radius: 10px;
+    max-width: 600px;
+  }
+
+  .container-dash input:disabled{
+    cursor: not-allowed;
+  }
+
+  .container-dash label{
+    margin-bottom: .5em;
+    font-size: 1.4em;
+  }
+  
+  .btnCalcular{
+    padding: 8px 20px;
+    background-color: #f2f2f2;
+    border:1px solid #121212;
+    border-radius: 5px;
+    font-size: 1.5em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .btnDownload{
+    padding: 8px 20px;
+    background-color: #f2f2f2;
+    border:1px solid #121212;
+    border-radius: 5px;
+    font-size: 1.5em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .btnDownload:hover{
+    background-color: #fff;
+  }
+
+  tr{
+    text-align: center;
+  }
+
+  .btnCalcular:hover{
+    background-color: #fff;
+  }
+  
+
+ .wrapper {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-auto-rows: 100px;
+    }
+ 
+    .wrapper p {
+      margin-bottom: 0.5em;
+    font-size: 1.4em;
+    }
+    
+    .charts{
+      display: flex;
+    }
+
+    .btnCharts{
+      display: flex;
+    }
+  
+    .btnCharts > div{
+      width: 500px;
+      justify-content: center;
+      display: flex;
+    }
