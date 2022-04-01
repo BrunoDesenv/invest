@@ -85,3 +85,15 @@
       justify-content: center;
       display: flex;
     }
+
+
+    .btnArea{
+      display: flex;
+    align-content: center;
+    flex-wrap: wrap;
+    }
+
+    .calcular{
+      display: flex;
+    align-items: center;
+    }

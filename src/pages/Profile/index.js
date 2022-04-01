@@ -42,6 +42,8 @@ function Profile() {
         }
     }
 
+    
+
     async function handleUpload() {
         const currentUid = user.uid;
 
@@ -138,12 +140,6 @@ function Profile() {
                         <button type="submit">Salvar</button>
                     </form>
                 </div>
-                <div className="container">
-                    <button className="logout-btn" onClick={() => { signOut() }}>
-                        Sair
-                    </button>
-                </div>
-
             </div>
         </div>
     )
