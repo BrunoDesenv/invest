@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react'
+import { useState, useContext, useCallback } from 'react'
 
 import { AuthContext } from '../../contexts/auth'
 import Header from '../../components/Header'
@@ -7,7 +7,11 @@ import Title from '../../components/Title'
 import { FiHome } from 'react-icons/fi'
 
 import './style.css';
+//import './card.scss';
 
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { useCurrentPng } from "recharts-to-png";
+import FileSaver from "file-saver";
 
 function Dashboard() {
 
@@ -20,6 +24,17 @@ function Dashboard() {
   const [mensal, setMensal] = useState(0);
   const [rentabilidadeAno, setRentabilidadeAno] = useState(0);
   const [tMeses, setMeses] = useState([]);
+  const [getPng, { isLoading, ref: charRef }] = useCurrentPng();
+  
+  const handleDownload = useCallback(async () => {
+    debugger;
+    const png = await getPng();
+    // Verify that png is not undefined
+    if (png) {
+      // Download with FileSaver
+      FileSaver.saveAs(png, 'myChart.png');
+    }
+  }, [getPng])
 
   function calcular() {
 
@@ -42,8 +57,8 @@ function Dashboard() {
 
       tm = (capital * ((1 + (rendimentoM / 100)) ** i)) + (quantidade * (((((1 + (rendimentoM / 100)) ** i) - 1) / (rendimentoM / 100))));
       tm = tm.toFixed(2)
-
-      ar.push({ mes: i, valor: tm });
+      
+      ar.push({ mes: i, valor: tm, valorInvestido:  quantidade * i});
     }
 
     setMeses(ar);
@@ -113,6 +128,47 @@ function Dashboard() {
             </tbody>
           </table>
         </div>
+
+         
+        <div className="container-dash">            
+          <div class="card-container" ontouchstart="this.classList.toggle('hover');">
+            <div class="card">
+              <div class="front">
+                <h2>Stuff on Front1</h2>
+              </div>
+              <div class="back">
+                <h2>Stuff on Back1</h2>
+              </div>
+            </div>
+          </div>  
+        </div>  
+
+        <div className="container-dash">
+            <BarChart ref={charRef}
+              width={500}
+              height={300}
+              data={tMeses}
+              margin={{
+                top: 5,
+                right: 30,
+                left: 20,
+                bottom: 5,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="mes" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="valor" fill="#8884d8" />
+              <Bar dataKey="valorInvestido" fill="#82ca9d" />
+            </BarChart>
+
+            <button onClick={handleDownload}>
+              {isLoading ? 'Downloading...' : 'Download Chart'}
+            </button>
+        </div>
+
         <div className="container-dash">
           <button className="logout-btn" onClick={() => { signOut() }}>
             Sair
