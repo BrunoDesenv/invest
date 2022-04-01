@@ -8,9 +8,7 @@ import { FiHome } from 'react-icons/fi'
 
 import './style.css';
 
-import { BarChart, Bar, 
-         LineChart, Line,
-         XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 
 import { useCurrentPng } from "recharts-to-png";
