@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react'
+import { useState, useContext, useCallback } from 'react'
 
 import { AuthContext } from '../../contexts/auth'
 import Header from '../../components/Header'
@@ -8,6 +8,11 @@ import { FiHome } from 'react-icons/fi'
 
 import './style.css';
 
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+
+
+import { useCurrentPng } from "recharts-to-png";
+import FileSaver from "file-saver";
 
 function Dashboard() {
 
@@ -21,6 +26,25 @@ function Dashboard() {
   const [rentabilidadeAno, setRentabilidadeAno] = useState(0);
   const [tMeses, setMeses] = useState([]);
   const [isCalculated, setIsCalculated] = useState(false);
+  const [getbarChartPng, { isLoadingBarChart, ref: barChartRef }] = useCurrentPng();
+  const [getbarChartStackPng, { ref: barChartStackRef, isLoadingBarChartStack }] = useCurrentPng();
+  
+  const handleDownloadBarChart = useCallback(async () => {
+    debugger;
+    const png = await getbarChartPng();
+    // Verify that png is not undefined
+    if (png) {
+      // Download with FileSaver
+      FileSaver.saveAs(png, 'barChart.png');
+    }
+  }, [getbarChartPng])
+
+  const handleComposedDownloadBarChartStack = useCallback(async () => {
+    const png = await getbarChartStackPng();
+    if (png) {
+      FileSaver.saveAs(png, "barChartStick.png");
+    }
+  }, [getbarChartStackPng]);
 
   function calcular() {
     let totalMeses = anos * 12
@@ -42,8 +66,8 @@ function Dashboard() {
 
       tm = (capital * ((1 + (rendimentoM / 100)) ** i)) + (quantidade * (((((1 + (rendimentoM / 100)) ** i) - 1) / (rendimentoM / 100))));
       tm = tm.toFixed(2)
-
-      ar.push({ mes: i, valor: tm });
+      
+      ar.push({ mes: i, valor: tm, valorInvestido:  quantidade * i});
     }
 
     setMeses(ar);
@@ -96,7 +120,7 @@ function Dashboard() {
             </div>
           </div>
         </div>
-        {isCalculated && 
+        {isCalculated && <>
           <div className="container-dash">
             <table>
               <tbody>
@@ -115,6 +139,64 @@ function Dashboard() {
               </tbody>
             </table>
           </div>
+                  
+          <div className="container-dash">
+            <div className="charts">
+              <BarChart ref={barChartRef}
+                width={500}
+                height={300}
+                data={tMeses}
+                margin={{
+                  top: 5,
+                  right: 30,
+                  left: 20,
+                  bottom: 5,
+                }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="mes" />
+                <YAxis />
+                <Tooltip />
+                <Legend verticalAlign="bottom" height={36}/>
+                <Bar name="Valor" dataKey="valor" fill="#8884d8" />
+                <Bar name="Valor Investido" dataKey="valorInvestido" fill="#82ca9d" />
+              </BarChart>
+
+              <BarChart ref={barChartStackRef}
+                  width={500}
+                  height={300}
+                  data={tMeses}
+                  margin={{
+                    top: 20,
+                    right: 30,
+                    left: 20,
+                    bottom: 5
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend verticalAlign="bottom" height={36}/>
+                  <Bar name="Valor" dataKey="valor" stackId="a" fill="#8884d8" />
+                  <Bar name="Valor Investido"  dataKey="valorInvestido" stackId="a" fill="#82ca9d" />
+              </BarChart>
+            </div>
+
+              <div className="btnCharts">
+                <div>
+                  <button className="btnDownload" onClick={handleDownloadBarChart}>
+                    {isLoadingBarChart ? 'Downloading...' : 'Download Chart'}
+                  </button>
+                </div>
+                <div>
+                  <button className="btnDownload" onClick={handleComposedDownloadBarChartStack}>
+                    {isLoadingBarChartStack ? 'Downloading...' : 'Download Chart'}
+                  </button>
+                </div>
+              </div>
+          </div>
+        </>
         }
         <div className="container-dash">
           <button className="logout-btn" onClick={() => { signOut() }}>

@@ -37,6 +37,21 @@
     align-items: center;
   }
 
+  .btnDownload{
+    padding: 8px 20px;
+    background-color: #f2f2f2;
+    border:1px solid #121212;
+    border-radius: 5px;
+    font-size: 1.5em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .btnDownload:hover{
+    background-color: #fff;
+  }
+
   tr{
     text-align: center;
   }
@@ -55,4 +70,18 @@
     .wrapper p {
       margin-bottom: 0.5em;
     font-size: 1.4em;
+    }
+    
+    .charts{
+      display: flex;
+    }
+
+    .btnCharts{
+      display: flex;
+    }
+  
+    .btnCharts > div{
+      width: 500px;
+      justify-content: center;
+      display: flex;
     }
