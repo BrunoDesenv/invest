@@ -48,6 +48,10 @@
     align-items: center;
   }
 
+  .btnDownload:hover{
+    background-color: #fff;
+  }
+
   tr{
     text-align: center;
   }
@@ -68,6 +72,16 @@
     font-size: 1.4em;
     }
 
-.button{
-  width: 10px;
-} 
+  .charts{
+    display: flex;
+  }
+
+  .btnCharts{
+    display: flex;
+  }
+
+  .btnCharts > div{
+    width: 500px;
+    justify-content: center;
+    display: flex;
+  }
