@@ -99,3 +99,116 @@ a {
 tr:nth-child(even) {
     background-color: #f4f6fb;
 }
+
+.ReactModal__Content{
+    position: absolute;
+    inset: 40px;
+    border: 1px solid rgb(204, 204, 204);
+    background: rgb(255, 255, 255);
+    overflow: auto;
+    border-radius: 4px;
+    outline: none;
+    padding: 20px;  
+}
+
+.ReactModal__Content{
+    position: absolute;
+    inset: 150px;
+    border: 1px solid rgb(204, 204, 204);
+    background: rgb(255, 255, 255);
+    overflow: auto;
+    border-radius: 15px;
+    outline: none;
+    padding: 20px;  
+}
+
+.ReactModal__Overlay--after-open{
+    background-color: rgb(102 102 102 / 75%) !important;
+}
+
+
+.ReactModal__form h2{
+    color: #000;
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    margin-left: 1rem;
+    margin-top: 1rem;
+}
+
+.ReactModal__form input{
+    width: 30%; 
+    padding: 0 1.5rem;
+    height: 3rem;
+
+    border-radius: 0.25rem;
+    border: 1px solid #d7d7d7;
+
+    background:#e7e9ee;
+    font-weight: 400;
+
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    margin-left: 1rem;
+
+}
+
+.ReactModal__form label{
+    width: 100%;
+    padding: 1.1rem;
+    height: 3rem;
+    font-weight: 400;
+    font-size: 1rem;
+}
+
+.ReactModal__Submit{
+    width: 90%;
+    padding: 0 1.5rem;
+    height:3rem;
+    background:rgb(1, 173, 1);
+    color: #fff;
+    border-radius: 0.25rem;
+    border: 0;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    margin-left: 2rem;
+}
+    
+    
+
+.ReactModal__Submit:hover{
+    background:#07bc0c;
+}
+
+.ReactModal__Cancel{
+    width: 90%;
+    padding: 0 1.5rem;
+    height:3rem;
+    background:rgb(153, 43, 0);
+    color: #fff;
+    border-radius: 0.25rem;
+    border: 0;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    margin-left: 2rem;
+}
+
+.ReactModal__Cancel:hover{
+    background:rgb(184, 52, 0);
+}
+
+.ReactModal__Simulate{
+    width: 90%;
+    padding: 0 1.5rem;
+    height:3rem;
+    background:rgb(0 75 153);
+    color: #fff;
+    border-radius: 0.25rem;
+    border: 0;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    margin-left: 2rem;
+}
+
+.ReactModal__Simulate:hover{
+    background:rgb(1 96 195);
+}
