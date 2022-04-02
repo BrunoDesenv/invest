@@ -40,20 +40,21 @@ function SimulationProvider({ children }) {
                 console.log(err)
                 toast.error('Algo deu errado')
             })
+
+            getSimulations();
     }
 
-    async function getSimulations(userId) {
+    async function getSimulations() {
         setSimularion([])
         await firebase.firestore().collection('simulations')
             .get()
             .then((snapshot) => {
                 updateState(snapshot);
-                let filtrado = simulation.filter(simulation => simulation.usuario == userId);
-                // setSimularion(filtrado);
             })
             .catch((error) => {
                 console.log(error)
             })
+            
     }
 
     async function updateState(snapshot) {
