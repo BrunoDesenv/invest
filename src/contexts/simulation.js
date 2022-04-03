@@ -65,7 +65,7 @@ function SimulationProvider({ children }) {
 
             snapshot.forEach((doc) => {
                 lista.push({
-                    key:doc.data().id,
+                    key:doc.data().key,
                     usuario: doc.data().usuario,
                     objetivo: doc.data().objetivo,
                     valorinicial: doc.data().valorinicial,

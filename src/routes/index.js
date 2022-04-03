@@ -7,6 +7,7 @@ import Dashboard from '../pages/Dashboard'
 import Profile from '../pages/Profile'
 import Debits from '../pages/Debits'
 import Simulation from '../pages/Simulation'
+import Investimento from '../pages/Investimentos'
 
 
 import RequireAuth from './requireAuth'
@@ -44,7 +45,7 @@ export default function Rotas() {
         }
       />
       <Route
-        path="/Profile"
+        path="/perfil"
         element={
           <RequireAuth redirectTo="/" isPrivate>
             <Profile />
@@ -52,7 +53,7 @@ export default function Rotas() {
         }
       />
       <Route
-        path="/simulations"
+        path="/simulacoes"
         element={
           <RequireAuth redirectTo="/" isPrivate>
             <Simulation />
@@ -60,7 +61,15 @@ export default function Rotas() {
         }
       />
       <Route
-        path="/debits"
+        path="/investimentos"
+        element={
+          <RequireAuth redirectTo="/" isPrivate>
+            <Investimento />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/debitos"
         element={
           <RequireAuth redirectTo="/" isPrivate>
             <Debits />
