@@ -1,13 +1,13 @@
 import { useEffect, useState, useContext, useCallback } from 'react'
 
 import { AuthContext } from '../../contexts/auth'
-import { SimulationContext } from '../../contexts/simulation';
+import { InvestimentosContext } from '../../contexts/investimento';
 import Header from '../../components/Header'
 import Title from '../../components/Title'
 
 import ReactModal from 'react-modal'
 
-import { FiTrendingUp } from 'react-icons/fi'
+import { FiDollarSign } from 'react-icons/fi'
 
 import './style.css';
 
@@ -15,15 +15,15 @@ import './style.css';
 function Simulation() {
 
   const { user, signOut } = useContext(AuthContext);
-  const { saveSimulation, simulation, getSimulations } = useContext(SimulationContext);
+  const { saveInvestimentos, investimento, getInvestimentos } = useContext(InvestimentosContext);
   const [filtrado, setFiltrado] = useState([]);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [isSimulate, SetIsSimulate] = useState(false);
 
-  const [quantidade, setQuantidade] = useState();
-  const [objetivo, setObjetivo] = useState('');
+  const [quantidade, setQuantidade] = useState(0);
+  const [ativo, setAtivo] = useState('');
   const [capital, setCapital] = useState();
-  const [anos, setAnos] = useState();
+  const [anos, setAnos] = useState(1);
   const [rendimentoM, setRendimentoM] = useState();
   const [quanto, setQuanto] = useState();
   const [mensal, setMensal] = useState();
@@ -35,7 +35,7 @@ function Simulation() {
     let montante = (capital * ((1 + (rendimentoM / 100)) ** totalMeses)) + (quantidade * (((((1 + (rendimentoM / 100)) ** totalMeses) - 1) / (rendimentoM / 100))));
     setQuanto(montante.toFixed(2));
 
-    let rendimentoMensal = (montante * rendimentoM) / 100
+    let rendimentoMensal = (capital * rendimentoM) / 100
     setMensal(rendimentoMensal.toFixed(2))
 
     let rendimentoAnual = (rendimentoMensal * 12)
@@ -60,7 +60,7 @@ function Simulation() {
   function closeModal() {
     setIsOpen(false);
     setQuantidade();
-    setObjetivo();
+    setAtivo();
     setCapital();
     setAnos();
     setRendimentoM();
@@ -69,41 +69,37 @@ function Simulation() {
   function saveValues() {
     let data = {
       usuario: user.uid,
-      objetivo: objetivo,
-      valorinicial: capital,
-      aportemensal: quantidade,
-      tempoinvestido: anos,
-      rendimentomensal: rendimentoM,
-      saldofinal: quanto,
+      ativo: ativo,
+      valorinvestido: capital,
+      taxaam: rendimentoM,
       retornomensal: mensal,
-      retornoanual: rentabilidadeAno,
-      totalmeses: tMeses
+      retornoanual: rentabilidadeAno
     }
 
-    saveSimulation(data);
+    saveInvestimentos(data);
     closeModal();
   }
 
   useEffect(() => {
-    getSimulations();
-    let filtrado = simulation.filter(simulation => simulation.usuario === user.uid);
+    getInvestimentos();
+    let filtrado = investimento.filter(simulation => simulation.usuario === user.uid);
     setFiltrado(filtrado);
   }, [])
 
   useEffect(() => {
-    let filtrado = simulation.filter(simulation => simulation.usuario === user.uid);
+    let filtrado = investimento.filter(simulation => simulation.usuario === user.uid);
     setFiltrado(filtrado);
-  }, [simulation])
+  }, [investimento])
 
   return (
     <div className="App">
       <Header />
       <div className="content">
-        <Title nome="Simular Objetivo">
-          <FiTrendingUp size={25} />
+        <Title nome="Meus Investimentos">
+          <FiDollarSign size={25} />
         </Title>
         <div className="container-dash">
-          {/* Card superior */}
+           {/* Card superior */}
 
           <div className="row">
             <div className="col-xl-3">
@@ -123,7 +119,7 @@ function Simulation() {
               </div>
             </div>
 
-
+            
             <div className="col-xl-3 col-md-6 mb-4">
               <div className="card border-left-success">
                 <div className="card-body">
@@ -141,7 +137,7 @@ function Simulation() {
               </div>
             </div>
 
-
+            
             <div className="col-xl-3 col-md-6 mb-4">
               <div className="card border-left-info">
                 <div className="card-body">
@@ -164,7 +160,7 @@ function Simulation() {
               </div>
             </div>
 
-
+           
             <div className="col-xl-3 col-md-6 mb-4">
               <div className="card border-left-warning">
                 <div className="card-body">
@@ -184,24 +180,22 @@ function Simulation() {
           </div>
 
           {/* Card superior */}
-          <button className="ReactModal__Submit" onClick={openModal}>Criar Simulação</button>
+          <button className="ReactModal__Submit" onClick={openModal}>Cadastrar Novo</button>
           <ReactModal
             isOpen={modalIsOpen}
+            ariaHideApp={false}
             className={
               "ReactModal__Content"}>
             <div>
               <div className="ReactModal__form">
-                <h2>Nova Simulação</h2>
+                <h2>Novo investimento</h2>
 
-                <input value={objetivo} placeholder="Objetivo" onChange={(e) => setObjetivo(e.target.value)} />
-                <input value={capital} placeholder="Capital Inicial" onChange={(e) => setCapital(e.target.value.replace(',', '.'))} />
-                <input value={quantidade} placeholder="Aporte Mensal" onChange={(e) => setQuantidade(e.target.value.replace(',', '.'))} />
-                <input value={anos} placeholder="Tempo de Investimento" onChange={(e) => setAnos(e.target.value)} />
+                <input value={ativo} placeholder="Ativo" onChange={(e) => setAtivo(e.target.value)} />
+                <input value={capital} placeholder="Valor Investido" onChange={(e) => setCapital(e.target.value.replace(',', '.'))} />
                 <input value={rendimentoM} placeholder="Taxa de rendimento" onChange={(e) => setRendimentoM(e.target.value.replace(',', '.'))} />
                 <button className="ReactModal__Simulate" type="button" onClick={() => { calcular() }}>Simular</button>
                 {isSimulate && <div>
-                  <h2>Resultado (Montante, Retorno Mensal, Retorno Anual)</h2>
-                  <input disabled={true} value={quanto} placeholder="Montante" />
+                  <h2>Resultado (Retorno Mensal, Retorno Anual)</h2>
                   <input disabled={true} value={mensal} placeholder="Retorno Mensal" />
                   <input disabled={true} value={rentabilidadeAno} placeholder="Retorno Anual" />
                   <button className="ReactModal__Submit" type="button" onClick={() => { saveValues() }}>Salvar Simulação</button>
@@ -213,12 +207,9 @@ function Simulation() {
           <table className="table1">
             <thead>
               <tr>
-                <th>Objetivo</th>
-                <th>Valor Inicial</th>
-                <th>Aporte Mensal</th>
-                <th>Tempo de investimento</th>
-                <th>Taxa mensal</th>
-                <th>Saldo Final</th>
+                <th>ativo</th>
+                <th>Valor Investido</th>
+                <th>Taxa A.M</th>
                 <th>Retorno Mensal</th>
                 <th>Retorno Anual</th>
               </tr>
@@ -227,12 +218,9 @@ function Simulation() {
               {filtrado.map((item) => {
                 return (
                   <tr key={item.key}>
-                    <td>{item.objetivo}</td>
-                    <td>{item.valorinicial}</td>
-                    <td>{item.aportemensal}</td>
-                    <td>{item.tempoinvestido}</td>
-                    <td className="amount">{item.rendimentomensal}</td>
-                    <td className="amount">{item.saldofinal}</td>
+                    <td>{item.ativo}</td>
+                    <td>{item.valorinvestido}</td>
+                    <td className="amount">{item.taxaam}</td>
                     <td className="amount">{item.retornomensal}</td>
                     <td className="amount">{item.retornoanual}</td>
                   </tr>
