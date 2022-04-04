@@ -8,6 +8,7 @@ import Profile from '../pages/Profile'
 import Debits from '../pages/Debits'
 import Simulation from '../pages/Simulation'
 import Investimento from '../pages/Investimentos'
+import Forgot from '../pages/Forgot';
 
 
 import RequireAuth from './requireAuth'
@@ -31,6 +32,15 @@ export default function Rotas() {
         element={
           <RequireAuth redirectTo="/dashboard">
             <SignUp />
+          </RequireAuth>
+        }
+      />
+
+      <Route
+        path="/forgot"
+        element={
+          <RequireAuth redirectTo="/dashboard">
+            <Forgot />
           </RequireAuth>
         }
       />
