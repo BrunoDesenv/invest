@@ -18,14 +18,15 @@ function Profile() {
     const { user, signOut, setUser, storageUser } = useContext(AuthContext);
 
     const [nome, setNome] = useState(user && user.nome);
+    const [receita, setReceita] = useState(user && user.receita);
     const [email, setEmail] = useState(user && user.email);
 
     const [avatarURL, setAvatarURL] = useState(user && user.avatarUrl);
 
     const [imageAvatar, setImageAvatar] = useState(null);
 
+
     function HandleFile(e) {
-        console.log(e.target.files[0])
 
         if (e.target.files[0]) {
             const image = e.target.files[0]
@@ -51,7 +52,6 @@ function Profile() {
             .ref(`images/${currentUid}/${imageAvatar.name}`)
             .put(imageAvatar)
             .then(async () => {
-                console.log('FOTO ENVIADA COM SUCESSO!');
 
                 await firebase.storage().ref(`images/${currentUid}`)
                     .child(imageAvatar.name).getDownloadURL()
@@ -62,13 +62,15 @@ function Profile() {
                             .doc(user.uid)
                             .update({
                                 avatarUrl: urlFoto,
-                                nome: nome
+                                nome: nome, 
+                                receita: receita
                             })
                             .then(() => {
                                 let data = {
                                     ...user,
                                     avatarUrl: urlFoto,
-                                    nome: nome
+                                    nome: nome, 
+                                    receita: receita
                                 };
                                 setUser(data);
                                 storageUser(data);
@@ -89,11 +91,14 @@ function Profile() {
             await firebase.firestore().collection('users')
                 .doc(user.uid)
                 .update({
-                    nome: nome
+                    nome: nome, 
+                    receita: receita
                 })
                 .then(() => {
                     let data = {
-                        ...user, nome: nome
+                        ...user, 
+                        nome: nome,
+                        receita: receita
                     }
                     setUser(data)
                     storageUser(data)
@@ -134,6 +139,8 @@ function Profile() {
 
                         <label>Nome</label>
                         <input type="text" value={nome} onChange={(e) => setNome(e.target.value)}></input>
+                        <label>Receita</label>
+                        <input type="text" value={receita} onChange={(e) => setReceita(e.target.value)}></input>
                         <label>Email</label>
                         <input type="text" value={email} disabled={true} />
 
