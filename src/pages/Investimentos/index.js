@@ -30,6 +30,12 @@ function Simulation() {
   const [rentabilidadeAno, setRentabilidadeAno] = useState();
   const [tMeses, setMeses] = useState([]);
 
+  const [totalInvestido, setTotalInvestido] = useState(0);
+  const [taxaMedia, setTotalTaxaMedia] = useState(0);
+  const [totalrendimentoMensalMedioTotal, setTotalRendimentoMensal] = useState(0);
+  const [totalRendimentoAnual, setTotalRendimentoAnual] = useState(0);
+
+
   function calcular() {
     let totalMeses = anos * 12
     let montante = (capital * ((1 + (rendimentoM / 100)) ** totalMeses)) + (quantidade * (((((1 + (rendimentoM / 100)) ** totalMeses) - 1) / (rendimentoM / 100))));
@@ -81,6 +87,30 @@ function Simulation() {
   }
 
   useEffect(() => {
+    let rtotalInvestido = 0;
+    let rtotalTaxaMedia = 0;
+    let rtotalRendimentoMensal = 0;
+    let rtotalRendimentoAnual = 0;
+    
+
+    filtrado.forEach((item) => {
+      rtotalInvestido = parseFloat(item.valorinvestido) + parseFloat(rtotalInvestido);
+      rtotalRendimentoMensal = parseFloat(item.retornomensal) + parseFloat(rtotalRendimentoMensal);
+      rtotalRendimentoAnual = parseFloat(item.retornoanual) + parseFloat(rtotalRendimentoAnual);
+      rtotalTaxaMedia = parseFloat(item.taxaam) + parseFloat(rtotalTaxaMedia);
+    })
+
+    let ctaxamedia = rtotalTaxaMedia / filtrado.length;
+
+    setTotalInvestido(rtotalInvestido);
+    setTotalTaxaMedia(ctaxamedia);
+    setTotalRendimentoMensal(rtotalRendimentoMensal);
+    setTotalRendimentoAnual(rtotalRendimentoAnual);
+
+  }, [filtrado]);
+
+
+  useEffect(() => {
     getInvestimentos();
     let filtrado = investimento.filter(simulation => simulation.usuario === user.uid);
     setFiltrado(filtrado);
@@ -109,7 +139,7 @@ function Simulation() {
                     <div className="col mr-2">
                       <div className="text-xs">
                         Total Investido (Mês)</div>
-                      <div className="h5">R$1250,00</div>
+                      <div className="h5">R$ {totalInvestido.toFixed(2)}</div>
                     </div>
                     <div className="col-auto">
                       <i className="fas fa-calendar"></i>
@@ -127,7 +157,7 @@ function Simulation() {
                     <div className="col mr-2">
                       <div className="text-xs">
                         Taxa média (Mensal)</div>
-                      <div className="h5">0,66% A.M</div>
+                      <div className="h5">{taxaMedia}% A.M</div>
                     </div>
                     <div className="col-auto">
                       <i className="fas fa-dollar-sign"></i>
@@ -148,7 +178,7 @@ function Simulation() {
                       </div>
                       <div className="row no-gutters">
                         <div className="col-auto">
-                          <div className="h5">R$ 8,25</div>
+                          <div className="h5">R$ {totalrendimentoMensalMedioTotal.toFixed(2)}</div>
                         </div>
                       </div>
                     </div>
@@ -168,7 +198,7 @@ function Simulation() {
                     <div className="col mr-2">
                       <div className="text-xs">
                         Rendimento Anual</div>
-                      <div className="h5">R$ 99,00</div>
+                      <div className="h5">R$ {totalRendimentoAnual.toFixed(2)}</div>
                     </div>
                     <div className="col-auto">
                       <i className="fas fa-comments"></i>
