@@ -103,6 +103,7 @@ function Debits() {
     closeSituacaoModal();
   }
 
+
   useEffect(() => {
     getDebitos();
     let filtrado = debitos.filter(debito => debito.usuario === user.uid);
@@ -128,7 +129,7 @@ function Debits() {
         rPago = parseFloat(item.valor) + parseFloat(rPago);
       }
 
-      if (item.categoria === "Divida") {
+      if (item.categoria === "Casa" || item.categoria === "Dívida" || item.categoria === "Responsabilidades") {
         rEssencial = parseFloat(item.valor) + parseFloat(rEssencial);
       }
     })
@@ -157,7 +158,7 @@ function Debits() {
                     <div className="col mr-2">
                       <div className="text-xs">
                         Receita (Mês)</div>
-                      <div className="h5">R$ {(user.receita) ? user.receita : 0}</div>
+                      <div className="h5">R$ {(user.receita) ? Number(user.receita).toFixed(2).replace('.', ',') : 0}</div>
                     </div>
                     <div className="col-auto">
                       <i className="fas fa-calendar"></i>
@@ -175,7 +176,7 @@ function Debits() {
                     <div className="col mr-2">
                       <div className="text-xs">
                         A Pagar (Mensal)</div>
-                      <div className="h5">R$ {pagar}</div>
+                      <div className="h5">R$ {Number(pagar).toFixed(2).replace('.', ',')}</div>
                     </div>
                     <div className="col-auto">
                       <i className="fas fa-dollar-sign"></i>
@@ -196,7 +197,7 @@ function Debits() {
                       </div>
                       <div className="row no-gutters">
                         <div className="col-auto">
-                          <div className="h5">R$ {pago}</div>
+                          <div className="h5">R$ {Number(pago).toFixed(2).replace('.', ',')}</div>
                         </div>
                       </div>
                     </div>
@@ -216,7 +217,7 @@ function Debits() {
                     <div className="col mr-2">
                       <div className="text-xs">
                         Total Essencial</div>
-                      <div className="h5">R$ {essencial}</div>
+                      <div className="h5">R$ {Number(essencial).toFixed(2).replace('.', ',')}</div>
                     </div>
                     <div className="col-auto">
                       <i className="fas fa-comments"></i>
