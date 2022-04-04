@@ -96,6 +96,18 @@ function AuthProvider({ children }) {
                 setLoadingAuth(false);
             })
     }
+    
+    function forgot(email){
+        firebase.auth().sendPasswordResetEmail(email)
+        .then((response)=>{ 
+            console.log("response", response);
+            toast.success('Verifique seu e-mail para alterar a senha');
+        })
+        .catch((error)=>{
+            console.log("error", error) 
+            toast.error('Ocorreu um erro, tente novamente mais tarde');    
+        });
+    }
 
     return (
         <AuthContext.Provider value={{
@@ -107,7 +119,8 @@ function AuthProvider({ children }) {
             signIn,
             loadingAuth, 
             setUser, 
-            storageUser
+            storageUser,
+            forgot
         }}>
             {children}
         </AuthContext.Provider>
