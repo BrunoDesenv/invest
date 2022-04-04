@@ -112,7 +112,14 @@ function Debits() {
 
   useEffect(() => {
     let filtrado = debitos.filter(debito => debito.usuario === user.uid);
-    setFiltrado(filtrado);
+    setFiltrado(filtrado.sort(function (a,b) {
+      if(a.categoria < b.categoria){
+          return -1;
+      }
+      else {
+          return true;
+      }
+  }))
   }, [debitos])
 
 
