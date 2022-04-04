@@ -245,7 +245,9 @@ function Simulation() {
               <button className="ReactModal__Cancel" onClick={closeModal}>Cancelar</button>
             </div>
           </ReactModal>
-          <div>
+        </div>
+        <div className="container-dash">
+          <div className="containerTable">
             <table className="table1">
               <thead>
                 <tr>
@@ -278,8 +280,8 @@ function Simulation() {
             </table>
           </div>
         </div>
-      </div>
-    </div >
+      </div >
+    </div>
   );
 }
 
