@@ -33,14 +33,15 @@ function AuthProvider({ children }) {
                 await firebase.firestore().collection('users')
                     .doc(uid).set({
                         nome: nome,
-                        avatarUrl: null,
+                        avatarUrl: null, 
+                        receita: 0
                     })
                     .then(() => {
                         let data = {
                             uid: uid,
                             nome: nome,
                             email: value.user.email,
-                            avatarUrl: null
+                            avatarUrl: null, 
                         }
                         setUser(data);
                         storageUser(data);
@@ -81,7 +82,8 @@ function AuthProvider({ children }) {
                     uid: uid,
                     nome: userProfile.data().nome,
                     avatarUrl: userProfile.data().avatarUrl,
-                    email: value.user.email
+                    email: value.user.email, 
+                    receita: userProfile.data().receita
                 };
 
                 setUser(data);
@@ -96,6 +98,18 @@ function AuthProvider({ children }) {
                 setLoadingAuth(false);
             })
     }
+    
+    function forgot(email){
+        firebase.auth().sendPasswordResetEmail(email)
+        .then((response)=>{ 
+            console.log("response", response);
+            toast.success('Verifique seu e-mail para alterar a senha');
+        })
+        .catch((error)=>{
+            console.log("error", error) 
+            toast.error('Ocorreu um erro, tente novamente mais tarde');    
+        });
+    }
 
     return (
         <AuthContext.Provider value={{
@@ -107,7 +121,8 @@ function AuthProvider({ children }) {
             signIn,
             loadingAuth, 
             setUser, 
-            storageUser
+            storageUser,
+            forgot
         }}>
             {children}
         </AuthContext.Provider>

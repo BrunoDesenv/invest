@@ -80,6 +80,10 @@
       display: none;
     }
   }
+
+  .logout-btn-menu{
+    cursor: pointer;
+  }
   
   
   @media screen and (max-width: 400px){

@@ -3,7 +3,7 @@
     display:flex;
     justify-content: center;
     align-items: center;
-    background-image: url("../../assets/bg1.jpg");
+    background-color: #121212;
 }
 
 .login {
@@ -13,6 +13,8 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    border-radius: 10px;
+    box-shadow: 2px 2px 2px 2px rgb(0 0 0 / 24%);
 }
 
 .logo-area {
@@ -20,9 +22,6 @@
     justify-content: center;
     background-color: #01346b;
     width: 100%;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    box-shadow: 2px 0px 2px 2px rgb(0 0 0 / 24%);
 }
 
 .logo-area img {
@@ -65,14 +64,11 @@ form button {
 
 .login a {
     margin:1.5em 0;
-    color: #01346b;
+    color: #000;
     cursor: pointer;
 }
 
-.info{
-    display: flex;
-    width: 90%;
-    justify-content: space-between;
-}
+
+
 
 

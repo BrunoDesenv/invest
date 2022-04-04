@@ -32,7 +32,10 @@ function SignIn() {
           <button type="submit">{loadingAuth ? 'Carregando...' : 'Acessar' }</button>
         </form>
 
-        <Link to="/register">Cadastre-se</Link>
+        <div className='info'>
+          <Link className='register' to="/register">Cadastre-se</Link>
+          <Link className ='forgot' to="/forgot">Esqueceu a senha?</Link>
+        </div>
       </div>
     </div>
   );
