@@ -78,6 +78,14 @@ function DebitosProvider({ children }) {
             .get()
             .then((snapshot) => {
                 updateState(snapshot);
+                setDebitos(debitos.sort(function (a,b) {
+                    if(a.categoria < b.categoria){
+                        return -1;
+                    }
+                    else {
+                        return true;
+                    }
+                }))
             })
             .catch((error) => {
                 console.log(error)

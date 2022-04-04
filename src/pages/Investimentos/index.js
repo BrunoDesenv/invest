@@ -157,7 +157,7 @@ function Simulation() {
                     <div className="col mr-2">
                       <div className="text-xs">
                         Taxa média (Mensal)</div>
-                      <div className="h5">{taxaMedia}% A.M</div>
+                      <div className="h5">{(taxaMedia) ? taxaMedia.toFixed(2) : 0}% A.M</div>
                     </div>
                     <div className="col-auto">
                       <i className="fas fa-dollar-sign"></i>
