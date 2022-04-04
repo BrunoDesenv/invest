@@ -30,7 +30,7 @@ export default function Rotas() {
       <Route
         path="/register"
         element={
-          <RequireAuth redirectTo="/simulacoes">
+          <RequireAuth redirectTo="/dashboard">
             <SignUp />
           </RequireAuth>
         }
@@ -39,7 +39,7 @@ export default function Rotas() {
       <Route
         path="/forgot"
         element={
-          <RequireAuth redirectTo="/simulacoes">
+          <RequireAuth redirectTo="/dashboard">
             <Forgot />
           </RequireAuth>
         }

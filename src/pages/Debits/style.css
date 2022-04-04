@@ -248,6 +248,23 @@ tr:nth-child(even) {
     background:#07bc0c;
 }
 
+.ReactModal__save{
+  width: 90%;
+  padding: 0 1.5rem;
+  height: 3rem;
+  background: rgb(1, 173, 1);
+  color: #fff;
+  border-radius: 0.25rem;
+  border: 0;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+    margin-left: 2rem;
+}
+
+.ReactModal__save:hover{
+  background:#07bc0c;
+}
+
 .ReactModal__Cancel{
     width: 90%;
     padding: 0 1.5rem;
