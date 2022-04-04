@@ -21,7 +21,7 @@ export default function Rotas() {
       <Route
         path="/"
         element={
-          <RequireAuth redirectTo="/dashboard">
+          <RequireAuth redirectTo="/simulacoes">
             <SignIn />
           </RequireAuth>
         }

@@ -33,7 +33,43 @@ function DebitosProvider({ children }) {
                 toast.error('Algo deu errado')
             })
 
-            getDebitos();
+        getDebitos();
+    }
+
+    async function updateDebitsValues(data) {
+
+        await firebase.firestore().collection('debits')
+            .doc(data.key)
+            .update({
+                usuario: data.usuario,
+                categoria: data.categoria,
+                descricao: data.descricao,
+                valor: data.valor,
+                situacao: data.situacao
+            })
+            .then(() => {
+                toast.success('Alterado com sucesso')
+            })
+            .catch((err) => {
+                toast.success('Erro')
+            })
+
+        getDebitos();
+
+    }
+
+    async function excluirDebits(idDebit) {
+
+        await firebase.firestore().collection('debits')
+            .doc(idDebit)
+            .delete()
+            .then(() => {
+                console.log('Dados excluidos')
+            })
+            .catch(() => {
+                console.log('erro ao atualizar')
+            })
+        getDebitos();
     }
 
     async function getDebitos() {
@@ -46,7 +82,7 @@ function DebitosProvider({ children }) {
             .catch((error) => {
                 console.log(error)
             })
-            
+
     }
 
     async function updateState(snapshot) {
@@ -57,10 +93,10 @@ function DebitosProvider({ children }) {
 
             snapshot.forEach((doc) => {
                 lista.push({
-                    key:doc.data().key,
+                    key: doc.data().key,
                     usuario: doc.data().usuario,
                     categoria: doc.data().categoria,
-                    descricao: doc.data().descricao, 
+                    descricao: doc.data().descricao,
                     valor: doc.data().valor,
                     situacao: doc.data().situacao
                 })
@@ -81,7 +117,9 @@ function DebitosProvider({ children }) {
             saveDebitos,
             getDebitos,
             debitos,
-            setDebitos
+            setDebitos,
+            updateDebitsValues,
+            excluirDebits
         }}>
             {children}
         </DebitosContext.Provider>

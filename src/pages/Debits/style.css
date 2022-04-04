@@ -40,6 +40,28 @@
     overflow-x: auto;
 }
 
+.status-pending {
+  background-color: #fff0c2;
+  color: #a68b00;
+}
+
+.status-paid {
+  background-color: #c8e6c9;
+  color: #388e3c;
+}
+
+.status--unpaid {
+  background-color: #ffcdd2;
+  color: #c62828;
+}
+
+.btnAlterarStatus{
+  margin: 0;
+  border: 0;
+  background: transparent;
+  width: 100%;
+}
+
 .container-dash input,
 textarea,
 selct {
@@ -181,6 +203,23 @@ tr:nth-child(even) {
     margin-bottom: 1rem;
     margin-left: 1rem;
 
+}
+
+.optIcon{
+  cursor: pointer;
+}
+
+.ReactModal__form select {
+  width: 30%;
+    padding: 0 1.5rem;
+    height: 3rem;
+    border-radius: 0.25rem;
+    border: 1px solid #d7d7d7;
+    background: #e7e9ee;
+    font-weight: 400;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    margin-left: 1rem;
 }
 
 .ReactModal__form label{
