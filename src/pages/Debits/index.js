@@ -244,7 +244,7 @@ function Debits() {
                 </select>
                 <input value={descricao} placeholder="Descrição" onChange={(e) => setDescricao(e.target.value.replace(',', '.'))} />
                 <input value={valor} placeholder="Valor" onChange={(e) => setValor(e.target.value.replace(',', '.'))} />
-                <button className="ReactModal__Submit" type="button" onClick={() => { saveValues() }}>Salvar Gasto</button>
+                <button className="ReactModal__save" type="button" onClick={() => { saveValues() }}>Salvar Gasto</button>
               </div>
               <button className="ReactModal__Cancel" onClick={closeModal}>Cancelar</button>
             </div>
@@ -268,7 +268,7 @@ function Debits() {
                   ))}
                 </select>
 
-                <button className="ReactModal__Submit" type="button" onClick={() => { updateValues() }}>Atualizar Gasto</button>
+                <button className="ReactModal__save" type="button" onClick={() => { updateValues() }}>Atualizar Gasto</button>
               </div>
               <button className="ReactModal__Cancel" onClick={closeSituacaoModal}>Cancelar</button>
             </div>
