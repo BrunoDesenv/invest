@@ -285,7 +285,6 @@ function Debits() {
             </thead>
             <tbody>
               {filtrado.map((item) => {
-                console.log(item)
                 return (
                   <tr key={item.key}>
                     <td>{item.categoria}</td>

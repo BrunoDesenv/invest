@@ -2,7 +2,7 @@
 .sidebar{
     margin: 0;
     padding: 0;
-    width: 200px;
+    width: 280px;
     background-color: #01346b;
     position: fixed;
     height: 100%;
@@ -15,7 +15,7 @@
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    height: 150px;
+    height: 250px;
   }
   
   .sidebar div{
@@ -26,8 +26,8 @@
     border-radius: 50%;
     display: block;
     margin:auto;
-    width: 90px;
-    height: 90px;
+    width: 150px;
+    height: 150px;
     -webkit-filter: drop-shadow(2px 3px 6px #121212);
     filter: drop-shadow(2px 3px 6px #121212);
     object-fit: cover;
@@ -54,7 +54,7 @@
   }
   
   .content{
-    margin-left: 200px;
+    margin-left: 280px;
     padding: 1px 16px;
   }
   

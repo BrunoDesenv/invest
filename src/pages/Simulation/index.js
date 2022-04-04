@@ -100,7 +100,7 @@ function Simulation() {
     let rtotalTaxaMedia = 0;
     let rtotalRendimentoMensal = 0;
     let rtotalRendimentoAnual = 0;
-    
+
 
     filtrado.forEach((item) => {
       rtotalInvestido = parseFloat(item.saldofinal) + parseFloat(rtotalInvestido);
@@ -245,37 +245,38 @@ function Simulation() {
               <button className="ReactModal__Cancel" onClick={closeModal}>Cancelar</button>
             </div>
           </ReactModal>
-          <table className="table1">
-            <thead>
-              <tr>
-                <th>Objetivo</th>
-                <th>Valor Inicial</th>
-                <th>Aporte Mensal</th>
-                <th>Tempo de investimento</th>
-                <th>Taxa mensal</th>
-                <th>Saldo Final</th>
-                <th>Retorno Mensal</th>
-                <th>Retorno Anual</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtrado.map((item) => {
-                return (
-                  <tr key={item.key}>
-                    <td>{item.objetivo}</td>
-                    <td>{item.valorinicial}</td>
-                    <td>{item.aportemensal}</td>
-                    <td>{item.tempoinvestido}</td>
-                    <td className="amount">{item.rendimentomensal}</td>
-                    <td className="amount">{item.saldofinal}</td>
-                    <td className="amount">{item.retornomensal}</td>
-                    <td className="amount">{item.retornoanual}</td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-
+          <div>
+            <table className="table1">
+              <thead>
+                <tr>
+                  <th>Objetivo</th>
+                  <th>Valor Inicial</th>
+                  <th>Aporte Mensal</th>
+                  <th>Tempo de investimento</th>
+                  <th>Taxa mensal</th>
+                  <th>Saldo Final</th>
+                  <th>Retorno Mensal</th>
+                  <th>Retorno Anual</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtrado.map((item) => {
+                  return (
+                    <tr key={item.key}>
+                      <td>{item.objetivo}</td>
+                      <td>{item.valorinicial}</td>
+                      <td>{item.aportemensal}</td>
+                      <td>{item.tempoinvestido}</td>
+                      <td className="amount">{item.rendimentomensal}</td>
+                      <td className="amount">{item.saldofinal}</td>
+                      <td className="amount">{item.retornomensal}</td>
+                      <td className="amount">{item.retornoanual}</td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div >
