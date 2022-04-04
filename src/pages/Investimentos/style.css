@@ -192,16 +192,15 @@ tr:nth-child(even) {
 }
 
 .ReactModal__Submit{
-    width: 90%;
-    padding: 0 1.5rem;
-    height:3rem;
-    background:rgb(1, 173, 1);
-    color: #fff;
-    border-radius: 0.25rem;
-    border: 0;
-    font-size: 1rem;
-    margin-bottom: 1rem;
-    margin-left: 2rem;
+  width: 90%;
+  padding: 0 1.5rem;
+  height: 3rem;
+  background: rgb(1, 173, 1);
+  color: #fff;
+  border-radius: 0.25rem;
+  border: 0;
+  font-size: 1rem;
+  margin: 0 auto;
 }
     
     
@@ -247,8 +246,8 @@ tr:nth-child(even) {
 .row{
   display: flex;
   flex-wrap: wrap;
-  margin-right: -0.75rem;
-  margin-left: -0.75rem;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .card {
@@ -261,6 +260,7 @@ tr:nth-child(even) {
   background-clip: border-box;
   border: 1px solid #e3e6f0;
   border-radius: 0.35rem;
+  height: 82%;
 }
 
 .card > hr {

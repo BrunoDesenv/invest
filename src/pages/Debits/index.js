@@ -273,37 +273,40 @@ function Debits() {
               <button className="ReactModal__Cancel" onClick={closeSituacaoModal}>Cancelar</button>
             </div>
           </ReactModal>
+          <div className="container-dash">
+            <div className="containerTable">
 
-          <table className="table1">
-            <thead>
-              <tr>
-                <th>Categoria</th>
-                <th>Descrição</th>
-                <th>Valor</th>
-                <th>Situação</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtrado.map((item) => {
-                return (
-                  <tr key={item.key}>
-                    <td>{item.categoria}</td>
-                    <td>{item.descricao}</td>
-                    <td>{item.valor}</td>
-                    {item.situacao === "Pendente" && <td className="status-pending">{item.situacao}</td>}
-                    {item.situacao === "Pago" && <td className="status-paid">{item.situacao}</td>}
-                    {item.situacao === "Atrasado" && <td className="status--unpaid">{item.situacao}</td>}
-                    <td><FiEdit onClick={() => { openSituacaoModal(item) }} className="optIcon" /></td>
-                    <td><FiX onClick={() => { excluirDebits(item.key) }} className="optIcon" /></td>
+              <table className="table1">
+                <thead>
+                  <tr>
+                    <th>Categoria</th>
+                    <th>Descrição</th>
+                    <th>Valor</th>
+                    <th>Situação</th>
                   </tr>
-                )
-              })}
-            </tbody>
-          </table>
-
+                </thead>
+                <tbody>
+                  {filtrado.map((item) => {
+                    return (
+                      <tr key={item.key}>
+                        <td>{item.categoria}</td>
+                        <td>{item.descricao}</td>
+                        <td>{item.valor}</td>
+                        {item.situacao === "Pendente" && <td className="status-pending">{item.situacao}</td>}
+                        {item.situacao === "Pago" && <td className="status-paid">{item.situacao}</td>}
+                        {item.situacao === "Atrasado" && <td className="status--unpaid">{item.situacao}</td>}
+                        <td><FiEdit onClick={() => { openSituacaoModal(item) }} className="optIcon" /></td>
+                        <td><FiX onClick={() => { excluirDebits(item.key) }} className="optIcon" /></td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
-    </div >
+    </div>
   );
 }
 

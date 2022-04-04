@@ -91,7 +91,7 @@ function Simulation() {
     let rtotalTaxaMedia = 0;
     let rtotalRendimentoMensal = 0;
     let rtotalRendimentoAnual = 0;
-    
+
 
     filtrado.forEach((item) => {
       rtotalInvestido = parseFloat(item.valorinvestido) + parseFloat(rtotalInvestido);
@@ -129,7 +129,7 @@ function Simulation() {
           <FiDollarSign size={25} />
         </Title>
         <div className="container-dash">
-           {/* Card superior */}
+          {/* Card superior */}
 
           <div className="row">
             <div className="col-xl-3">
@@ -138,7 +138,7 @@ function Simulation() {
                   <div className="row">
                     <div className="col mr-2">
                       <div className="text-xs">
-                        Total Investido (Mês)</div>
+                        Total Investido</div>
                       <div className="h5">R$ {totalInvestido.toFixed(2)}</div>
                     </div>
                     <div className="col-auto">
@@ -149,7 +149,7 @@ function Simulation() {
               </div>
             </div>
 
-            
+
             <div className="col-xl-3 col-md-6 mb-4">
               <div className="card border-left-success">
                 <div className="card-body">
@@ -167,7 +167,7 @@ function Simulation() {
               </div>
             </div>
 
-            
+
             <div className="col-xl-3 col-md-6 mb-4">
               <div className="card border-left-info">
                 <div className="card-body">
@@ -190,7 +190,7 @@ function Simulation() {
               </div>
             </div>
 
-           
+
             <div className="col-xl-3 col-md-6 mb-4">
               <div className="card border-left-warning">
                 <div className="card-body">
@@ -234,31 +234,34 @@ function Simulation() {
               <button className="ReactModal__Cancel" onClick={closeModal}>Cancelar</button>
             </div>
           </ReactModal>
-          <table className="table1">
-            <thead>
-              <tr>
-                <th>ativo</th>
-                <th>Valor Investido</th>
-                <th>Taxa A.M</th>
-                <th>Retorno Mensal</th>
-                <th>Retorno Anual</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtrado.map((item) => {
-                return (
-                  <tr key={item.key}>
-                    <td>{item.ativo}</td>
-                    <td>{item.valorinvestido}</td>
-                    <td className="amount">{item.taxaam}</td>
-                    <td className="amount">{item.retornomensal}</td>
-                    <td className="amount">{item.retornoanual}</td>
+          <div className="container-dash">
+            <div className="containerTable">
+              <table className="table1">
+                <thead>
+                  <tr>
+                    <th>ativo</th>
+                    <th>Valor Investido</th>
+                    <th>Taxa A.M</th>
+                    <th>Retorno Mensal</th>
+                    <th>Retorno Anual</th>
                   </tr>
-                )
-              })}
-            </tbody>
-          </table>
-
+                </thead>
+                <tbody>
+                  {filtrado.map((item) => {
+                    return (
+                      <tr key={item.key}>
+                        <td>{item.ativo}</td>
+                        <td>{item.valorinvestido}</td>
+                        <td className="amount">{item.taxaam}</td>
+                        <td className="amount">{item.retornomensal}</td>
+                        <td className="amount">{item.retornoanual}</td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div >
