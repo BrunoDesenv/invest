@@ -88,13 +88,55 @@ function SimulationProvider({ children }) {
         }
     }
 
+    async function excluirSimulacao(idSimulacao) {
+
+        await firebase.firestore().collection('simulations')
+            .doc(idSimulacao)
+            .delete()
+            .then(() => {
+                toast.success('Dados excluidos')
+            })
+            .catch(() => {
+                toast.success('Não foi possível excluir o registro, tente novamente mais tarde')
+            })
+            getSimulations();
+    }
+
+    async function updateSimulacaoValues(data) {
+
+        await firebase.firestore().collection('simulations')
+            .doc(data.key)
+            .update({
+                usuario: data.usuario,
+                objetivo: data.objetivo,
+                valorinicial: data.valorinicial,
+                aportemensal: data.aportemensal,
+                tempoinvestido: data.tempoinvestido,
+                rendimentomensal: data.rendimentomensal,
+                saldofinal: data.saldofinal,
+                retornomensal: data.retornomensal,
+                retornoanual: data.retornoanual,
+                totalmeses: data.totalmeses
+            })
+            .then(() => {
+                toast.success('Alterado com sucesso')
+            })
+            .catch((err) => {
+                toast.error('Erro')
+            })
+
+        getSimulations();
+
+    }
 
     return (
         <SimulationContext.Provider value={{
             saveSimulation,
             getSimulations,
             simulation,
-            setSimularion
+            setSimularion,
+            updateSimulacaoValues,
+            excluirSimulacao
         }}>
             {children}
         </SimulationContext.Provider>

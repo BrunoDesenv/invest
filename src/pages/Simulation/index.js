@@ -7,15 +7,14 @@ import Title from '../../components/Title'
 
 import ReactModal from 'react-modal'
 
-import { FiTrendingUp } from 'react-icons/fi'
-
+import { FiTrendingUp, FiShoppingCart, FiEdit, FiX  } from 'react-icons/fi'
 import './style.css';
 
 
 function Simulation() {
 
   const { user, signOut } = useContext(AuthContext);
-  const { saveSimulation, simulation, getSimulations } = useContext(SimulationContext);
+  const { saveSimulation, simulation, getSimulations, excluirSimulacao, updateSimulacaoValues } = useContext(SimulationContext);
   const [filtrado, setFiltrado] = useState([]);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [isSimulate, SetIsSimulate] = useState(false);
@@ -35,6 +34,9 @@ function Simulation() {
   const [totalrendimentoMensalMedioTotal, setTotalRendimentoMensal] = useState(0);
   const [totalRendimentoAnual, setTotalRendimentoAnual] = useState(0);
 
+  const [simulacaoIsOpen, setSimulacaoIsOpen] = useState(false);
+  const [editarSimulacaoIsOpen, setEditarSimulacaoIsOpem] = useState(false);
+  const [id, setId] = useState();
 
   function calcular() {
     let totalMeses = anos * 12
@@ -72,6 +74,50 @@ function Simulation() {
     setRendimentoM();
   }
 
+  function openSimulacaoModal(item) {
+    setObjetivo(item.objetivo);
+    setCapital(item.valorinicial);
+    setQuantidade(item.aportemensal);
+    setAnos(item.tempoinvestido);
+    setRendimentoM(item.rendimentomensal); 
+    setId(item.key);
+    setSimulacaoIsOpen(true);
+    SetIsSimulate(false)
+  }
+
+  async function updateValues() {
+    let data = {
+      key: id,
+      usuario: user.uid,
+      objetivo: objetivo,
+      valorinicial: capital,
+      aportemensal: quantidade,
+      tempoinvestido: anos,
+      rendimentomensal: rendimentoM,
+      saldofinal: quanto,
+      retornomensal: mensal,
+      retornoanual: rentabilidadeAno,
+      totalmeses: tMeses
+    }
+
+    updateSimulacaoValues(data);
+    closeSituacaoModal();
+  }
+
+
+  function closeSituacaoModal() {
+    clear();
+    setSimulacaoIsOpen(false);
+    setEditarSimulacaoIsOpem(false);
+  }
+
+  function clear(){
+    setObjetivo('');
+    setCapital('');
+    setQuantidade('');
+    setAnos('');
+    setRendimentoM(''); 
+  }
   function saveValues() {
     let data = {
       usuario: user.uid,
@@ -246,6 +292,34 @@ function Simulation() {
             </div>
           </ReactModal>
         </div>
+
+        <ReactModal
+            isOpen={simulacaoIsOpen}
+            ariaHideApp={false}
+            className={
+              "ReactModal__Content"}>
+            <div>
+              <div className="ReactModal__form">
+                <h2>Editar</h2>
+                <input value={objetivo} placeholder="Objetivo" onChange={(e) => setObjetivo(e.target.value)} />
+                <input value={capital} placeholder="Capital Inicial" onChange={(e) => setCapital(e.target.value.replace(',', '.'))} />
+                <input value={quantidade} placeholder="Aporte Mensal" onChange={(e) => setQuantidade(e.target.value.replace(',', '.'))} />
+                <input value={anos} placeholder="Tempo de Investimento" onChange={(e) => setAnos(e.target.value)} />
+                <input value={rendimentoM} placeholder="Taxa de rendimento" onChange={(e) => setRendimentoM(e.target.value.replace(',', '.'))} />
+                <button className="ReactModal__Simulate" type="button" onClick={() => { calcular() }}>Simular modal</button>
+                
+                {isSimulate && <div>
+                  <h2>Resultado (Montante, Retorno Mensal, Retorno Anual)</h2>
+                  <input disabled={true} value={quanto} placeholder="Montante" />
+                  <input disabled={true} value={mensal} placeholder="Retorno Mensal" />
+                  <input disabled={true} value={rentabilidadeAno} placeholder="Retorno Anual" />
+                  <button className="ReactModal__save" type="button" onClick={() => { updateValues() }}>Salvar Simulação modal</button>
+                </div>}
+              </div>
+              <button className="ReactModal__Cancel" onClick={closeSituacaoModal}>Cancelar</button>
+            </div>
+          </ReactModal>
+
         <div className="container-dash">
           <div className="containerTable">
             <table className="table1">
@@ -273,6 +347,8 @@ function Simulation() {
                       <td className="amount">{item.saldofinal}</td>
                       <td className="amount">{item.retornomensal}</td>
                       <td className="amount">{item.retornoanual}</td>
+                      <td><FiEdit onClick={() => { openSimulacaoModal(item) }} className="optIcon" /></td>
+                      <td><FiX onClick={() => { excluirSimulacao(item.key) }} className="optIcon" /></td>
                     </tr>
                   )
                 })}
