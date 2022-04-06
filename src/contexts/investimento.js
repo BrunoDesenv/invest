@@ -77,13 +77,50 @@ function InvestimentosProvider({ children }) {
         }
     }
 
+    async function excluirInvestimento(idInvestimento) {
+
+        await firebase.firestore().collection('Investimentos')
+            .doc(idInvestimento)
+            .delete()
+            .then(() => {
+                toast.success('Dados excluidos')
+            })
+            .catch(() => {
+                toast.success('Não foi possível excluir o registro, tente novamente mais tarde')
+            })
+            getInvestimentos();
+    }
+
+    async function updateInvestimentoValues(data) {
+
+        await firebase.firestore().collection('Investimentos')
+            .doc(data.key)
+            .update({
+                ativo: data.ativo,
+                valorinvestido: data.valorinvestido,
+                taxaam: data.taxaam,
+                retornomensal: data.retornomensal,
+                retornoanual: data.retornoanual
+            })
+            .then(() => {
+                toast.success('Alterado com sucesso')
+            })
+            .catch((err) => {
+                toast.error('Erro')
+            })
+
+        getInvestimentos();
+
+    }
 
     return (
         <InvestimentosContext.Provider value={{
             saveInvestimentos,
             getInvestimentos,
             investimento,
-            setInvestimentos
+            setInvestimentos,
+            excluirInvestimento,
+            updateInvestimentoValues
         }}>
             {children}
         </InvestimentosContext.Provider>

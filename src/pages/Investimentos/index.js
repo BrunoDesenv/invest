@@ -7,7 +7,7 @@ import Title from '../../components/Title'
 
 import ReactModal from 'react-modal'
 
-import { FiDollarSign } from 'react-icons/fi'
+import { FiDollarSign, FiEdit, FiX   } from 'react-icons/fi'
 
 import './style.css';
 
@@ -15,7 +15,7 @@ import './style.css';
 function Simulation() {
 
   const { user, signOut } = useContext(AuthContext);
-  const { saveInvestimentos, investimento, getInvestimentos } = useContext(InvestimentosContext);
+  const { saveInvestimentos, investimento, getInvestimentos, excluirInvestimento, updateInvestimentoValues } = useContext(InvestimentosContext);
   const [filtrado, setFiltrado] = useState([]);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [isSimulate, SetIsSimulate] = useState(false);
@@ -35,6 +35,8 @@ function Simulation() {
   const [totalrendimentoMensalMedioTotal, setTotalRendimentoMensal] = useState(0);
   const [totalRendimentoAnual, setTotalRendimentoAnual] = useState(0);
 
+  const [investimentoIsOpen, setInvestimentoIsOpen] = useState(false);
+  const [id, setId] = useState();
 
   function calcular() {
     let totalMeses = anos * 12
@@ -85,6 +87,47 @@ function Simulation() {
     saveInvestimentos(data);
     closeModal();
   }
+
+  function openInvestimentoModal(item) {
+    console.log(item)
+    setId(item.key);
+    setAtivo(item.ativo);
+    setCapital(item.valorinvestido);
+    setRendimentoM(item.taxaam)
+    setInvestimentoIsOpen(true);
+    SetIsSimulate(false); 
+  }
+
+  function closeInvestimentoModal() {
+    clear();
+    setInvestimentoIsOpen(false);
+  }
+
+  function clear(){
+    setAtivo('');
+    setCapital('');
+    setRendimentoM('')
+    setQuanto('')
+    setMensal('')
+    setRentabilidadeAno()
+  }
+
+  async function updateValues() {
+    let data = {
+      key: id,
+      ativo: ativo,
+      valorinvestido: capital,
+      taxaam: rendimentoM,
+      retornomensal: mensal,
+      retornoanual: rentabilidadeAno
+    }
+
+    updateInvestimentoValues(data);
+    closeInvestimentoModal();
+  }
+
+
+
 
   useEffect(() => {
     let rtotalInvestido = 0;
@@ -234,6 +277,32 @@ function Simulation() {
               <button className="ReactModal__Cancel" onClick={closeModal}>Cancelar</button>
             </div>
           </ReactModal>
+
+
+          <ReactModal
+            isOpen={investimentoIsOpen}
+            ariaHideApp={false}
+            className={
+              "ReactModal__Content"}>
+            <div>
+              <div className="ReactModal__form">
+                <h2>Editar</h2>
+                <input value={ativo} placeholder="Ativo" onChange={(e) => setAtivo(e.target.value)} />
+                <input value={capital} placeholder="Valor Investido" onChange={(e) => setCapital(e.target.value.replace(',', '.'))} />
+                <input value={rendimentoM} placeholder="Taxa de rendimento" onChange={(e) => setRendimentoM(e.target.value.replace(',', '.'))} />
+                <button className="ReactModal__Simulate" type="button" onClick={() => { calcular() }}>Simular</button>
+                {isSimulate && <div>
+                  <h2>Resultado (Retorno Mensal, Retorno Anual)</h2>
+                  <input disabled={true} value={mensal} placeholder="Retorno Mensal" />
+                  <input disabled={true} value={rentabilidadeAno} placeholder="Retorno Anual" />
+                  <button className="ReactModal__save" type="button" onClick={() => { updateValues() }}>Salvar Simulação modal </button>
+                </div>}
+              </div>
+              <button className="ReactModal__Cancel" onClick={closeInvestimentoModal}>Cancelar</button>
+            </div>
+          </ReactModal>
+
+
           <div className="container-dash">
             <div className="containerTable">
               <table className="table1">
@@ -255,6 +324,8 @@ function Simulation() {
                         <td className="amount">{item.taxaam}</td>
                         <td className="amount">{item.retornomensal}</td>
                         <td className="amount">{item.retornoanual}</td>
+                        <td><FiEdit onClick={() => { openInvestimentoModal(item) }} className="optIcon" /></td>
+                        <td><FiX onClick={() => { excluirInvestimento(item.key) }} className="optIcon" /></td>
                       </tr>
                     )
                   })}
