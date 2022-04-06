@@ -118,6 +118,7 @@ function Simulation() {
     setAnos('');
     setRendimentoM(''); 
   }
+  
   function saveValues() {
     let data = {
       usuario: user.uid,
@@ -306,14 +307,14 @@ function Simulation() {
                 <input value={quantidade} placeholder="Aporte Mensal" onChange={(e) => setQuantidade(e.target.value.replace(',', '.'))} />
                 <input value={anos} placeholder="Tempo de Investimento" onChange={(e) => setAnos(e.target.value)} />
                 <input value={rendimentoM} placeholder="Taxa de rendimento" onChange={(e) => setRendimentoM(e.target.value.replace(',', '.'))} />
-                <button className="ReactModal__Simulate" type="button" onClick={() => { calcular() }}>Simular modal</button>
+                <button className="ReactModal__Simulate" type="button" onClick={() => { calcular() }}>Simular</button>
                 
                 {isSimulate && <div>
                   <h2>Resultado (Montante, Retorno Mensal, Retorno Anual)</h2>
                   <input disabled={true} value={quanto} placeholder="Montante" />
                   <input disabled={true} value={mensal} placeholder="Retorno Mensal" />
                   <input disabled={true} value={rentabilidadeAno} placeholder="Retorno Anual" />
-                  <button className="ReactModal__save" type="button" onClick={() => { updateValues() }}>Salvar Simulação modal</button>
+                  <button className="ReactModal__save" type="button" onClick={() => { updateValues() }}>Salvar Simulação</button>
                 </div>}
               </div>
               <button className="ReactModal__Cancel" onClick={closeSituacaoModal}>Cancelar</button>
