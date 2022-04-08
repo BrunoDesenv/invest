@@ -14,7 +14,7 @@ import './style.css';
 
 function Simulation() {
 
-  const { user, signOut } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const { saveInvestimentos, investimento, getInvestimentos, excluirInvestimento, updateInvestimentoValues } = useContext(InvestimentosContext);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [isSimulate, SetIsSimulate] = useState(false);
@@ -36,17 +36,16 @@ function Simulation() {
 
   const [investimentoIsOpen, setInvestimentoIsOpen] = useState(false);
   const [id, setId] = useState();
-  const [invest, setInvest ] = useState();
+  const [invest, setInvest ] = useState('FII');
 
   const listCategoria = [
-    { id: 1, name: 'Fiis' },
-    { id: 2, name: 'Ação' },
+    { id: 1, name: 'FII' },
+    { id: 2, name: 'AÇÃO' },
     { id: 3, name: 'CDB' },
-    { id: 4, name: 'Tesouro' },
-    { id: 5, name: 'Poupança' },
-    { id: 5, name: 'Ação Estrangeira' },
-    { id: 5, name: 'Criptos' }
-
+    { id: 4, name: 'TESOURO' },
+    { id: 5, name: 'POUPANÇA' },
+    { id: 6, name: 'AÇÃO ESTRANGEIRA' },
+    { id: 7, name: 'CRIPTOS' }
   ];
 
   function calcular() {
@@ -83,6 +82,7 @@ function Simulation() {
     setCapital();
     setAnos();
     setRendimentoM();
+    setInvest('FII');
   }
 
   function saveValues() {

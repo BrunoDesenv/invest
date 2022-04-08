@@ -31,7 +31,8 @@ function SimulationProvider({ children }) {
                 saldofinal: data.saldofinal,
                 retornomensal: data.retornomensal,
                 retornoanual: data.retornoanual,
-                totalmeses: data.totalmeses
+                totalmeses: data.totalmeses, 
+                categoria: data.invest
             })
             .then(() => {
                 toast.success('Simulação cadastrada')
@@ -75,7 +76,8 @@ function SimulationProvider({ children }) {
                     saldofinal: doc.data().saldofinal,
                     retornomensal: doc.data().retornomensal,
                     retornoanual: doc.data().retornoanual,
-                    totalmeses: doc.data().totalmeses
+                    totalmeses: doc.data().totalmeses, 
+                    categoria: doc.data().categoria 
                 })
             })
 
@@ -116,7 +118,9 @@ function SimulationProvider({ children }) {
                 saldofinal: data.saldofinal,
                 retornomensal: data.retornomensal,
                 retornoanual: data.retornoanual,
-                totalmeses: data.totalmeses
+                totalmeses: data.totalmeses, 
+                categoria: data.invest
+
             })
             .then(() => {
                 toast.success('Alterado com sucesso')

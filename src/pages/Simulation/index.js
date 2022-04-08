@@ -7,13 +7,13 @@ import Title from '../../components/Title'
 
 import ReactModal from 'react-modal'
 
-import { FiTrendingUp, FiShoppingCart, FiEdit, FiX  } from 'react-icons/fi'
+import { FiTrendingUp, FiEdit, FiX } from 'react-icons/fi'
 import './style.css';
 
 
 function Simulation() {
 
-  const { user, signOut } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const { saveSimulation, simulation, getSimulations, excluirSimulacao, updateSimulacaoValues } = useContext(SimulationContext);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [isSimulate, SetIsSimulate] = useState(false);
@@ -36,6 +36,17 @@ function Simulation() {
   const [simulacaoIsOpen, setSimulacaoIsOpen] = useState(false);
   const [editarSimulacaoIsOpen, setEditarSimulacaoIsOpem] = useState(false);
   const [id, setId] = useState();
+  const [invest, setInvest] = useState('FII');
+
+  const listCategoria = [
+    { id: 1, name: 'FII' },
+    { id: 2, name: 'AÇÃO' },
+    { id: 3, name: 'CDB' },
+    { id: 4, name: 'TESOURO' },
+    { id: 5, name: 'POUPANÇA' },
+    { id: 6, name: 'AÇÃO ESTRANGEIRA' },
+    { id: 7, name: 'CRIPTOS' }
+  ];
 
   function calcular() {
     let totalMeses = anos * 12
@@ -71,6 +82,7 @@ function Simulation() {
     setCapital();
     setAnos();
     setRendimentoM();
+    setInvest('FII');
   }
 
   function openSimulacaoModal(item) {
@@ -78,8 +90,9 @@ function Simulation() {
     setCapital(item.valorinicial);
     setQuantidade(item.aportemensal);
     setAnos(item.tempoinvestido);
-    setRendimentoM(item.rendimentomensal); 
+    setRendimentoM(item.rendimentomensal);
     setId(item.key);
+    setInvest(item.categoria);
     setSimulacaoIsOpen(true);
     SetIsSimulate(false)
   }
@@ -96,7 +109,8 @@ function Simulation() {
       saldofinal: quanto,
       retornomensal: mensal,
       retornoanual: rentabilidadeAno,
-      totalmeses: tMeses
+      totalmeses: tMeses,
+      invest: invest
     }
 
     updateSimulacaoValues(data);
@@ -110,14 +124,15 @@ function Simulation() {
     setEditarSimulacaoIsOpem(false);
   }
 
-  function clear(){
+  function clear() {
     setObjetivo('');
     setCapital('');
     setQuantidade('');
     setAnos('');
-    setRendimentoM(''); 
+    setRendimentoM('');
+    setInvest('FII');
   }
-  
+
   function saveValues() {
     let data = {
       usuario: user.uid,
@@ -129,7 +144,8 @@ function Simulation() {
       saldofinal: quanto,
       retornomensal: mensal,
       retornoanual: rentabilidadeAno,
-      totalmeses: tMeses
+      totalmeses: tMeses,
+      invest: invest
     }
 
     saveSimulation(data);
@@ -200,7 +216,7 @@ function Simulation() {
                     <div className="col mr-2">
                       <div className="text-xs">
                         Taxa média (Mensal)</div>
-                      <div className="h5">{(taxaMedia) ? taxaMedia.toFixed(2):0}% A.M</div>
+                      <div className="h5">{(taxaMedia) ? taxaMedia.toFixed(2) : 0}% A.M</div>
                     </div>
                     <div className="col-auto">
                       <i className="fas fa-dollar-sign"></i>
@@ -261,7 +277,11 @@ function Simulation() {
             <div>
               <div className="ReactModal__form">
                 <h2>Nova Simulação</h2>
-
+                <select value={invest} onChange={e => setInvest(e.target.value)}>
+                  {listCategoria.map((item, index) => (
+                    <option key={item.id} value={item.name}>{item.name}</option>
+                  ))}
+                </select>
                 <input value={objetivo} placeholder="Objetivo" onChange={(e) => setObjetivo(e.target.value)} />
                 <input value={capital} placeholder="Capital Inicial" onChange={(e) => setCapital(e.target.value.replace(',', '.'))} />
                 <input value={quantidade} placeholder="Aporte Mensal" onChange={(e) => setQuantidade(e.target.value.replace(',', '.'))} />
@@ -282,31 +302,36 @@ function Simulation() {
         </div>
 
         <ReactModal
-            isOpen={simulacaoIsOpen}
-            ariaHideApp={false}
-            className={
-              "ReactModal__Content"}>
-            <div>
-              <div className="ReactModal__form">
-                <h2>Editar</h2>
-                <input value={objetivo} placeholder="Objetivo" onChange={(e) => setObjetivo(e.target.value)} />
-                <input value={capital} placeholder="Capital Inicial" onChange={(e) => setCapital(e.target.value.replace(',', '.'))} />
-                <input value={quantidade} placeholder="Aporte Mensal" onChange={(e) => setQuantidade(e.target.value.replace(',', '.'))} />
-                <input value={anos} placeholder="Tempo de Investimento" onChange={(e) => setAnos(e.target.value)} />
-                <input value={rendimentoM} placeholder="Taxa de rendimento" onChange={(e) => setRendimentoM(e.target.value.replace(',', '.'))} />
-                <button className="ReactModal__Simulate" type="button" onClick={() => { calcular() }}>Simular</button>
-                
-                {isSimulate && <div>
-                  <h2>Resultado (Montante, Retorno Mensal, Retorno Anual)</h2>
-                  <input disabled={true} value={quanto} placeholder="Montante" />
-                  <input disabled={true} value={mensal} placeholder="Retorno Mensal" />
-                  <input disabled={true} value={rentabilidadeAno} placeholder="Retorno Anual" />
-                  <button className="ReactModal__save" type="button" onClick={() => { updateValues() }}>Salvar Simulação</button>
-                </div>}
-              </div>
-              <button className="ReactModal__Cancel" onClick={closeSituacaoModal}>Cancelar</button>
+          isOpen={simulacaoIsOpen}
+          ariaHideApp={false}
+          className={
+            "ReactModal__Content"}>
+          <div>
+            <div className="ReactModal__form">
+              <h2>Editar</h2>
+              <select value={invest} onChange={e => setInvest(e.target.value)}>
+                {listCategoria.map((item, index) => (
+                  <option key={item.id} value={item.name}>{item.name}</option>
+                ))}
+              </select>
+              <input value={objetivo} placeholder="Objetivo" onChange={(e) => setObjetivo(e.target.value)} />
+              <input value={capital} placeholder="Capital Inicial" onChange={(e) => setCapital(e.target.value.replace(',', '.'))} />
+              <input value={quantidade} placeholder="Aporte Mensal" onChange={(e) => setQuantidade(e.target.value.replace(',', '.'))} />
+              <input value={anos} placeholder="Tempo de Investimento" onChange={(e) => setAnos(e.target.value)} />
+              <input value={rendimentoM} placeholder="Taxa de rendimento" onChange={(e) => setRendimentoM(e.target.value.replace(',', '.'))} />
+              <button className="ReactModal__Simulate" type="button" onClick={() => { calcular() }}>Simular</button>
+
+              {isSimulate && <div>
+                <h2>Resultado (Montante, Retorno Mensal, Retorno Anual)</h2>
+                <input disabled={true} value={quanto} placeholder="Montante" />
+                <input disabled={true} value={mensal} placeholder="Retorno Mensal" />
+                <input disabled={true} value={rentabilidadeAno} placeholder="Retorno Anual" />
+                <button className="ReactModal__save" type="button" onClick={() => { updateValues() }}>Salvar Simulação</button>
+              </div>}
             </div>
-          </ReactModal>
+            <button className="ReactModal__Cancel" onClick={closeSituacaoModal}>Cancelar</button>
+          </div>
+        </ReactModal>
 
         <div className="container-dash">
           <div className="containerTable">
@@ -327,6 +352,7 @@ function Simulation() {
                 {simulation.map((item) => {
                   return (
                     <tr key={item.key}>
+                      <td>{item.categoria}</td>
                       <td>{item.objetivo}</td>
                       <td>{item.valorinicial}</td>
                       <td>{item.aportemensal}</td>

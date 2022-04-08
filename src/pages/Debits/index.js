@@ -21,7 +21,7 @@ function Debits() {
   const [id, setId] = useState();
 
 
-  const [categoria, setCategoria] = useState();
+  const [categoria, setCategoria] = useState('Casa');
   const [descricao, setDescricao] = useState('');
   const [valor, setValor] = useState();
   const [situacao, setSituacao] = useState(1);
@@ -58,7 +58,7 @@ function Debits() {
 
   function closeSituacaoModal() {
     setSituacaoIsOpen(false);
-    setCategoria();
+    setCategoria('Casa');
     setDescricao();
     setValor();
     setSituacao();
@@ -66,13 +66,14 @@ function Debits() {
 
   function closeModal() {
     setIsOpen(false);
-    setCategoria();
+    setCategoria('Casa');
     setDescricao();
     setValor();
     setSituacao();
   }
 
   function saveValues() {
+    
     let data = {
       usuario: user.uid,
       categoria: categoria,
