@@ -4,7 +4,6 @@ import { AuthContext } from '../../contexts/auth'
 import { DebitosContext } from '../../contexts/debitos';
 import Header from '../../components/Header'
 import Title from '../../components/Title'
-import { toast } from 'react-toastify'
 
 import ReactModal from 'react-modal'
 
@@ -15,15 +14,14 @@ import './style.css';
 
 function Debits() {
 
-  const { user, signOut } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const { saveDebitos, updateDebitsValues, excluirDebits, debitos, getDebitos } = useContext(DebitosContext);
-  const [filtrado, setFiltrado] = useState([]);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [situacaoIsOpen, setSituacaoIsOpen] = useState(false);
   const [id, setId] = useState();
 
 
-  const [categoria, setCategoria] = useState();
+  const [categoria, setCategoria] = useState('Casa');
   const [descricao, setDescricao] = useState('');
   const [valor, setValor] = useState();
   const [situacao, setSituacao] = useState(1);
@@ -45,8 +43,6 @@ function Debits() {
     { id: 5, name: 'Dívida' }
   ];
 
-
-
   function openModal() {
     setIsOpen(true);
   }
@@ -62,7 +58,7 @@ function Debits() {
 
   function closeSituacaoModal() {
     setSituacaoIsOpen(false);
-    setCategoria();
+    setCategoria('Casa');
     setDescricao();
     setValor();
     setSituacao();
@@ -70,13 +66,14 @@ function Debits() {
 
   function closeModal() {
     setIsOpen(false);
-    setCategoria();
+    setCategoria('Casa');
     setDescricao();
     setValor();
     setSituacao();
   }
 
   function saveValues() {
+
     let data = {
       usuario: user.uid,
       categoria: categoria,
@@ -105,23 +102,8 @@ function Debits() {
 
 
   useEffect(() => {
-    getDebitos();
-    let filtrado = debitos.filter(debito => debito.usuario === user.uid);
-    setFiltrado(filtrado);
+    getDebitos(user.uid);
   }, [])
-
-  useEffect(() => {
-    let filtrado = debitos.filter(debito => debito.usuario === user.uid);
-    setFiltrado(filtrado.sort(function (a,b) {
-      if(a.categoria < b.categoria){
-          return -1;
-      }
-      else {
-          return true;
-      }
-  }))
-  }, [debitos])
-
 
   useEffect(() => {
     let rPagar = 0;
@@ -129,14 +111,14 @@ function Debits() {
     let rEssencial = 0;
 
 
-    filtrado.forEach((item) => {
+    debitos.forEach((item) => {
       rPagar = parseFloat(item.valor) + parseFloat(rPagar);
 
       if (item.situacao === "Pago") {
         rPago = parseFloat(item.valor) + parseFloat(rPago);
       }
 
-      if (item.categoria === "Casa" || item.categoria === "Dívida" || item.categoria === "Responsabilidades") {
+      if (item.categoria === "Casa" || item.categoria === "Dívida" || item.categoria === "Responsabilidade") {
         rEssencial = parseFloat(item.valor) + parseFloat(rEssencial);
       }
     })
@@ -145,7 +127,7 @@ function Debits() {
     setPago(rPago);
     setEssencial(rEssencial);
 
-  }, [filtrado]);
+  }, [debitos]);
 
   return (
     <div className="App">
@@ -291,10 +273,12 @@ function Debits() {
                     <th>Descrição</th>
                     <th>Valor</th>
                     <th>Situação</th>
+                    <th>Editar</th>
+                    <th>Excluir</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filtrado.map((item) => {
+                  {debitos.map((item) => {
                     return (
                       <tr key={item.key}>
                         <td>{item.categoria}</td>
@@ -304,7 +288,7 @@ function Debits() {
                         {item.situacao === "Pago" && <td className="status-paid">{item.situacao}</td>}
                         {item.situacao === "Atrasado" && <td className="status--unpaid">{item.situacao}</td>}
                         <td><FiEdit onClick={() => { openSituacaoModal(item) }} className="optIcon" /></td>
-                        <td><FiX onClick={() => { excluirDebits(item.key) }} className="optIcon" /></td>
+                        <td><FiX onClick={() => { excluirDebits(item.key, item.usuario) }} className="optIcon" /></td>
                       </tr>
                     )
                   })}

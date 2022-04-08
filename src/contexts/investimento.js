@@ -24,7 +24,8 @@ function InvestimentosProvider({ children }) {
                 valorinvestido: data.valorinvestido,
                 taxaam: data.taxaam,
                 retornomensal: data.retornomensal,
-                retornoanual: data.retornoanual
+                retornoanual: data.retornoanual,
+                invest: data.invest
             })
             .then(() => {
                 toast.success('Simulação cadastrada')
@@ -34,12 +35,12 @@ function InvestimentosProvider({ children }) {
                 toast.error('Algo deu errado')
             })
 
-            getInvestimentos();
+            getInvestimentos(data.usuario);
     }
 
-    async function getInvestimentos() {
+    async function getInvestimentos(userId) {
         setInvestimentos([])
-        await firebase.firestore().collection('Investimentos')
+        await firebase.firestore().collection('Investimentos').where("usuario", "==" ,userId)
             .get()
             .then((snapshot) => {
                 updateState(snapshot);
@@ -64,7 +65,8 @@ function InvestimentosProvider({ children }) {
                     valorinvestido: doc.data().valorinvestido, 
                     taxaam: doc.data().taxaam,
                     retornomensal: doc.data().retornomensal,
-                    retornoanual: doc.data().retornoanual
+                    retornoanual: doc.data().retornoanual,
+                    invest: doc.data().invest
                 })
             })
 
@@ -77,7 +79,7 @@ function InvestimentosProvider({ children }) {
         }
     }
 
-    async function excluirInvestimento(idInvestimento) {
+    async function excluirInvestimento(idInvestimento, userId) {
 
         await firebase.firestore().collection('Investimentos')
             .doc(idInvestimento)
@@ -88,7 +90,7 @@ function InvestimentosProvider({ children }) {
             .catch(() => {
                 toast.success('Não foi possível excluir o registro, tente novamente mais tarde')
             })
-            getInvestimentos();
+            getInvestimentos(userId);
     }
 
     async function updateInvestimentoValues(data) {
@@ -100,7 +102,8 @@ function InvestimentosProvider({ children }) {
                 valorinvestido: data.valorinvestido,
                 taxaam: data.taxaam,
                 retornomensal: data.retornomensal,
-                retornoanual: data.retornoanual
+                retornoanual: data.retornoanual,
+                invest: data.invest
             })
             .then(() => {
                 toast.success('Alterado com sucesso')
@@ -109,7 +112,7 @@ function InvestimentosProvider({ children }) {
                 toast.error('Erro')
             })
 
-        getInvestimentos();
+        getInvestimentos(data.usuario);
 
     }
 

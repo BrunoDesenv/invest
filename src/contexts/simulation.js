@@ -31,7 +31,8 @@ function SimulationProvider({ children }) {
                 saldofinal: data.saldofinal,
                 retornomensal: data.retornomensal,
                 retornoanual: data.retornoanual,
-                totalmeses: data.totalmeses
+                totalmeses: data.totalmeses, 
+                categoria: data.invest
             })
             .then(() => {
                 toast.success('Simulação cadastrada')
@@ -41,12 +42,12 @@ function SimulationProvider({ children }) {
                 toast.error('Algo deu errado')
             })
 
-            getSimulations();
+            getSimulations(data.usuario);
     }
 
-    async function getSimulations() {
+    async function getSimulations(userId) {
         setSimularion([])
-        await firebase.firestore().collection('simulations')
+        await firebase.firestore().collection('simulations').where("usuario", "==" ,userId)
             .get()
             .then((snapshot) => {
                 updateState(snapshot);
@@ -75,7 +76,8 @@ function SimulationProvider({ children }) {
                     saldofinal: doc.data().saldofinal,
                     retornomensal: doc.data().retornomensal,
                     retornoanual: doc.data().retornoanual,
-                    totalmeses: doc.data().totalmeses
+                    totalmeses: doc.data().totalmeses, 
+                    categoria: doc.data().categoria 
                 })
             })
 
@@ -88,7 +90,7 @@ function SimulationProvider({ children }) {
         }
     }
 
-    async function excluirSimulacao(idSimulacao) {
+    async function excluirSimulacao(idSimulacao, userId) {
 
         await firebase.firestore().collection('simulations')
             .doc(idSimulacao)
@@ -99,7 +101,7 @@ function SimulationProvider({ children }) {
             .catch(() => {
                 toast.success('Não foi possível excluir o registro, tente novamente mais tarde')
             })
-            getSimulations();
+            getSimulations(userId);
     }
 
     async function updateSimulacaoValues(data) {
@@ -116,7 +118,9 @@ function SimulationProvider({ children }) {
                 saldofinal: data.saldofinal,
                 retornomensal: data.retornomensal,
                 retornoanual: data.retornoanual,
-                totalmeses: data.totalmeses
+                totalmeses: data.totalmeses, 
+                categoria: data.invest
+
             })
             .then(() => {
                 toast.success('Alterado com sucesso')
@@ -125,7 +129,7 @@ function SimulationProvider({ children }) {
                 toast.error('Erro')
             })
 
-        getSimulations();
+        getSimulations(data.usuario);
 
     }
 
