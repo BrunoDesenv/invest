@@ -4,7 +4,6 @@ import { AuthContext } from '../../contexts/auth'
 import { DebitosContext } from '../../contexts/debitos';
 import Header from '../../components/Header'
 import Title from '../../components/Title'
-import { toast } from 'react-toastify'
 
 import ReactModal from 'react-modal'
 
@@ -15,9 +14,8 @@ import './style.css';
 
 function Debits() {
 
-  const { user, signOut } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const { saveDebitos, updateDebitsValues, excluirDebits, debitos, getDebitos } = useContext(DebitosContext);
-  const [filtrado, setFiltrado] = useState([]);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [situacaoIsOpen, setSituacaoIsOpen] = useState(false);
   const [id, setId] = useState();
@@ -44,8 +42,6 @@ function Debits() {
     { id: 4, name: 'Pessoal' },
     { id: 5, name: 'Dívida' }
   ];
-
-
 
   function openModal() {
     setIsOpen(true);
@@ -105,23 +101,8 @@ function Debits() {
 
 
   useEffect(() => {
-    getDebitos();
-    let filtrado = debitos.filter(debito => debito.usuario === user.uid);
-    setFiltrado(filtrado);
+    getDebitos(user.uid);
   }, [])
-
-  useEffect(() => {
-    let filtrado = debitos.filter(debito => debito.usuario === user.uid);
-    setFiltrado(filtrado.sort(function (a,b) {
-      if(a.categoria < b.categoria){
-          return -1;
-      }
-      else {
-          return true;
-      }
-  }))
-  }, [debitos])
-
 
   useEffect(() => {
     let rPagar = 0;
@@ -129,7 +110,7 @@ function Debits() {
     let rEssencial = 0;
 
 
-    filtrado.forEach((item) => {
+    debitos.forEach((item) => {
       rPagar = parseFloat(item.valor) + parseFloat(rPagar);
 
       if (item.situacao === "Pago") {
@@ -145,7 +126,7 @@ function Debits() {
     setPago(rPago);
     setEssencial(rEssencial);
 
-  }, [filtrado]);
+  }, [debitos]);
 
   return (
     <div className="App">
@@ -294,7 +275,7 @@ function Debits() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filtrado.map((item) => {
+                  {debitos.map((item) => {
                     return (
                       <tr key={item.key}>
                         <td>{item.categoria}</td>
@@ -304,7 +285,7 @@ function Debits() {
                         {item.situacao === "Pago" && <td className="status-paid">{item.situacao}</td>}
                         {item.situacao === "Atrasado" && <td className="status--unpaid">{item.situacao}</td>}
                         <td><FiEdit onClick={() => { openSituacaoModal(item) }} className="optIcon" /></td>
-                        <td><FiX onClick={() => { excluirDebits(item.key) }} className="optIcon" /></td>
+                        <td><FiX onClick={() => { excluirDebits(item.key, item.usuario) }} className="optIcon" /></td>
                       </tr>
                     )
                   })}

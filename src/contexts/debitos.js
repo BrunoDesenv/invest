@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext } from 'react'
+import { useState, createContext } from 'react'
 import firebase from '../services/firebaseConnection'
 import { toast } from 'react-toastify'
 import { v4 as uuidv4 } from "uuid";
@@ -33,7 +33,7 @@ function DebitosProvider({ children }) {
                 toast.error('Algo deu errado')
             })
 
-        getDebitos();
+        getDebitos(data.usuario);
     }
 
     async function updateDebitsValues(data) {
@@ -54,11 +54,11 @@ function DebitosProvider({ children }) {
                 toast.success('Erro')
             })
 
-        getDebitos();
+        getDebitos(data.usuario);
 
     }
 
-    async function excluirDebits(idDebit) {
+    async function excluirDebits(idDebit, userId) {
 
         await firebase.firestore().collection('debits')
             .doc(idDebit)
@@ -69,12 +69,12 @@ function DebitosProvider({ children }) {
             .catch(() => {
                 console.log('erro ao atualizar')
             })
-        getDebitos();
+        getDebitos(userId);
     }
 
-    async function getDebitos() {
+    async function getDebitos(userID) {
         setDebitos([])
-        await firebase.firestore().collection('debits')
+        await firebase.firestore().collection('debits').where("usuario", "==" ,userID)
             .get()
             .then((snapshot) => {
                 updateState(snapshot);
@@ -105,7 +105,16 @@ function DebitosProvider({ children }) {
 
             const lastDoc = snapshot.docs[snapshot.docs.length - 1]; //Pegando o ultimo documento buscado
 
-            setDebitos(debito => [...debito, ...lista]);
+            setDebitos(lista.sort(function (a,b) {
+                if(a.categoria < b.categoria){
+                    return -1;
+                }
+                else {
+                    return true;
+                }
+            }));
+
+            // setDebitos(debito => [...debito, ...lista]);
             setLastDocs(lastDoc);
         } else {
             setIsEmpty(true);

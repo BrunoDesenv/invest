@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext, useCallback, useMemo } from 'react'
+import { useEffect, useState, useContext, useCallback } from 'react'
 import { AuthContext } from '../../contexts/auth'
 import { DebitosContext } from '../../contexts/debitos';
 import { InvestimentosContext } from '../../contexts/investimento';
@@ -54,7 +54,7 @@ function Dashboard() {
 
 
   useEffect(() => {
-    getDebitos();
+    getDebitos(user.uid);
     let debitosFiltrado = debitos.filter(debito => debito.usuario === user.uid);
     setDebitosFiltrados(debitosFiltrado);
 
