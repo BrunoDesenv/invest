@@ -15,7 +15,6 @@ function Simulation() {
 
   const { user, signOut } = useContext(AuthContext);
   const { saveSimulation, simulation, getSimulations, excluirSimulacao, updateSimulacaoValues } = useContext(SimulationContext);
-  const [filtrado, setFiltrado] = useState([]);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [isSimulate, SetIsSimulate] = useState(false);
 
@@ -137,11 +136,6 @@ function Simulation() {
     closeModal();
   }
 
-  function filtrarValores() {
-    let filtrando = simulation.filter(simulation => simulation.usuario === user.uid);
-    setFiltrado(filtrando);
-  }
-
   useEffect(() => {
     let rtotalInvestido = 0;
     let rtotalTaxaMedia = 0;
@@ -149,33 +143,26 @@ function Simulation() {
     let rtotalRendimentoAnual = 0;
 
 
-    filtrado.forEach((item) => {
+    simulation.forEach((item) => {
       rtotalInvestido = parseFloat(item.saldofinal) + parseFloat(rtotalInvestido);
       rtotalRendimentoMensal = parseFloat(item.retornomensal) + parseFloat(rtotalRendimentoMensal);
       rtotalRendimentoAnual = parseFloat(item.retornoanual) + parseFloat(rtotalRendimentoAnual);
       rtotalTaxaMedia = parseFloat(item.rendimentomensal) + parseFloat(rtotalTaxaMedia);
     })
 
-    let ctaxamedia = rtotalTaxaMedia / filtrado.length;
+    let ctaxamedia = rtotalTaxaMedia / simulation.length;
 
     setTotalInvestido(rtotalInvestido);
     setTotalTaxaMedia(ctaxamedia);
     setTotalRendimentoMensal(rtotalRendimentoMensal);
     setTotalRendimentoAnual(rtotalRendimentoAnual);
 
-  }, [filtrado]);
+  }, [simulation]);
 
 
   useEffect(() => {
-    getSimulations();
-    filtrarValores();
+    getSimulations(user.uid);
   }, []);
-
-
-
-  useEffect(() => {
-    filtrarValores();
-  }, [simulation])
 
   return (
     <div className="App">
@@ -337,7 +324,7 @@ function Simulation() {
                 </tr>
               </thead>
               <tbody>
-                {filtrado.map((item) => {
+                {simulation.map((item) => {
                   return (
                     <tr key={item.key}>
                       <td>{item.objetivo}</td>
@@ -349,7 +336,7 @@ function Simulation() {
                       <td className="amount">{item.retornomensal}</td>
                       <td className="amount">{item.retornoanual}</td>
                       <td><FiEdit onClick={() => { openSimulacaoModal(item) }} className="optIcon" /></td>
-                      <td><FiX onClick={() => { excluirSimulacao(item.key) }} className="optIcon" /></td>
+                      <td><FiX onClick={() => { excluirSimulacao(item.key, item.usuario) }} className="optIcon" /></td>
                     </tr>
                   )
                 })}

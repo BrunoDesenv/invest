@@ -16,7 +16,6 @@ function Simulation() {
 
   const { user, signOut } = useContext(AuthContext);
   const { saveInvestimentos, investimento, getInvestimentos, excluirInvestimento, updateInvestimentoValues } = useContext(InvestimentosContext);
-  const [filtrado, setFiltrado] = useState([]);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [isSimulate, SetIsSimulate] = useState(false);
 
@@ -96,7 +95,6 @@ function Simulation() {
       retornoanual: rentabilidadeAno,
       invest: invest
     }
-    console.log(data)
 
     saveInvestimentos(data);
     closeModal();
@@ -149,33 +147,26 @@ function Simulation() {
     let rtotalRendimentoAnual = 0;
 
 
-    filtrado.forEach((item) => {
+    investimento.forEach((item) => {
       rtotalInvestido = parseFloat(item.valorinvestido) + parseFloat(rtotalInvestido);
       rtotalRendimentoMensal = parseFloat(item.retornomensal) + parseFloat(rtotalRendimentoMensal);
       rtotalRendimentoAnual = parseFloat(item.retornoanual) + parseFloat(rtotalRendimentoAnual);
       rtotalTaxaMedia = parseFloat(item.taxaam) + parseFloat(rtotalTaxaMedia);
     })
 
-    let ctaxamedia = rtotalTaxaMedia / filtrado.length;
+    let ctaxamedia = rtotalTaxaMedia / investimento.length;
 
     setTotalInvestido(rtotalInvestido);
     setTotalTaxaMedia(ctaxamedia);
     setTotalRendimentoMensal(rtotalRendimentoMensal);
     setTotalRendimentoAnual(rtotalRendimentoAnual);
 
-  }, [filtrado]);
+  }, [investimento]);
 
 
   useEffect(() => {
-    getInvestimentos();
-    let filtrado = investimento.filter(simulation => simulation.usuario === user.uid);
-    setFiltrado(filtrado);
+    getInvestimentos(user.uid);
   }, [])
-
-  useEffect(() => {
-    let filtrado = investimento.filter(simulation => simulation.usuario === user.uid);
-    setFiltrado(filtrado);
-  }, [investimento])
 
   return (
     <div className="App">
@@ -342,7 +333,7 @@ function Simulation() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filtrado.map((item) => {
+                  {investimento.map((item) => {
                     return (
                       <tr key={item.key}>
                         <td>{item?.invest}</td>
@@ -352,7 +343,7 @@ function Simulation() {
                         <td className="amount">{item.retornomensal}</td>
                         <td className="amount">{item.retornoanual}</td>
                         <td><FiEdit onClick={() => { openInvestimentoModal(item) }} className="optIcon" /></td>
-                        <td><FiX onClick={() => { excluirInvestimento(item.key) }} className="optIcon" /></td>
+                        <td><FiX onClick={() => { excluirInvestimento(item.key, item.usuario) }} className="optIcon" /></td>
                       </tr>
                     )
                   })}

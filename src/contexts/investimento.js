@@ -35,12 +35,12 @@ function InvestimentosProvider({ children }) {
                 toast.error('Algo deu errado')
             })
 
-            getInvestimentos();
+            getInvestimentos(data.usuario);
     }
 
-    async function getInvestimentos() {
+    async function getInvestimentos(userId) {
         setInvestimentos([])
-        await firebase.firestore().collection('Investimentos')
+        await firebase.firestore().collection('Investimentos').where("usuario", "==" ,userId)
             .get()
             .then((snapshot) => {
                 updateState(snapshot);
@@ -79,7 +79,7 @@ function InvestimentosProvider({ children }) {
         }
     }
 
-    async function excluirInvestimento(idInvestimento) {
+    async function excluirInvestimento(idInvestimento, userId) {
 
         await firebase.firestore().collection('Investimentos')
             .doc(idInvestimento)
@@ -90,7 +90,7 @@ function InvestimentosProvider({ children }) {
             .catch(() => {
                 toast.success('Não foi possível excluir o registro, tente novamente mais tarde')
             })
-            getInvestimentos();
+            getInvestimentos(userId);
     }
 
     async function updateInvestimentoValues(data) {
@@ -112,7 +112,7 @@ function InvestimentosProvider({ children }) {
                 toast.error('Erro')
             })
 
-        getInvestimentos();
+        getInvestimentos(data.usuario);
 
     }
 
