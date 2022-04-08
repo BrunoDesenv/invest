@@ -1,7 +1,7 @@
-import { useState, useContext, useCallback } from 'react'
-
+import { useEffect, useState, useContext, useCallback, useMemo } from 'react'
 import { AuthContext } from '../../contexts/auth'
-import { SimulationContext } from '../../contexts/simulation';
+import { DebitosContext } from '../../contexts/debitos';
+import { InvestimentosContext } from '../../contexts/investimento';
 
 import Header from '../../components/Header'
 import Title from '../../components/Title'
@@ -10,7 +10,19 @@ import { FiHome } from 'react-icons/fi'
 
 import './style.css';
 
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import {
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  BarChart,
+  Bar,
+} from "recharts";
+
 
 
 import { useCurrentPng } from "recharts-to-png";
@@ -18,32 +30,18 @@ import FileSaver from "file-saver";
 
 
 function Dashboard() {
-
   const { user } = useContext(AuthContext);
-  const { saveSimulation, simulation, getSimulations } = useContext(SimulationContext)
-  const [quantidade, setQuantidade] = useState(0);
-  const [objetivo, setObjetivo] = useState('');
-  const [capital, setCapital] = useState(0);
-  const [anos, setAnos] = useState(0);
-  const [rendimentoM, setRendimentoM] = useState(0);
-  const [quanto, setQuanto] = useState(0);
-  const [mensal, setMensal] = useState(0);
-  const [rentabilidadeAno, setRentabilidadeAno] = useState(0);
-  const [tMeses, setMeses] = useState([]);
-  const [isCalculated, setIsCalculated] = useState(false);
-  const [getbarChartPng, { isLoadingBarChart, ref: barChartRef }] = useCurrentPng();
   const [getbarChartStackPng, { ref: barChartStackRef, isLoadingBarChartStack }] = useCurrentPng();
+  const { debitos, getDebitos } = useContext(DebitosContext);
+  const [debitosFiltrados, setDebitosFiltrados] = useState([]);
 
+  const { investimento, getInvestimentos } = useContext(InvestimentosContext);
+  const [investimentosFiltrados, setInvestimentosFiltrados] = useState([]);
 
-  const handleDownloadBarChart = useCallback(async () => {
-    debugger;
-    const png = await getbarChartPng();
-    // Verify that png is not undefined
-    if (png) {
-      // Download with FileSaver
-      FileSaver.saveAs(png, 'barChart.png');
-    }
-  }, [getbarChartPng])
+  const [dataGrapgh, setDataGrapgh] = useState([]);
+  const [dataContasPagoTotal, setContasPagoTotal] = useState([]);
+  
+  const [dataInvestimento, setDataInvestimento] = useState([]);
 
   const handleComposedDownloadBarChartStack = useCallback(async () => {
     const png = await getbarChartStackPng();
@@ -52,193 +50,184 @@ function Dashboard() {
     }
   }, [getbarChartStackPng]);
 
-  function calcular() {
-    let totalMeses = anos * 12
-    let montante = (capital * ((1 + (rendimentoM / 100)) ** totalMeses)) + (quantidade * (((((1 + (rendimentoM / 100)) ** totalMeses) - 1) / (rendimentoM / 100))));
-    setQuanto(montante.toFixed(2));
+  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
-    let rendimentoMensal = (montante * rendimentoM) / 100
-    setMensal(rendimentoMensal.toFixed(2))
 
-    let rendimentoAnual = (rendimentoMensal * 12)
-    setRentabilidadeAno(rendimentoAnual.toFixed(2));
+  useEffect(() => {
+    getDebitos();
+    let debitosFiltrado = debitos.filter(debito => debito.usuario === user.uid);
+    setDebitosFiltrados(debitosFiltrado);
 
-    let tg = 0.5;
-    let va = capital;
-    let tm = 0;
-    let ar = [{ mes: 'Inicial', valor: capital }]
+    getInvestimentos();
+    let investimentosfiltrado = investimento.filter(simulation => simulation.usuario === user.uid);
+    setInvestimentosFiltrados(investimentosfiltrado);
+    console.log(investimentosFiltrados);
+  }, [])
 
-    for (let i = 1; i <= totalMeses; i++) {
+  useEffect(() => {
+    let aux = [];
+    let pagar = 0;
+    let pago = 0;
 
-      tm = (capital * ((1 + (rendimentoM / 100)) ** i)) + (quantidade * (((((1 + (rendimentoM / 100)) ** i) - 1) / (rendimentoM / 100))));
-      tm = tm.toFixed(2)
+    if (debitosFiltrados.length > 0) {
+      debitosFiltrados.reduce(function (res, currentValue) {
+        //Função de calcular os que tem que pagar e os pago
+        //se possivel separar em uma funcao
+        pagar = parseFloat(currentValue.valor) + parseFloat(pagar)
+        if (currentValue.situacao === "Pago") {
+          pago = parseFloat(currentValue.valor) + parseFloat(pago);
+        }
 
-      ar.push({ mes: i, valor: tm, valorInvestido: quantidade * i });
+        //Função que agrupa as categorias
+        //Se possivel separar em funcao
+        if (!res[currentValue.categoria]) {
+          res[currentValue.categoria] = { name: currentValue.categoria, valor: 0, porcentagem: 0 };
+          aux.push(res[currentValue.categoria])
+        }
+        res[currentValue.categoria].valor += parseFloat(currentValue.valor);
+        res[currentValue.categoria].porcentagem = 10;
+        return res;
+      });
+
+      setDataGrapgh(aux);
     }
 
-    setMeses(ar);
-    setIsCalculated(true);
-  }
+    dataContasPagoTotal.push({nome: "Pagar", valor: pagar});
+    dataContasPagoTotal.push({nome: "Pago", valor: pago});
+    setContasPagoTotal([]);
+    setContasPagoTotal(dataContasPagoTotal);
+ 
+  }, [debitosFiltrados])
 
-
-  function saveValues() {
-
-    getSimulations()
-
-    let data = {
-      usuario: user.uid,
-      objetivo: objetivo,
-      valorinicial: capital,
-      aportemensal: quantidade,
-      tempoinvestido: anos,
-      rendimentomensal: rendimentoM,
-      saldofinal: quanto,
-      retornomensal: mensal,
-      retornoanual: rentabilidadeAno,
-      totalmeses: tMeses
+  useEffect(() => {
+    let investimentos = [];
+    if (investimentosFiltrados.length > 0) {
+      investimentosFiltrados.forEach((investimento) => {
+        let porcentagem = 0;
+        porcentagem = (1 * 100) /  investimentosFiltrados.length;
+        investimentos.push({ativo: investimento.ativo , porcentagem: porcentagem})
+      });
+      setDataInvestimento(investimentos);
     }
-
-    saveSimulation(data);
-
-  }
+  }, [investimentosFiltrados])
 
   return (
     <div className="App">
       <Header />
       <div className="content">
-        <Title nome="Calculo de FII">
+        <Title nome="DashBoard">
           <FiHome size={25} />
         </Title>
-        <div className="container-dash">
-          <div className="wrapper">
+        <div className="container-dash">   
+          <div className="charts">
             <div>
-              <p>Objetivo</p>
-              <input type="text" value={objetivo} onChange={(e) => setObjetivo(e.target.value)}></input>
+              <div className="text-graph">
+                Categorias Agrupadas
+              </div>
+              <PieChart width={730} height={250}>
+                <Pie data={dataGrapgh} label dataKey="porcentagem" nameKey="name" cx="50%" cy="50%" outerRadius={100} fill="#8884d8">
+                  {dataGrapgh.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+              </PieChart>
             </div>
-            <div>
-              <p>Valor Inicial</p>
-              <input type="text" value={capital} onChange={(e) => setCapital(e.target.value)}></input>
-            </div>
-            <div>
-              <p>Aporte Mensal</p>
-              <input type="text" value={quantidade} onChange={(e) => setQuantidade(e.target.value)}></input>
-            </div>
-            <div>
-              <p>Tempo de investimento</p>
-              <input type="text" value={anos} onChange={(e) => setAnos(e.target.value)}></input>
-            </div>
-            <div>
-              <p>Rendimento mensal</p>
-              <input type="text" value={rendimentoM} onChange={(e) => setRendimentoM(e.target.value.replace(',', '.'))}></input>
-            </div>
-            <div className="calcular">
-              <button className="btnCalcular" onClick={() => { calcular() }}>Calcular</button>
+            <div>   
+              <div className="text-graph">
+                Contas Pagas VS A Pagar
+              </div>
+              <PieChart width={730} height={250}>
+                <Pie data={dataContasPagoTotal} label dataKey="valor" nameKey="nome" cx="50%" cy="50%" outerRadius={100} fill="#8884d8">
+                  {dataContasPagoTotal.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+              </PieChart>
             </div>
           </div>
 
-          <div className="wrapper">
+          <div className="charts">
             <div>
-              <p>Saldo Final</p>
-              <input type="text" disabled={true} value={quanto}></input>
-            </div>
-            <div>
-              <p>Retorno Mensal</p>
-              <input type="text" disabled={true} value={mensal}></input>
-            </div>
-            <div>
-              <p>Retorno Anual</p>
-              <input type="text" disabled={true} value={rentabilidadeAno}></input>
-            </div>
-          </div>
-        </div>
-        <div className="container-dash">
-          <button className="logout-btn" onClick={() => { saveValues() }}>
-            Salvar Simulação
-          </button>
-        </div>
-        {isCalculated && <>
-          <div className="container-dash">
-            <table>
-              <tbody>
-                <tr>
-                  <th>Mês</th>
-                  <th>Valor</th>
-                </tr>
-                {tMeses.map((item) => {
-                  return (
-                    <tr key={item.mes}>
-                      <td>{item.mes}</td>
-                      <td>R$ {item.valor}</td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
+              <div className="text-graph">
+                Valor Por Categoria
+              </div>
 
-          <div className="container-dash">
-            <div className="charts">
-              <BarChart ref={barChartRef}
+              <BarChart
                 width={500}
                 height={300}
-                data={tMeses}
+                data={dataGrapgh}
                 margin={{
                   top: 5,
-                  right: 30,
-                  left: 20,
-                  bottom: 5,
-                }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="mes" />
-                <YAxis />
-                <Tooltip />
-                <Legend verticalAlign="bottom" height={36} />
-                <Bar name="Valor" dataKey="valor" fill="#8884d8" />
-                <Bar name="Valor Investido" dataKey="valorInvestido" fill="#82ca9d" />
-              </BarChart>
-
-              <BarChart ref={barChartStackRef}
-                width={500}
-                height={300}
-                data={tMeses}
-                margin={{
-                  top: 20,
                   right: 30,
                   left: 20,
                   bottom: 5
                 }}
               >
-                <CartesianGrid strokeDasharray="3 3" />
+                <CartesianGrid strokeDasharray="5 5" />
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
-                <Legend verticalAlign="bottom" height={36} />
-                <Bar name="Valor" dataKey="valor" stackId="a" fill="#8884d8" />
-                <Bar name="Valor Investido" dataKey="valorInvestido" stackId="a" fill="#82ca9d" />
+                <Legend />
+                <Bar dataKey="valor" fill="#8884d8">
+                  {dataGrapgh.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Bar>
               </BarChart>
             </div>
-
-
-            <div className="btnCharts">
-              <div>
-                <button className="btnDownload" onClick={handleDownloadBarChart}>
-                  {isLoadingBarChart ? 'Downloading...' : 'Download Chart'}
-                </button>
+            <div>
+              <div className="text-graph">
+                Simulaçao de Investimentos
               </div>
-              <div>
-                <button className="btnDownload" onClick={handleComposedDownloadBarChartStack}>
-                  {isLoadingBarChartStack ? 'Downloading...' : 'Download Chart'}
-                </button>
-              </div>
+              <BarChart
+                width={500}
+                height={300}
+                data={investimentosFiltrados}
+                margin={{
+                  top: 5,
+                  right: 30,
+                  left: 20,
+                  bottom: 5
+                }}
+              >
+                <CartesianGrid strokeDasharray="5 5" />
+                <XAxis dataKey="ativo" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="valorinvestido" fill="#8884d8">
+                  {investimentosFiltrados.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Bar>
+              </BarChart>
             </div>
           </div>
-        </>
-        }
+          <div className="charts">
+            <div>
+              <div className="text-graph">
+                % investido por ativo
+              </div>
+              <PieChart width={730} height={250}>
+                <Pie data={dataInvestimento} label dataKey="porcentagem" nameKey="ativo" cx="50%" cy="50%" outerRadius={100} fill="#8884d8">
+                  {dataInvestimento.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+              </PieChart>
+            </div>
+          </div>
+        </div>
 
       </div>
-    </div >
-  );
-}
 
+      <div className="btnCharts">
+        <button className="btnDownload" onClick={handleComposedDownloadBarChartStack}>
+          {isLoadingBarChartStack ? 'Downloading...' : 'Download Chart'}
+        </button>
+      </div>
+    </div>
+  );
+
+}
 export default Dashboard;
