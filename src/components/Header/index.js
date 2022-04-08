@@ -15,7 +15,7 @@ function Header() {
                 <img src={user.avatarUrl === null ? avatar : user.avatarUrl} />
             </div>
 
-            {/* <Link to="/dashboard"><FiHome color="FFF" size={24} />Dashboard</Link> */}
+            <Link to="/dashboard"><FiHome color="FFF" size={24} />Dashboard</Link>
             <Link to="/simulacoes"><FiTrendingUp color="FFF" size={24} />Simular Objetivos</Link>
             <Link to="/investimentos"><FiDollarSign color="FFF" size={24} />Meus Investimentos</Link>
             <Link to="/debitos"><FiShoppingCart color="FFF" size={24} />Meus Gastos</Link>  

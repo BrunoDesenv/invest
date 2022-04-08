@@ -52,6 +52,13 @@
     background-color: #fff;
   }
 
+ 
+  .text-graph {
+    font-size: 1.2rem;
+    color: #000000;
+    text-align: center;
+  }
+
   tr{
     text-align: center;
   }
@@ -74,6 +81,7 @@
     
     .charts{
       display: flex;
+      width: 200px;
     }
 
     .btnCharts{
@@ -96,4 +104,8 @@
     .calcular{
       display: flex;
     align-items: center;
+    }
+
+    .charts{
+      display: flex;
     }
