@@ -136,7 +136,7 @@ function Debits() {
         rPago = parseFloat(item.valor) + parseFloat(rPago);
       }
 
-      if (item.categoria === "Casa" || item.categoria === "Dívida" || item.categoria === "Responsabilidades") {
+      if (item.categoria === "Casa" || item.categoria === "Dívida" || item.categoria === "Responsabilidade") {
         rEssencial = parseFloat(item.valor) + parseFloat(rEssencial);
       }
     })

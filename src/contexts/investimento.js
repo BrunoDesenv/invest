@@ -24,7 +24,8 @@ function InvestimentosProvider({ children }) {
                 valorinvestido: data.valorinvestido,
                 taxaam: data.taxaam,
                 retornomensal: data.retornomensal,
-                retornoanual: data.retornoanual
+                retornoanual: data.retornoanual,
+                invest: data.invest
             })
             .then(() => {
                 toast.success('Simulação cadastrada')
@@ -64,7 +65,8 @@ function InvestimentosProvider({ children }) {
                     valorinvestido: doc.data().valorinvestido, 
                     taxaam: doc.data().taxaam,
                     retornomensal: doc.data().retornomensal,
-                    retornoanual: doc.data().retornoanual
+                    retornoanual: doc.data().retornoanual,
+                    invest: doc.data().invest
                 })
             })
 
@@ -100,7 +102,8 @@ function InvestimentosProvider({ children }) {
                 valorinvestido: data.valorinvestido,
                 taxaam: data.taxaam,
                 retornomensal: data.retornomensal,
-                retornoanual: data.retornoanual
+                retornoanual: data.retornoanual,
+                invest: data.invest
             })
             .then(() => {
                 toast.success('Alterado com sucesso')
