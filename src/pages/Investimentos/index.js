@@ -101,7 +101,6 @@ function Simulation() {
   }
 
   function openInvestimentoModal(item) {
-    console.log(item)
     setId(item.key);
     setAtivo(item.ativo);
     setCapital(item.valorinvestido);
@@ -128,6 +127,7 @@ function Simulation() {
   async function updateValues() {
     let data = {
       key: id,
+      usuario: user.uid,
       ativo: ativo,
       valorinvestido: capital,
       taxaam: rendimentoM,
@@ -311,7 +311,7 @@ function Simulation() {
                   <h2>Resultado (Retorno Mensal, Retorno Anual)</h2>
                   <input disabled={true} value={mensal} placeholder="Retorno Mensal" />
                   <input disabled={true} value={rentabilidadeAno} placeholder="Retorno Anual" />
-                  <button className="ReactModal__save" type="button" onClick={() => { updateValues() }}>Salvar Simulação modal </button>
+                  <button className="ReactModal__save" type="button" onClick={() => { updateValues() }}>Salvar Simulação</button>
                 </div>}
               </div>
               <button className="ReactModal__Cancel" onClick={closeInvestimentoModal}>Cancelar</button>
