@@ -37,6 +37,18 @@ function Simulation() {
 
   const [investimentoIsOpen, setInvestimentoIsOpen] = useState(false);
   const [id, setId] = useState();
+  const [invest, setInvest ] = useState();
+
+  const listCategoria = [
+    { id: 1, name: 'Fiis' },
+    { id: 2, name: 'Ação' },
+    { id: 3, name: 'CDB' },
+    { id: 4, name: 'Tesouro' },
+    { id: 5, name: 'Poupança' },
+    { id: 5, name: 'Ação Estrangeira' },
+    { id: 5, name: 'Criptos' }
+
+  ];
 
   function calcular() {
     let totalMeses = anos * 12
@@ -81,8 +93,10 @@ function Simulation() {
       valorinvestido: capital,
       taxaam: rendimentoM,
       retornomensal: mensal,
-      retornoanual: rentabilidadeAno
+      retornoanual: rentabilidadeAno,
+      invest: invest
     }
+    console.log(data)
 
     saveInvestimentos(data);
     closeModal();
@@ -96,6 +110,7 @@ function Simulation() {
     setRendimentoM(item.taxaam)
     setInvestimentoIsOpen(true);
     SetIsSimulate(false); 
+    setInvest(item.invest);
   }
 
   function closeInvestimentoModal() {
@@ -119,15 +134,13 @@ function Simulation() {
       valorinvestido: capital,
       taxaam: rendimentoM,
       retornomensal: mensal,
-      retornoanual: rentabilidadeAno
+      retornoanual: rentabilidadeAno,
+      invest: invest
     }
 
     updateInvestimentoValues(data);
     closeInvestimentoModal();
   }
-
-
-
 
   useEffect(() => {
     let rtotalInvestido = 0;
@@ -263,6 +276,12 @@ function Simulation() {
               <div className="ReactModal__form">
                 <h2>Novo investimento</h2>
 
+                <select value={invest} onChange={e => setInvest(e.target.value)}>
+                  {listCategoria.map((item, index) => (
+                    <option key={item.id} value={item.name}>{item.name}</option>
+                  ))}
+                </select>
+
                 <input value={ativo} placeholder="Ativo" onChange={(e) => setAtivo(e.target.value)} />
                 <input value={capital} placeholder="Valor Investido" onChange={(e) => setCapital(e.target.value.replace(',', '.'))} />
                 <input value={rendimentoM} placeholder="Taxa de rendimento" onChange={(e) => setRendimentoM(e.target.value.replace(',', '.'))} />
@@ -287,6 +306,12 @@ function Simulation() {
             <div>
               <div className="ReactModal__form">
                 <h2>Editar</h2>
+                <select value={invest} onChange={e => setInvest(e.target.value)}>
+                  {listCategoria.map((item, index) => (
+                    <option key={item.id} value={item.name}>{item.name}</option>
+                  ))}
+                </select>
+
                 <input value={ativo} placeholder="Ativo" onChange={(e) => setAtivo(e.target.value)} />
                 <input value={capital} placeholder="Valor Investido" onChange={(e) => setCapital(e.target.value.replace(',', '.'))} />
                 <input value={rendimentoM} placeholder="Taxa de rendimento" onChange={(e) => setRendimentoM(e.target.value.replace(',', '.'))} />
@@ -308,6 +333,7 @@ function Simulation() {
               <table className="table1">
                 <thead>
                   <tr>
+                    <th>Categoria</th>
                     <th>ativo</th>
                     <th>Valor Investido</th>
                     <th>Taxa A.M</th>
@@ -319,6 +345,7 @@ function Simulation() {
                   {filtrado.map((item) => {
                     return (
                       <tr key={item.key}>
+                        <td>{item?.invest}</td>
                         <td>{item.ativo}</td>
                         <td>{item.valorinvestido}</td>
                         <td className="amount">{item.taxaam}</td>
