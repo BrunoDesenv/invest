@@ -7,7 +7,7 @@ import Title from '../../components/Title'
 
 import ReactModal from 'react-modal'
 
-import { FiDollarSign, FiEdit, FiX   } from 'react-icons/fi'
+import { FiDollarSign, FiEdit, FiX } from 'react-icons/fi'
 
 import './style.css';
 
@@ -36,7 +36,7 @@ function Simulation() {
 
   const [investimentoIsOpen, setInvestimentoIsOpen] = useState(false);
   const [id, setId] = useState();
-  const [invest, setInvest ] = useState('FII');
+  const [invest, setInvest] = useState('FII');
 
   const listCategoria = [
     { id: 1, name: 'FII' },
@@ -106,7 +106,7 @@ function Simulation() {
     setCapital(item.valorinvestido);
     setRendimentoM(item.taxaam)
     setInvestimentoIsOpen(true);
-    SetIsSimulate(false); 
+    SetIsSimulate(false);
     setInvest(item.invest);
   }
 
@@ -115,7 +115,7 @@ function Simulation() {
     setInvestimentoIsOpen(false);
   }
 
-  function clear(){
+  function clear() {
     setAtivo('');
     setCapital('');
     setRendimentoM('')
@@ -330,6 +330,8 @@ function Simulation() {
                     <th>Taxa A.M</th>
                     <th>Retorno Mensal</th>
                     <th>Retorno Anual</th>
+                    <th>Editar</th>
+                    <th>Excluir</th>
                   </tr>
                 </thead>
                 <tbody>

@@ -338,6 +338,7 @@ function Simulation() {
             <table className="table1">
               <thead>
                 <tr>
+                  <th>Categoria</th>
                   <th>Objetivo</th>
                   <th>Valor Inicial</th>
                   <th>Aporte Mensal</th>
@@ -346,6 +347,8 @@ function Simulation() {
                   <th>Saldo Final</th>
                   <th>Retorno Mensal</th>
                   <th>Retorno Anual</th>
+                  <th>Editar</th>
+                  <th>Excluir</th>
                 </tr>
               </thead>
               <tbody>

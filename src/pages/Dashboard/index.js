@@ -40,7 +40,7 @@ function Dashboard() {
 
   const [dataGrapgh, setDataGrapgh] = useState([]);
   const [dataContasPagoTotal, setContasPagoTotal] = useState([]);
-  
+
   const [dataInvestimento, setDataInvestimento] = useState([]);
 
   const handleComposedDownloadBarChartStack = useCallback(async () => {
@@ -92,11 +92,11 @@ function Dashboard() {
       setDataGrapgh(aux);
     }
 
-    dataContasPagoTotal.push({nome: "Pagar", valor: pagar});
-    dataContasPagoTotal.push({nome: "Pago", valor: pago});
+    dataContasPagoTotal.push({ nome: "Pagar", valor: pagar });
+    dataContasPagoTotal.push({ nome: "Pago", valor: pago });
     setContasPagoTotal([]);
     setContasPagoTotal(dataContasPagoTotal);
- 
+
   }, [debitosFiltrados])
 
   useEffect(() => {
@@ -104,8 +104,8 @@ function Dashboard() {
     if (investimentosFiltrados.length > 0) {
       investimentosFiltrados.forEach((investimento) => {
         let porcentagem = 0;
-        porcentagem = (1 * 100) /  investimentosFiltrados.length;
-        investimentos.push({ativo: investimento.ativo , porcentagem: porcentagem})
+        porcentagem = (1 * 100) / investimentosFiltrados.length;
+        investimentos.push({ ativo: investimento.ativo, porcentagem: porcentagem })
       });
       setDataInvestimento(investimentos);
     }
@@ -118,7 +118,7 @@ function Dashboard() {
         <Title nome="DashBoard">
           <FiHome size={25} />
         </Title>
-        <div className="container-dash">   
+        {/* <div className="container-dash">   
           <div className="charts">
             <div>
               <div className="text-graph">
@@ -225,6 +225,7 @@ function Dashboard() {
         <button className="btnDownload" onClick={handleComposedDownloadBarChartStack}>
           {isLoadingBarChartStack ? 'Downloading...' : 'Download Chart'}
         </button>
+      </div> */}
       </div>
     </div>
   );

@@ -73,7 +73,7 @@ function Debits() {
   }
 
   function saveValues() {
-    
+
     let data = {
       usuario: user.uid,
       categoria: categoria,
@@ -273,6 +273,8 @@ function Debits() {
                     <th>Descrição</th>
                     <th>Valor</th>
                     <th>Situação</th>
+                    <th>Editar</th>
+                    <th>Excluir</th>
                   </tr>
                 </thead>
                 <tbody>
