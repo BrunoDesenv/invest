@@ -23,7 +23,8 @@ function DebitosProvider({ children }) {
                 categoria: data.categoria,
                 descricao: data.descricao,
                 valor: data.valor,
-                situacao: data.situacao
+                situacao: data.situacao, 
+                dataVencimento: data.dataVencimento
             })
             .then(() => {
                 toast.success('Simulação cadastrada')
@@ -45,7 +46,8 @@ function DebitosProvider({ children }) {
                 categoria: data.categoria,
                 descricao: data.descricao,
                 valor: data.valor,
-                situacao: data.situacao
+                situacao: data.situacao, 
+                dataVencimento: data.dataVencimento
             })
             .then(() => {
                 toast.success('Alterado com sucesso')
@@ -99,7 +101,8 @@ function DebitosProvider({ children }) {
                     categoria: doc.data().categoria,
                     descricao: doc.data().descricao,
                     valor: doc.data().valor,
-                    situacao: doc.data().situacao
+                    situacao: doc.data().situacao, 
+                    dataVencimento: doc.data().dataVencimento
                 })
             })
 
