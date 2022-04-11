@@ -7,6 +7,8 @@ import Title from '../../components/Title'
 
 import ReactModal from 'react-modal'
 
+import { listarCategoria } from '../../services/lists'
+
 import { FiDollarSign, FiEdit, FiX } from 'react-icons/fi'
 
 import './style.css';
@@ -38,15 +40,7 @@ function Simulation() {
   const [id, setId] = useState();
   const [invest, setInvest] = useState('FII');
 
-  const listCategoria = [
-    { id: 1, name: 'FII' },
-    { id: 2, name: 'AÇÃO' },
-    { id: 3, name: 'CDB' },
-    { id: 4, name: 'TESOURO' },
-    { id: 5, name: 'POUPANÇA' },
-    { id: 6, name: 'AÇÃO ESTRANGEIRA' },
-    { id: 7, name: 'CRIPTOS' }
-  ];
+  const [listCategoria, setListaCategoria] = useState([])
 
   function calcular() {
     let totalMeses = anos * 12
@@ -165,6 +159,8 @@ function Simulation() {
 
 
   useEffect(() => {
+    let listaCategoria = listarCategoria();
+    setListaCategoria(listaCategoria);
     getInvestimentos(user.uid);
   }, [])
 

@@ -4,9 +4,10 @@ import { AuthContext } from '../../contexts/auth'
 import { DebitosContext } from '../../contexts/debitos';
 import Header from '../../components/Header'
 import Title from '../../components/Title'
+import moment from 'moment'
 
 import ReactModal from 'react-modal'
-
+import { listarDebitos, listarSituacao } from '../../services/lists'
 import { FiShoppingCart, FiEdit, FiX } from 'react-icons/fi'
 
 import './style.css';
@@ -28,20 +29,10 @@ function Debits() {
   const [pagar, setPagar] = useState();
   const [pago, setPago] = useState();
   const [essencial, setEssencial] = useState();
+  const [vdata, setData] = useState();
 
-  const listSituacao = [
-    { id: 1, name: 'Pago' },
-    { id: 2, name: 'Pendente' },
-    { id: 3, name: 'Atrasado' }
-  ];
-
-  const listCategoria = [
-    { id: 1, name: 'Casa' },
-    { id: 2, name: 'Investimentos' },
-    { id: 3, name: 'Responsabilidade' },
-    { id: 4, name: 'Pessoal' },
-    { id: 5, name: 'Dívida' }
-  ];
+  const [listSituacao, SetlistSituacao] = useState([]);
+  const [listCategoria, SetListCategoria] = useState([]);
 
   function openModal() {
     setIsOpen(true);
@@ -79,7 +70,8 @@ function Debits() {
       categoria: categoria,
       descricao: descricao,
       valor: valor,
-      situacao: 'Pendente'
+      situacao: 'Pendente', 
+      dataVencimento: vdata
     }
 
     saveDebitos(data);
@@ -93,7 +85,8 @@ function Debits() {
       categoria: categoria,
       descricao: descricao,
       valor: valor,
-      situacao: situacao
+      situacao: situacao,
+      dataVencimento: vdata
     }
 
     updateDebitsValues(data);
@@ -102,6 +95,12 @@ function Debits() {
 
 
   useEffect(() => {
+    let situacao = listarSituacao();
+    let categorias = listarDebitos();
+
+    SetlistSituacao(situacao);
+    SetListCategoria(categorias);
+
     getDebitos(user.uid);
   }, [])
 
@@ -234,6 +233,9 @@ function Debits() {
                 </select>
                 <input value={descricao} placeholder="Descrição" onChange={(e) => setDescricao(e.target.value.replace(',', '.'))} />
                 <input value={valor} placeholder="Valor" onChange={(e) => setValor(e.target.value.replace(',', '.'))} />
+
+                <input type="date" value={vdata} placeholder="Data de vencimento" onChange={(e) => setData(e.target.value)} />
+
                 <button className="ReactModal__save" type="button" onClick={() => { saveValues() }}>Salvar Gasto</button>
               </div>
               <button className="ReactModal__Cancel" onClick={closeModal}>Cancelar</button>
@@ -248,9 +250,14 @@ function Debits() {
             <div>
               <div className="ReactModal__form">
                 <h2>Editar</h2>
-                <input value={categoria} placeholder="Categoria" onChange={(e) => setCategoria(e.target.value)} />
+                <select value={categoria} onChange={e => setCategoria(e.target.value)}>
+                  {listCategoria.map((item, index) => (
+                    <option key={item.id} value={item.name}>{item.name}</option>
+                  ))}
+                </select>
                 <input value={descricao} placeholder="Descrição" onChange={(e) => setDescricao(e.target.value.replace(',', '.'))} />
                 <input value={valor} placeholder="Valor" onChange={(e) => setValor(e.target.value.replace(',', '.'))} />
+                <input type="date" value={vdata} placeholder="Data de vencimento" onChange={(e) => setData(e.target.value)} />
 
                 <select value={situacao} onChange={e => setSituacao(e.target.value)}>
                   {listSituacao.map((item, index) => (
@@ -272,6 +279,7 @@ function Debits() {
                     <th>Categoria</th>
                     <th>Descrição</th>
                     <th>Valor</th>
+                    <th>Vencimento</th>
                     <th>Situação</th>
                     <th>Editar</th>
                     <th>Excluir</th>
@@ -284,6 +292,7 @@ function Debits() {
                         <td>{item.categoria}</td>
                         <td>{item.descricao}</td>
                         <td>{item.valor}</td>
+                        <td>{item.dataVencimento ? moment(item.dataVencimento).format("DD/MM/YYYY") : ''}</td>
                         {item.situacao === "Pendente" && <td className="status-pending">{item.situacao}</td>}
                         {item.situacao === "Pago" && <td className="status-paid">{item.situacao}</td>}
                         {item.situacao === "Atrasado" && <td className="status--unpaid">{item.situacao}</td>}
