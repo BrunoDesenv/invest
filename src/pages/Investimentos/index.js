@@ -12,6 +12,7 @@ import { listarCategoria } from '../../services/lists'
 import { FiDollarSign, FiEdit, FiX } from 'react-icons/fi'
 
 import './style.css';
+import { toast } from 'react-toastify';
 
 
 function Simulation() {
@@ -43,6 +44,10 @@ function Simulation() {
   const [listCategoria, setListaCategoria] = useState([])
 
   function calcular() {
+
+    if(invest === '' || ativo === undefined || capital === undefined || rendimentoM === undefined){
+      return toast.error("Para efetuar a simulação é necessário preencher os campos baixo");
+    }
     let totalMeses = anos * 12
     let montante = (capital * ((1 + (rendimentoM / 100)) ** totalMeses)) + (quantidade * (((((1 + (rendimentoM / 100)) ** totalMeses) - 1) / (rendimentoM / 100))));
     setQuanto(montante.toFixed(2));
