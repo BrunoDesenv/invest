@@ -10,6 +10,8 @@ import ReactModal from 'react-modal'
 import { listarDebitos, listarSituacao } from '../../services/lists'
 import { FiShoppingCart, FiEdit, FiX } from 'react-icons/fi'
 
+import Card from '../Card';
+
 import './style.css';
 
 
@@ -33,6 +35,9 @@ function Debits() {
 
   const [listSituacao, SetlistSituacao] = useState([]);
   const [listCategoria, SetListCategoria] = useState([]);
+  const [showGastoGategoria, setShowGastoGategoria] = useState(false);
+  const [categoriaSum, setCategoriaSum] = useState([]);
+  const [info, setInfo] = useState([])
 
   function openModal() {
     setIsOpen(true);
@@ -125,8 +130,37 @@ function Debits() {
     setPagar(rPagar);
     setPago(rPago);
     setEssencial(rEssencial);
+    console.log(categoriaSum);
 
   }, [debitos]);
+
+
+  const showCategory = () => {
+    countCaterory();
+    setShowGastoGategoria(!showGastoGategoria);
+    console.log("show", categoriaSum)
+    console.log("show", categoriaSum[0].Casa.valor)
+    console.log("boolean", showGastoGategoria)
+  }
+
+  const countCaterory = () => {
+    let result = [];
+    let resultFormat = [];
+    result = debitos.reduce(function(res, value) {
+      if (!res[value.categoria]) {
+        res[value.categoria] = { Id: value.categoria, valor: 0 };
+        result.push(res[value.categoria])
+      }
+      res[value.categoria].valor +=  parseFloat(value.valor);
+      resultFormat.push([{id: res[value.categoria].Id, valor: res[value.categoria].valor }])
+
+      return res;
+    }, {});
+
+    setCategoriaSum(result);
+    
+
+  }
 
   return (
     <div className="App">
@@ -139,82 +173,68 @@ function Debits() {
           {/* Card superior */}
 
           <div className="row">
-            <div className="col-xl-3">
-              <div className="card border-left-primary">
-                <div className="card-body">
-                  <div className="row">
-                    <div className="col mr-2">
-                      <div className="text-xs">
-                        Receita (Mês)</div>
-                      <div className="h5">R$ {(user.receita) ? Number(user.receita).toFixed(2).replace('.', ',') : 0}</div>
-                    </div>
-                    <div className="col-auto">
-                      <i className="fas fa-calendar"></i>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
 
+            <Card 
+              classCol={''} 
+              categoria={'Receita (Mês)'} 
+              essencial={user.receita} 
+              classBorderLeft={'primary'} 
+              calssRow={''}
+              classComment={'fa-calendar'}
+            />
 
-            <div className="col-xl-3 col-md-6 mb-4">
-              <div className="card border-left-success">
-                <div className="card-body">
-                  <div className="row no-gutters">
-                    <div className="col mr-2">
-                      <div className="text-xs">
-                        A Pagar (Mensal)</div>
-                      <div className="h5">R$ {Number(pagar).toFixed(2).replace('.', ',')}</div>
-                    </div>
-                    <div className="col-auto">
-                      <i className="fas fa-dollar-sign"></i>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <Card 
+              classCol={'col-md-6 mb-4'} 
+              categoria={'A Pagar (Mensal)'} 
+              essencial={pagar} 
+              classBorderLeft={'success'} 
+              calssRow={'no-gutters'}
+              classComment={'fa-dollar-sign'}
+            />
 
+            <Card 
+              classCol={'col-md-6 mb-4'} 
+              categoria={'Pago'} 
+              essencial={pago} 
+              classBorderLeft={'info'} 
+              calssRow={'no-gutters'}
+              classComment={'fa-clipboard-list'}
+            />
 
-            <div className="col-xl-3 col-md-6 mb-4">
-              <div className="card border-left-info">
-                <div className="card-body">
-                  <div className="row no-gutters">
-                    <div className="col mr-2">
-                      <div className="text-xs">
-                        Pago
-                      </div>
-                      <div className="row no-gutters">
-                        <div className="col-auto">
-                          <div className="h5">R$ {Number(pago).toFixed(2).replace('.', ',')}</div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-auto">
-                      <i className="fas fa-clipboard-list"></i>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <Card 
+              classCol={'col-md-6 mb-4'} 
+              categoria={'Total Essencial'} 
+              essencial={essencial} 
+              classBorderLeft={'warning'} 
+              calssRow={'no-gutters'}
+              classComment={'fa-comments'}
+            />
 
-
-            <div className="col-xl-3 col-md-6 mb-4">
-              <div className="card border-left-warning">
-                <div className="card-body">
-                  <div className="row no-gutters">
-                    <div className="col mr-2">
-                      <div className="text-xs">
-                        Total Essencial</div>
-                      <div className="h5">R$ {Number(essencial).toFixed(2).replace('.', ',')}</div>
-                    </div>
-                    <div className="col-auto">
-                      <i className="fas fa-comments"></i>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
+
+          <div className='card-por-categoria' onClick={() => showCategory()}>
+            <a>Visualar total de gasto por categoria</a>
+          </div>
+
+          <div className='card-info-categoria'>
+          { showGastoGategoria && 
+            Object.values(categoriaSum).map((categoria,index)=> {
+              return (
+                  <Card 
+                  classCol={''} 
+                  categoria={categoria.Id} 
+                  essencial={categoria.valor} 
+                  classBorderLeft={'info'} 
+                  calssRow={''}
+                  classComment={'fa-comments'}
+                />
+            )
+            })
+          } 
+          </div>
+        
+          
+          
 
           {/* Card superior */}
           <button className="ReactModal__Submit" onClick={openModal}>Cadastrar Novo</button>

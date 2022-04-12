@@ -46,7 +46,7 @@ function Simulation() {
   function calcular() {
 
     if(invest === '' || objetivo === undefined || capital === undefined || quantidade === undefined || anos === undefined || rendimentoM === undefined){
-      return toast.error("Verificar se os campos foram preenchidos.");
+      return toast.error("Para efetuar a simulação é necessário preencher os campos baixo");
      }
 
     let totalMeses = anos * 12

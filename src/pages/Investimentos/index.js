@@ -48,6 +48,7 @@ function Simulation() {
     if(invest === '' || ativo === undefined || capital === undefined || rendimentoM === undefined){
       return toast.error("Para efetuar a simulação é necessário preencher os campos baixo");
     }
+    
     let totalMeses = anos * 12
     let montante = (capital * ((1 + (rendimentoM / 100)) ** totalMeses)) + (quantidade * (((((1 + (rendimentoM / 100)) ** totalMeses) - 1) / (rendimentoM / 100))));
     setQuanto(montante.toFixed(2));
