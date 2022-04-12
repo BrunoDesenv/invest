@@ -468,8 +468,3 @@ tr:nth-child(even) {
   cursor: pointer;
   color: blueviolet;
 }
-
-
-.card-info-categoria{
-  display: flex;
-}
