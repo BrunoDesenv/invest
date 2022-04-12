@@ -130,7 +130,6 @@ function Debits() {
     setPagar(rPagar);
     setPago(rPago);
     setEssencial(rEssencial);
-    console.log(categoriaSum);
 
   }, [debitos]);
 
@@ -138,9 +137,6 @@ function Debits() {
   const showCategory = () => {
     countCaterory();
     setShowGastoGategoria(!showGastoGategoria);
-    console.log("show", categoriaSum)
-    console.log("show", categoriaSum[0].Casa.valor)
-    console.log("boolean", showGastoGategoria)
   }
 
   const countCaterory = () => {
