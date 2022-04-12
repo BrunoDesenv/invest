@@ -145,15 +145,12 @@ function Debits() {
 
   const countCaterory = () => {
     let result = [];
-    let resultFormat = [];
     result = debitos.reduce(function(res, value) {
       if (!res[value.categoria]) {
         res[value.categoria] = { Id: value.categoria, valor: 0 };
         result.push(res[value.categoria])
       }
       res[value.categoria].valor +=  parseFloat(value.valor);
-      resultFormat.push([{id: res[value.categoria].Id, valor: res[value.categoria].valor }])
-
       return res;
     }, {});
 
@@ -213,7 +210,7 @@ function Debits() {
           </div>
 
           <div className='card-por-categoria' onClick={() => showCategory()}>
-            <a>Visualar total de gasto por categoria</a>
+            <a>Exibir total por categoria</a>
           </div>
 
           <div className='card-info-categoria'>
