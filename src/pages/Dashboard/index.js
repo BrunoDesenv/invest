@@ -24,92 +24,84 @@ import {
 } from "recharts";
 
 
-
-import { useCurrentPng } from "recharts-to-png";
-import FileSaver from "file-saver";
-
-
 function Dashboard() {
   const { user } = useContext(AuthContext);
-  const [getbarChartStackPng, { ref: barChartStackRef, isLoadingBarChartStack }] = useCurrentPng();
+    
   const { debitos, getDebitos } = useContext(DebitosContext);
-  const [debitosFiltrados, setDebitosFiltrados] = useState([]);
-
   const { investimento, getInvestimentos } = useContext(InvestimentosContext);
-  const [investimentosFiltrados, setInvestimentosFiltrados] = useState([]);
 
-  const [dataGrapgh, setDataGrapgh] = useState([]);
+  const [dataCategoriasAgrupadas, setDataCategoriasAgrupadas] = useState([]);
   const [dataContasPagoTotal, setContasPagoTotal] = useState([]);
-
   const [dataInvestimento, setDataInvestimento] = useState([]);
-
-  const handleComposedDownloadBarChartStack = useCallback(async () => {
-    const png = await getbarChartStackPng();
-    if (png) {
-      FileSaver.saveAs(png, "barChartStick.png");
-    }
-  }, [getbarChartStackPng]);
 
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
-
   useEffect(() => {
     getDebitos(user.uid);
-    let debitosFiltrado = debitos.filter(debito => debito.usuario === user.uid);
-    setDebitosFiltrados(debitosFiltrado);
-
-    getInvestimentos();
-    let investimentosfiltrado = investimento.filter(simulation => simulation.usuario === user.uid);
-    setInvestimentosFiltrados(investimentosfiltrado);
-    console.log(investimentosFiltrados);
+    getInvestimentos(user.uid);
   }, [])
 
   useEffect(() => {
-    let aux = [];
-    let pagar = 0;
-    let pago = 0;
-
-    if (debitosFiltrados.length > 0) {
-      debitosFiltrados.reduce(function (res, currentValue) {
-        //Função de calcular os que tem que pagar e os pago
-        //se possivel separar em uma funcao
-        pagar = parseFloat(currentValue.valor) + parseFloat(pagar)
-        if (currentValue.situacao === "Pago") {
-          pago = parseFloat(currentValue.valor) + parseFloat(pago);
-        }
-
-        //Função que agrupa as categorias
-        //Se possivel separar em funcao
-        if (!res[currentValue.categoria]) {
-          res[currentValue.categoria] = { name: currentValue.categoria, valor: 0, porcentagem: 0 };
-          aux.push(res[currentValue.categoria])
-        }
-        res[currentValue.categoria].valor += parseFloat(currentValue.valor);
-        res[currentValue.categoria].porcentagem = 10;
-        return res;
-      });
-
-      setDataGrapgh(aux);
-    }
-
-    dataContasPagoTotal.push({ nome: "Pagar", valor: pagar });
-    dataContasPagoTotal.push({ nome: "Pago", valor: pago });
-    setContasPagoTotal([]);
-    setContasPagoTotal(dataContasPagoTotal);
-
-  }, [debitosFiltrados])
+    CalculosDebito();    
+  }, [debitos])
 
   useEffect(() => {
-    let investimentos = [];
-    if (investimentosFiltrados.length > 0) {
-      investimentosFiltrados.forEach((investimento) => {
-        let porcentagem = 0;
-        porcentagem = (1 * 100) / investimentosFiltrados.length;
-        investimentos.push({ ativo: investimento.ativo, porcentagem: porcentagem })
-      });
-      setDataInvestimento(investimentos);
+    CalculaInvestimento();
+  }, [investimento])
+
+  function CalculaInvestimento(){
+
+    let investimentosLocal = [];
+    let porcentagem = 0;
+
+    investimento.forEach((inv) => {
+      porcentagem = (1 / investimento.length) * 100;
+      investimentosLocal.push({ ativo: inv.ativo, porcentagem: parseFloat(porcentagem.toFixed(2)) })
+    });
+    setDataInvestimento(investimentosLocal);
+
+  }
+
+  function CalculosDebito(){
+    let pagamentos = {
+      pagar: 0,
+      pago: 0
     }
-  }, [investimentosFiltrados])
+    const categoriasAgrupadas = [];
+
+    debitos.forEach(debito => {
+      CalculoPagamentos(pagamentos, debito);
+      debugger;
+      CalculoCategorias(categoriasAgrupadas, debito);
+    });
+
+    categoriasAgrupadas.forEach(categoria => {
+      categoria.porcentagem = parseFloat(((1 / categoriasAgrupadas.length) * 100).toFixed(2));
+    });
+
+    dataContasPagoTotal.push({ nome: "Pagar", valor: pagamentos.pagar });
+    dataContasPagoTotal.push({ nome: "Pago", valor: pagamentos.pago });
+
+    setDataCategoriasAgrupadas(categoriasAgrupadas);
+    setContasPagoTotal(dataContasPagoTotal);
+  }
+
+  function CalculoPagamentos(pagamentos, debito){
+    pagamentos.pagar = parseFloat(debito.valor) + parseFloat(pagamentos.pagar)
+    if (debito.situacao === "Pago") {
+      pagamentos.pago = parseFloat(debito.valor) + parseFloat(pagamentos.pago);
+    }
+  }
+
+  function CalculoCategorias(categoriasAgrupadas, debito) {
+    let indexCategoria = categoriasAgrupadas.findIndex(categoria => categoria.nome === debito.categoria);
+    if(indexCategoria != -1){
+      categoriasAgrupadas[indexCategoria].valor += parseFloat(debito.valor);
+    }
+    else{
+      categoriasAgrupadas.push({ nome: debito.categoria, valor: parseFloat(debito.valor), porcentagem: 0 })
+    }
+  }
 
   return (
     <div className="App">
@@ -118,15 +110,15 @@ function Dashboard() {
         <Title nome="DashBoard">
           <FiHome size={25} />
         </Title>
-        {/* <div className="container-dash">   
+        <div className="container-dash">   
           <div className="charts">
-            <div>
+            {/* <div>
               <div className="text-graph">
                 Categorias Agrupadas
               </div>
               <PieChart width={730} height={250}>
-                <Pie data={dataGrapgh} label dataKey="porcentagem" nameKey="name" cx="50%" cy="50%" outerRadius={100} fill="#8884d8">
-                  {dataGrapgh.map((entry, index) => (
+                <Pie data={dataCategoriasAgrupadas} label dataKey="porcentagem" nameKey="nome" cx="50%" cy="50%" outerRadius={100} fill="#8884d8">
+                  {dataCategoriasAgrupadas.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
@@ -143,7 +135,7 @@ function Dashboard() {
                   ))}
                 </Pie>
               </PieChart>
-            </div>
+            </div> */}
           </div>
 
           <div className="charts">
@@ -155,7 +147,7 @@ function Dashboard() {
               <BarChart
                 width={500}
                 height={300}
-                data={dataGrapgh}
+                data={dataCategoriasAgrupadas}
                 margin={{
                   top: 5,
                   right: 30,
@@ -164,12 +156,12 @@ function Dashboard() {
                 }}
               >
                 <CartesianGrid strokeDasharray="5 5" />
-                <XAxis dataKey="name" />
+                <XAxis dataKey="nome" />
                 <YAxis />
                 <Tooltip />
                 <Legend />
                 <Bar dataKey="valor" fill="#8884d8">
-                  {dataGrapgh.map((entry, index) => (
+                  {dataCategoriasAgrupadas.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Bar>
@@ -177,12 +169,12 @@ function Dashboard() {
             </div>
             <div>
               <div className="text-graph">
-                Simulaçao de Investimentos
+                Meus Investimentos
               </div>
               <BarChart
                 width={500}
                 height={300}
-                data={investimentosFiltrados}
+                data={dataInvestimento}
                 margin={{
                   top: 5,
                   right: 30,
@@ -195,15 +187,15 @@ function Dashboard() {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="valorinvestido" fill="#8884d8">
-                  {investimentosFiltrados.map((entry, index) => (
+                <Bar dataKey="porcentagem" fill="#8884d8">
+                  {dataInvestimento.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Bar>
               </BarChart>
             </div>
           </div>
-          <div className="charts">
+          {/* <div className="charts">
             <div>
               <div className="text-graph">
                 % investido por ativo
@@ -216,18 +208,11 @@ function Dashboard() {
                 </Pie>
               </PieChart>
             </div>
-          </div>
+          </div> */}
         </div>
 
       </div>
-
-      <div className="btnCharts">
-        <button className="btnDownload" onClick={handleComposedDownloadBarChartStack}>
-          {isLoadingBarChartStack ? 'Downloading...' : 'Download Chart'}
-        </button>
-      </div> */}
       </div>
-    </div>
   );
 
 }
