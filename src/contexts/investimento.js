@@ -71,8 +71,7 @@ function InvestimentosProvider({ children }) {
             })
 
             const lastDoc = snapshot.docs[snapshot.docs.length - 1]; //Pegando o ultimo documento buscado
-
-            setInvestimentos(investimento => [...investimento, ...lista]);
+            setInvestimentos(lista);
             setLastDocs(lastDoc);
         } else {
             setIsEmpty(true);
