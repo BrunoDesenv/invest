@@ -23,7 +23,6 @@ import {
   Bar,
 } from "recharts";
 
-
 function Dashboard() {
   const { user } = useContext(AuthContext);
     
@@ -34,7 +33,8 @@ function Dashboard() {
   const [dataContasPagoTotal, setContasPagoTotal] = useState([]);
   const [dataInvestimento, setDataInvestimento] = useState([]);
 
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#FF0000", "#800000", "#808000", 
+                  "#00FF00", "#008000" , "#00FFFF", "#008080", "#0000FF", "#000080", "#FF00FF", "#800080"]
 
   useEffect(() => {
     getDebitos(user.uid);
@@ -68,10 +68,11 @@ function Dashboard() {
       pago: 0
     }
     const categoriasAgrupadas = [];
+    const contasPagoTotal = [];
+
 
     debitos.forEach(debito => {
       CalculoPagamentos(pagamentos, debito);
-      debugger;
       CalculoCategorias(categoriasAgrupadas, debito);
     });
 
@@ -79,11 +80,12 @@ function Dashboard() {
       categoria.porcentagem = parseFloat(((1 / categoriasAgrupadas.length) * 100).toFixed(2));
     });
 
-    dataContasPagoTotal.push({ nome: "Pagar", valor: pagamentos.pagar });
-    dataContasPagoTotal.push({ nome: "Pago", valor: pagamentos.pago });
+
+    contasPagoTotal.push({ nome: "Pagar", valor: parseFloat(pagamentos.pagar.toFixed(2)) });
+    contasPagoTotal.push({ nome: "Pago", valor: parseFloat(pagamentos.pago.toFixed(2)) });
 
     setDataCategoriasAgrupadas(categoriasAgrupadas);
-    setContasPagoTotal(dataContasPagoTotal);
+    setContasPagoTotal(contasPagoTotal);
   }
 
   function CalculoPagamentos(pagamentos, debito){
@@ -96,10 +98,12 @@ function Dashboard() {
   function CalculoCategorias(categoriasAgrupadas, debito) {
     let indexCategoria = categoriasAgrupadas.findIndex(categoria => categoria.nome === debito.categoria);
     if(indexCategoria != -1){
-      categoriasAgrupadas[indexCategoria].valor += parseFloat(debito.valor);
+      let valorArray = parseFloat(categoriasAgrupadas[indexCategoria].valor);
+      let valorDebito = parseFloat(debito.valor);
+      categoriasAgrupadas[indexCategoria].valor = (valorArray + valorDebito).toFixed(2);
     }
     else{
-      categoriasAgrupadas.push({ nome: debito.categoria, valor: parseFloat(debito.valor), porcentagem: 0 })
+      categoriasAgrupadas.push({ nome: debito.categoria, valor: parseFloat(debito.valor).toFixed(2), porcentagem: 0 })
     }
   }
 
@@ -112,38 +116,10 @@ function Dashboard() {
         </Title>
         <div className="container-dash">   
           <div className="charts">
-            {/* <div>
-              <div className="text-graph">
-                Categorias Agrupadas
-              </div>
-              <PieChart width={730} height={250}>
-                <Pie data={dataCategoriasAgrupadas} label dataKey="porcentagem" nameKey="nome" cx="50%" cy="50%" outerRadius={100} fill="#8884d8">
-                  {dataCategoriasAgrupadas.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-              </PieChart>
-            </div>
-            <div>   
-              <div className="text-graph">
-                Contas Pagas VS A Pagar
-              </div>
-              <PieChart width={730} height={250}>
-                <Pie data={dataContasPagoTotal} label dataKey="valor" nameKey="nome" cx="50%" cy="50%" outerRadius={100} fill="#8884d8">
-                  {dataContasPagoTotal.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-              </PieChart>
-            </div> */}
-          </div>
-
-          <div className="charts">
             <div>
               <div className="text-graph">
                 Valor Por Categoria
               </div>
-
               <BarChart
                 width={500}
                 height={300}
@@ -159,7 +135,6 @@ function Dashboard() {
                 <XAxis dataKey="nome" />
                 <YAxis />
                 <Tooltip />
-                <Legend />
                 <Bar dataKey="valor" fill="#8884d8">
                   {dataCategoriasAgrupadas.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -169,7 +144,7 @@ function Dashboard() {
             </div>
             <div>
               <div className="text-graph">
-                Meus Investimentos
+                % Meus Investimentos
               </div>
               <BarChart
                 width={500}
@@ -186,7 +161,6 @@ function Dashboard() {
                 <XAxis dataKey="ativo" />
                 <YAxis />
                 <Tooltip />
-                <Legend />
                 <Bar dataKey="porcentagem" fill="#8884d8">
                   {dataInvestimento.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -195,12 +169,14 @@ function Dashboard() {
               </BarChart>
             </div>
           </div>
-          {/* <div className="charts">
+          <div className="charts">
             <div>
               <div className="text-graph">
                 % investido por ativo
               </div>
-              <PieChart width={730} height={250}>
+              <PieChart width={500} height={350}>
+              <Tooltip />
+              <Legend />
                 <Pie data={dataInvestimento} label dataKey="porcentagem" nameKey="ativo" cx="50%" cy="50%" outerRadius={100} fill="#8884d8">
                   {dataInvestimento.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -208,7 +184,35 @@ function Dashboard() {
                 </Pie>
               </PieChart>
             </div>
-          </div> */}
+            <div>   
+              <div className="text-graph">
+                Contas Pagas VS A Pagar
+              </div>
+              <PieChart width={500} height={300}>
+                <Legend />
+                <Tooltip />
+                <Pie data={dataContasPagoTotal} label dataKey="valor" nameKey="nome" cx="50%" cy="50%" outerRadius={100} fill="#8884d8">
+                  {dataContasPagoTotal.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+              </PieChart>
+            </div> 
+            <div>
+              <div className="text-graph">
+                % por Categoria
+              </div>
+              <PieChart width={500} height={300}>
+                <Tooltip />
+                <Legend />
+                <Pie data={dataCategoriasAgrupadas} label dataKey="porcentagem" nameKey="nome" cx="50%" cy="50%" outerRadius={100} fill="#8884d8">
+                  {dataCategoriasAgrupadas.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+              </PieChart>
+            </div>
+          </div>
         </div>
 
       </div>
