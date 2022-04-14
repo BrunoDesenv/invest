@@ -38,10 +38,9 @@ function Dashboard() {
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#FF0000", "#800000", "#808000",
     "#00FF00", "#008000", "#00FFFF", "#008080", "#0000FF", "#000080", "#FF00FF", "#800080"]
 
-  // user.id
   useEffect(() => {
-    getDebitos("qUgqP2CTNlVBeZQxFqYnI8gYRMu2");
-    getInvestimentos("qUgqP2CTNlVBeZQxFqYnI8gYRMu2");
+    getDebitos(user.id);
+    getInvestimentos(user.id);
   }, [])
 
   useEffect(() => {
