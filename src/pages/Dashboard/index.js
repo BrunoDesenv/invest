@@ -39,8 +39,8 @@ function Dashboard() {
     "#00FF00", "#008000", "#00FFFF", "#008080", "#0000FF", "#000080", "#FF00FF", "#800080"]
 
   useEffect(() => {
-    getDebitos(user.id);
-    getInvestimentos(user.id);
+    getDebitos(user.uid);
+    getInvestimentos(user.uid);
   }, [])
 
   useEffect(() => {
