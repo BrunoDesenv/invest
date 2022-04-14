@@ -109,11 +109,3 @@
     .charts{
       display: flex;
     }
-
-    .text-graph-ativo {
-      font-size: 1.2rem;
-      color: #000000;
-      text-align: center;
-      padding-bottom: 20px;
-    }
-    
