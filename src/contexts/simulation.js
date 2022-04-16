@@ -83,7 +83,16 @@ function SimulationProvider({ children }) {
 
             const lastDoc = snapshot.docs[snapshot.docs.length - 1]; //Pegando o ultimo documento buscado
 
-            setSimularion(simulation => [...simulation, ...lista]);
+
+            setSimularion(lista.sort(function (a,b) {
+                if(a.categoria < b.categoria){
+                    return -1;
+                }
+                else {
+                    return true;
+                }
+            }));
+            
             setLastDocs(lastDoc);
         } else {
             setIsEmpty(true);

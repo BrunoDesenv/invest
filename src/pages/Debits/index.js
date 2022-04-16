@@ -10,7 +10,7 @@ import ReactModal from 'react-modal'
 import { listarDebitos, listarSituacao } from '../../services/lists'
 import { FiShoppingCart, FiEdit, FiX } from 'react-icons/fi'
 
-import Card from '../Card';
+import Card from '../../components/Card';
 
 import './style.css';
 
@@ -202,7 +202,7 @@ function Debits() {
               calssRow={'no-gutters'}
               classComment={'fa-comments'}
             />
-
+ 
           </div>
 
           <div className='card-por-categoria' onClick={() => showCategory()}>
@@ -226,11 +226,14 @@ function Debits() {
           } 
           </div>
         
-          
+          <div className="actionsArea">
+          <button className="ReactModal__Submit" onClick={openModal}>+ Novo</button>
+            <button className="ReactModal__Clear" onClick={()=>{}}>Limpar tudo</button>
+          </div>
           
 
           {/* Card superior */}
-          <button className="ReactModal__Submit" onClick={openModal}>Cadastrar Novo</button>
+         
           <ReactModal
             isOpen={modalIsOpen}
             ariaHideApp={false}

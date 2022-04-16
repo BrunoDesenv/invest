@@ -270,8 +270,13 @@ function Simulation() {
             </div>
           </div>
 
+          <div className="actionsArea">
+          <button className="ReactModal__Submit" onClick={openModal}>+ Novo</button>
+            <button className="ReactModal__Clear" onClick={()=>{}}>Limpar tudo</button>
+          </div>
+
           {/* Card superior */}
-          <button className="ReactModal__Submit" onClick={openModal}>Criar Simulação</button>
+          
           <ReactModal
             isOpen={modalIsOpen}
             className={

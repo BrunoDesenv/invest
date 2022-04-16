@@ -71,7 +71,16 @@ function InvestimentosProvider({ children }) {
             })
 
             const lastDoc = snapshot.docs[snapshot.docs.length - 1]; //Pegando o ultimo documento buscado
-            setInvestimentos(lista);
+            
+            setInvestimentos(lista.sort(function (a,b) {
+                if(a.invest < b.invest){
+                    return -1;
+                }
+                else {
+                    return true;
+                }
+            }));
+
             setLastDocs(lastDoc);
         } else {
             setIsEmpty(true);

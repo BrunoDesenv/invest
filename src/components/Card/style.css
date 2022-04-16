@@ -230,18 +230,7 @@ tr:nth-child(even) {
     font-size: 1rem;
 }
 
-.ReactModal__Submit{
-  width: 90%;
-  padding: 0 1.5rem;
-  height: 3rem;
-  background: rgb(1, 173, 1);
-  color: #fff;
-  border-radius: 0.25rem;
-  border: 0;
-  font-size: 1rem;
-  margin: 0 auto;
-}
-    
+  
     
 
 .ReactModal__Submit:hover{

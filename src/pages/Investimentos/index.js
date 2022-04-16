@@ -43,12 +43,15 @@ function Simulation() {
 
   const [listCategoria, setListaCategoria] = useState([])
 
+  const [showGastoGategoria, setShowGastoGategoria] = useState(false);
+  const [categoriaSum, setCategoriaSum] = useState([]);
+
   function calcular() {
 
-    if(invest === '' || ativo === undefined || capital === undefined || rendimentoM === undefined){
+    if (invest === '' || ativo === undefined || capital === undefined || rendimentoM === undefined) {
       return toast.error("Para efetuar a simulação é necessário preencher os campos baixo");
     }
-    
+
     let totalMeses = anos * 12
     let montante = (capital * ((1 + (rendimentoM / 100)) ** totalMeses)) + (quantidade * (((((1 + (rendimentoM / 100)) ** totalMeses) - 1) / (rendimentoM / 100))));
     setQuanto(montante.toFixed(2));
@@ -73,6 +76,26 @@ function Simulation() {
   function openModal() {
     setIsOpen(true);
     SetIsSimulate(false);
+  }
+
+  const countCaterory = () => {
+    let result = [];
+    result = investimento.reduce(function (res, value) {
+      if (!res[value.invest]) {
+        res[value.invest] = { Id: value.invest, valorinvestido: 0 };
+        result.push(res[value.invest])
+      }
+      res[value.invest].valorinvestido += parseFloat(value.valorinvestido);
+      return res
+    }, {});
+
+    setCategoriaSum(result);
+
+  }
+
+  const showCategory = () => {
+    countCaterory();
+    setShowGastoGategoria(!showGastoGategoria);
   }
 
   function closeModal() {
@@ -258,8 +281,98 @@ function Simulation() {
             </div>
           </div>
 
+          <div className='card-por-categoria' onClick={() => showCategory()}>
+            <a>Exibir total por categoria</a>
+          </div>
+
+          <div className='card-info-categoria'>
+            {showGastoGategoria &&
+
+              <div className="row">
+                <div className="col-xl-3">
+                  <div className="card border-left-primary">
+                    <div className="card-body">
+                      <div className="row">
+                        <div className="col mr-2">
+                          <div className="text-xs">
+                            Total FII</div>
+                          <div className="h5">R$ {categoriaSum.FII.valorinvestido.toFixed(2)}</div>
+                        </div>
+                        <div className="col-auto">
+                          <i className="fas fa-calendar"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+                <div className="col-xl-3 col-md-6 mb-4">
+                  <div className="card border-left-success">
+                    <div className="card-body">
+                      <div className="row no-gutters">
+                        <div className="col mr-2">
+                          <div className="text-xs">
+                            Total Ação</div>
+                          <div className="h5">{(categoriaSum.AÇÃO.valorinvestido) ? categoriaSum.AÇÃO.valorinvestido.toFixed(2) : 0}</div>
+                        </div>
+                        <div className="col-auto">
+                          <i className="fas fa-dollar-sign"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+                <div className="col-xl-3 col-md-6 mb-4">
+                  <div className="card border-left-info">
+                    <div className="card-body">
+                      <div className="row no-gutters">
+                        <div className="col mr-2">
+                          <div className="text-xs">
+                            Total Ação Estrangeira
+                          </div>
+                          <div className="row no-gutters">
+                            <div className="col-auto">
+                              <div className="h5">R$ {JSON.stringify(categoriaSum['AÇÃO ESTRANGEIRA'].valorinvestido)}</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-auto">
+                          <i className="fas fa-clipboard-list"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+                <div className="col-xl-3 col-md-6 mb-4">
+                  <div className="card border-left-warning">
+                    <div className="card-body">
+                      <div className="row no-gutters">
+                        <div className="col mr-2">
+                          <div className="text-xs">
+                            Total Poupança</div>
+                          <div className="h5">R$ {categoriaSum.POUPANÇA.valorinvestido.toFixed(2)}</div>
+                        </div>
+                        <div className="col-auto">
+                          <i className="fas fa-comments"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+          <div className="actionsArea">
+            <button className="ReactModal__Submit" onClick={openModal}>+ Novo</button>
+            <button className="ReactModal__Clear" onClick={()=>{}}>Limpar tudo</button>
+          </div>
           {/* Card superior */}
-          <button className="ReactModal__Submit" onClick={openModal}>Cadastrar Novo</button>
+
           <ReactModal
             isOpen={modalIsOpen}
             ariaHideApp={false}

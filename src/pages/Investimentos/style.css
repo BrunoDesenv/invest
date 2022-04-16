@@ -183,6 +183,11 @@ tr:nth-child(even) {
 
 }
 
+.actionsArea{
+  display: flex;
+  justify-content: flex-end;
+}
+
 .ReactModal__form label{
     width: 100%;
     padding: 1.1rem;
@@ -192,15 +197,25 @@ tr:nth-child(even) {
 }
 
 .ReactModal__Submit{
-  width: 90%;
-  padding: 0 1.5rem;
+    height: 3rem;
+    background: rgb(1, 173, 1);
+    color: #fff;
+    border-radius: 0.25rem;
+    border: 0;
+    font-size: 1rem;
+    width: 200px;
+    margin-left: 10px;
+}
+
+.ReactModal__Clear{
   height: 3rem;
-  background: rgb(1, 173, 1);
+  background: rgb(173 1 1);
   color: #fff;
   border-radius: 0.25rem;
   border: 0;
   font-size: 1rem;
-  margin: 0 auto;
+  width: 200px;
+  margin-left: 10px;
 }
     
     
