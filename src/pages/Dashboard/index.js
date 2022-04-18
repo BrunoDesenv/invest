@@ -97,7 +97,11 @@ function Dashboard() {
   }
 
   function CalculoPagamentos(pagamentos, debito) {
-    pagamentos.pagar = parseFloat(debito.valor) + parseFloat(pagamentos.pagar)
+    debugger;
+    if (debito.situacao == "Pendente" || debito.situacao == "Atrasado" ||debito.situacao == undefined) {
+      pagamentos.pagar = parseFloat(debito.valor) + parseFloat(pagamentos.pagar)
+    }
+
     if (debito.situacao === "Pago") {
       pagamentos.pago = parseFloat(debito.valor) + parseFloat(pagamentos.pago);
     }
@@ -108,6 +112,7 @@ function Dashboard() {
     if (indexInvestimento != -1) {
       let valorArray = parseFloat(investimentosLocal[indexInvestimento].valor);
       let valorInvestimento = parseFloat(investimentoCTX.valorinvestido);
+      // .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
       investimentosLocal[indexInvestimento].valor = (valorArray + valorInvestimento).toFixed(2);
     }
     else {
