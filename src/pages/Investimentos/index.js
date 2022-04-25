@@ -194,8 +194,6 @@ function Simulation() {
   }, [])
 
   const limparTudo = () => {
-
-    console.log("iNve", investimento)
     if(investimento.length === 0 ){
       return toast.error("Não existe registro a serem excluido")
     }

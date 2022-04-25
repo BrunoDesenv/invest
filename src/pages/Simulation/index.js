@@ -183,8 +183,6 @@ function Simulation() {
   }, []);
 
   const limparTudo = () => {
-
-    console.log("simulation", simulation)
     if(simulation.length === 0 ){
       return toast.error("Não existe registro a serem excluido")
     }

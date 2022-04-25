@@ -173,8 +173,6 @@ function Debits() {
     }
 
   }
-
-  // console.log("Debitos", debitos)
   return (
     <div className="App">
       <Header />
