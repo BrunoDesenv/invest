@@ -383,3 +383,22 @@ tr:nth-child(even) {
     font-weight: 600;
     color: #5a5c69;
   }
+
+  .ReactModal_style{
+    display: flex;
+
+    justify-content: right;
+    align-items: center;
+  }
+
+  .ReactModal_style > .ReactModal__save{
+    margin: 0px;
+    width: 200px;
+    margin-right: 20px;
+  }
+
+  .ReactModal_style > .ReactModal__Cancel{
+    margin: 0px;
+    width: 200px;
+    margin-right: 4rem;
+  }

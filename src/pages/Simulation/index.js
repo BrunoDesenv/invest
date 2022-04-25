@@ -46,7 +46,7 @@ function Simulation() {
   function calcular() {
 
     if(invest === '' || objetivo === undefined || capital === undefined || quantidade === undefined || anos === undefined || rendimentoM === undefined){
-      return toast.error("Para efetuar a simulação é necessário preencher os campos baixo");
+      return toast.error("Para efetuar uma simulação é necessário preencher os campos");
      }
 
     let totalMeses = anos * 12
@@ -182,6 +182,25 @@ function Simulation() {
     getSimulations(user.uid);
   }, []);
 
+  const limparTudo = () => {
+    if(simulation.length === 0 ){
+      return toast.error("Não existe registro a serem excluido")
+    }
+
+    const confirme = window.confirm("Tem certeza que deseja exluir todos os registro?");
+
+    if(confirme){
+      simulation.forEach(sim => {
+        excluirSimulacao(sim.key, sim.usuario, false);
+     });
+
+     return toast.success("Dados excluído");
+
+    }
+
+  }
+
+
   return (
     <div className="App">
       <Header />
@@ -271,8 +290,8 @@ function Simulation() {
           </div>
 
           <div className="actionsArea">
-          <button className="ReactModal__Submit" onClick={openModal}>+ Novo</button>
-            <button className="ReactModal__Clear" onClick={()=>{}}>Limpar tudo</button>
+            <button className="ReactModal__Submit" onClick={openModal}>+ Novo</button>
+            <button className="ReactModal__Clear" onClick={()=> limparTudo() }>Limpar tudo</button>
           </div>
 
           {/* Card superior */}
@@ -295,15 +314,21 @@ function Simulation() {
                 <input value={anos} placeholder="Tempo de Investimento" onChange={(e) => setAnos(e.target.value)} />
                 <input value={rendimentoM} placeholder="Taxa de rendimento" onChange={(e) => setRendimentoM(e.target.value.replace(',', '.'))} />
                 <button className="ReactModal__Simulate" type="button" onClick={() => { calcular() }}>Simular</button>
-                {isSimulate && <div>
+                {isSimulate && 
+                <div>
                   <h2>Resultado (Montante, Retorno Mensal, Retorno Anual)</h2>
                   <input disabled={true} value={quanto} placeholder="Montante" />
                   <input disabled={true} value={mensal} placeholder="Retorno Mensal" />
                   <input disabled={true} value={rentabilidadeAno} placeholder="Retorno Anual" />
-                  <button className="ReactModal__save" type="button" onClick={() => { saveValues() }}>Salvar Simulação</button>
+                  
                 </div>}
               </div>
-              <button className="ReactModal__Cancel" onClick={closeModal}>Cancelar</button>
+                <div className='ReactModal_style'>
+                  {isSimulate && 
+                    <button className="ReactModal__save" type="button" onClick={() => { saveValues() }}>Salvar Simulação</button>
+                  }
+                  <button className="ReactModal__Cancel" onClick={closeModal}>Cancelar</button>
+                </div>
             </div>
           </ReactModal>
         </div>
@@ -364,13 +389,13 @@ function Simulation() {
                     <tr key={item.key}>
                       <td>{item.categoria}</td>
                       <td>{item.objetivo}</td>
-                      <td>{item.valorinicial}</td>
-                      <td>{item.aportemensal}</td>
+                      <td>R$ {item.valorinicial}</td>
+                      <td>R$ {item.aportemensal}</td>
                       <td>{item.tempoinvestido}</td>
-                      <td className="amount">{item.rendimentomensal}</td>
-                      <td className="amount">{item.saldofinal}</td>
-                      <td className="amount">{item.retornomensal}</td>
-                      <td className="amount">{item.retornoanual}</td>
+                      <td className="amount">{item.rendimentomensal} %</td>
+                      <td className="amount">R$ {item.saldofinal}</td>
+                      <td className="amount">R$ {item.retornomensal}</td>
+                      <td className="amount">R$ {item.retornoanual}</td>
                       <td><FiEdit onClick={() => { openSimulacaoModal(item) }} className="optIcon" /></td>
                       <td><FiX onClick={() => { excluirSimulacao(item.key, item.usuario) }} className="optIcon" /></td>
                     </tr>

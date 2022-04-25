@@ -99,13 +99,15 @@ function SimulationProvider({ children }) {
         }
     }
 
-    async function excluirSimulacao(idSimulacao, userId) {
+    async function excluirSimulacao(idSimulacao, userId, mensagem = true) {
 
         await firebase.firestore().collection('simulations')
             .doc(idSimulacao)
             .delete()
             .then(() => {
-                toast.success('Dados excluidos')
+                if(mensagem){
+                    toast.success('Dados excluidos')
+                }                
             })
             .catch(() => {
                 toast.success('Não foi possível excluir o registro, tente novamente mais tarde')
