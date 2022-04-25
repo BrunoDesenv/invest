@@ -60,13 +60,15 @@ function DebitosProvider({ children }) {
 
     }
 
-    async function excluirDebits(idDebit, userId) {
+    async function excluirDebits(idDebit, userId, mensagem = true) {
 
         await firebase.firestore().collection('debits')
             .doc(idDebit)
             .delete()
             .then(() => {
-                console.log('Dados excluidos')
+                if(mensagem){
+                   toast.success("Dado exclído")
+                }               
             })
             .catch(() => {
                 console.log('erro ao atualizar')

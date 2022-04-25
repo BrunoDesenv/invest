@@ -193,6 +193,27 @@ function Simulation() {
     getInvestimentos(user.uid);
   }, [])
 
+  const limparTudo = () => {
+
+    console.log("iNve", investimento)
+    if(investimento.length === 0 ){
+      return toast.error("Não existe registro a serem excluido")
+    }
+
+    const confirme = window.confirm("Tem certeza que deseja exluir todos os registro?");
+
+    if(confirme){
+      investimento.forEach(inves => {
+        excluirInvestimento(inves.key, inves.usuario, false);
+     });
+
+     return toast.success("Dados excluído");
+
+    }
+
+  }
+
+
   return (
     <div className="App">
       <Header />
@@ -369,7 +390,7 @@ function Simulation() {
           </div>
           <div className="actionsArea">
             <button className="ReactModal__Submit" onClick={openModal}>+ Novo</button>
-            <button className="ReactModal__Clear" onClick={()=>{}}>Limpar tudo</button>
+            <button className="ReactModal__Clear" onClick={()=> limparTudo() }>Limpar tudo</button>
           </div>
           {/* Card superior */}
 
@@ -396,10 +417,16 @@ function Simulation() {
                   <h2>Resultado (Retorno Mensal, Retorno Anual)</h2>
                   <input disabled={true} value={mensal} placeholder="Retorno Mensal" />
                   <input disabled={true} value={rentabilidadeAno} placeholder="Retorno Anual" />
-                  <button className="ReactModal__save" type="button" onClick={() => { saveValues() }}>Salvar Simulação</button>
+                  
                 </div>}
               </div>
-              <button className="ReactModal__Cancel" onClick={closeModal}>Cancelar</button>
+              <div className='ReactModal_style'>
+                  {isSimulate && 
+                    <button className="ReactModal__save" type="button" onClick={() => { saveValues() }}>Salvar Simulação</button>
+                  }
+                  <button className="ReactModal__Cancel" onClick={closeModal}>Cancelar</button>
+                </div>
+              
             </div>
           </ReactModal>
 
@@ -455,10 +482,10 @@ function Simulation() {
                       <tr key={item.key}>
                         <td>{item?.invest}</td>
                         <td>{item.ativo}</td>
-                        <td>{item.valorinvestido}</td>
-                        <td className="amount">{item.taxaam}</td>
-                        <td className="amount">{item.retornomensal}</td>
-                        <td className="amount">{item.retornoanual}</td>
+                        <td>R$ {item.valorinvestido}</td>
+                        <td className="amount">{item.taxaam} %</td>
+                        <td className="amount">R$ {item.retornomensal}</td>
+                        <td className="amount">R$ {item.retornoanual}</td>
                         <td><FiEdit onClick={() => { openInvestimentoModal(item) }} className="optIcon" /></td>
                         <td><FiX onClick={() => { excluirInvestimento(item.key, item.usuario) }} className="optIcon" /></td>
                       </tr>

@@ -87,13 +87,15 @@ function InvestimentosProvider({ children }) {
         }
     }
 
-    async function excluirInvestimento(idInvestimento, userId) {
+    async function excluirInvestimento(idInvestimento, userId, mensagem = true) {
 
         await firebase.firestore().collection('Investimentos')
             .doc(idInvestimento)
             .delete()
             .then(() => {
-                toast.success('Dados excluidos')
+                if(mensagem){
+                    toast.success('Dados excluidos')
+                }                
             })
             .catch(() => {
                 toast.success('Não foi possível excluir o registro, tente novamente mais tarde')

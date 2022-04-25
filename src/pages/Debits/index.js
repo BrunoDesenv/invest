@@ -13,6 +13,7 @@ import { FiShoppingCart, FiEdit, FiX } from 'react-icons/fi'
 import Card from '../../components/Card';
 
 import './style.css';
+import { toast } from 'react-toastify';
 
 
 function Debits() {
@@ -98,7 +99,6 @@ function Debits() {
     closeSituacaoModal();
   }
 
-
   useEffect(() => {
     let situacao = listarSituacao();
     let categorias = listarDebitos();
@@ -155,6 +155,26 @@ function Debits() {
 
   }
 
+  const limparTudo = () => {
+
+    if(debitos.length === 0 ){
+      return toast.error("Não existe registro a serem excluido")
+    }
+
+    const confirme = window.confirm("Tem certeza que deseja exluir todos os registro?");
+
+    if(confirme){
+      debitos.forEach(debito => {
+      excluirDebits(debito.key, debito.usuario, false);
+     });
+
+     return toast.success("Dados excluído");
+
+    }
+
+  }
+
+  // console.log("Debitos", debitos)
   return (
     <div className="App">
       <Header />
@@ -227,8 +247,8 @@ function Debits() {
           </div>
         
           <div className="actionsArea">
-          <button className="ReactModal__Submit" onClick={openModal}>+ Novo</button>
-            <button className="ReactModal__Clear" onClick={()=>{}}>Limpar tudo</button>
+            <button className="ReactModal__Submit" onClick={openModal}>+ Novo</button>
+            <button className="ReactModal__Clear" onClick={()=> limparTudo() }>Limpar tudo</button>
           </div>
           
 
@@ -252,9 +272,13 @@ function Debits() {
 
                 <input type="date" value={vdata} placeholder="Data de vencimento" onChange={(e) => setData(e.target.value)} />
 
-                <button className="ReactModal__save" type="button" onClick={() => { saveValues() }}>Salvar Gasto</button>
+                
               </div>
-              <button className="ReactModal__Cancel" onClick={closeModal}>Cancelar</button>
+              <div className='ReactModal_style'>
+                <button className="ReactModal__save" type="button" onClick={() => { saveValues() }}>Salvar Gasto</button>
+                <button className="ReactModal__Cancel" onClick={closeModal}>Cancelar</button>
+              </div>
+                
             </div>
           </ReactModal>
 
@@ -307,7 +331,7 @@ function Debits() {
                       <tr key={item.key}>
                         <td>{item.categoria}</td>
                         <td>{item.descricao}</td>
-                        <td>{item.valor}</td>
+                        <td>R$ {item.valor}</td>
                         <td>{item.dataVencimento ? moment(item.dataVencimento).format("DD/MM/YYYY") : ''}</td>
                         {item.situacao === "Pendente" && <td className="status-pending">{item.situacao}</td>}
                         {item.situacao === "Pago" && <td className="status-paid">{item.situacao}</td>}
