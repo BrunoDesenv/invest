@@ -1,5 +1,5 @@
 import React from 'react';
-import './style.css';
+import './profile.css';
 
 import { useState, useContext } from 'react';
 import { AuthContext } from '../../contexts/auth';
@@ -18,6 +18,8 @@ function Profile() {
     const { user, signOut, setUser, storageUser } = useContext(AuthContext);
 
     const [nome, setNome] = useState(user && user.nome);
+    const [profissao, setProfissao] = useState(user && user.profissao);
+    const [idade, setIdade] = useState(user && user.idade);
     const [receita, setReceita] = useState(user && user.receita);
     const [email, setEmail] = useState(user && user.email);
 
@@ -43,7 +45,7 @@ function Profile() {
         }
     }
 
-    
+
 
     async function handleUpload() {
         const currentUid = user.uid;
@@ -62,14 +64,14 @@ function Profile() {
                             .doc(user.uid)
                             .update({
                                 avatarUrl: urlFoto,
-                                nome: nome, 
+                                nome: nome,
                                 receita: receita
                             })
                             .then(() => {
                                 let data = {
                                     ...user,
                                     avatarUrl: urlFoto,
-                                    nome: nome, 
+                                    nome: nome,
                                     receita: receita
                                 };
                                 setUser(data);
@@ -91,12 +93,12 @@ function Profile() {
             await firebase.firestore().collection('users')
                 .doc(user.uid)
                 .update({
-                    nome: nome, 
+                    nome: nome,
                     receita: receita
                 })
                 .then(() => {
                     let data = {
-                        ...user, 
+                        ...user,
                         nome: nome,
                         receita: receita
                     }
@@ -136,19 +138,39 @@ function Profile() {
                                 :
                                 <img src={avatarURL} width={250} height={250} alt="Foto Perfil" />}
                         </label>
+                        <div className="form-container">
+                            <div className="form-box">
+                                <span className="details">Nome</span>
+                                <input type="text" value={nome} onChange={(e) => setNome(e.target.value)}></input>
+                            </div>
 
-                        <label>Nome</label>
-                        <input type="text" value={nome} onChange={(e) => setNome(e.target.value)}></input>
-                        <label>Receita</label>
-                        <input type="text" value={receita} onChange={(e) => setReceita(e.target.value)}></input>
-                        <label>Email</label>
-                        <input type="text" value={email} disabled={true} />
+                            <div className="form-box">
+                                <span className="details">Profissão</span>
+                                <input type="text" value={profissao} onChange={(e) => setProfissao(e.target.value)}></input>
+                            </div>
 
-                        <button type="submit">Salvar</button>
+                            <div className="form-box">
+                                <span className="details">Idade</span>
+                                <input type="text" value={idade} onChange={(e) => setIdade(e.target.value)}></input>
+                            </div>
+
+                            <div className="form-box">
+                                <span className="details">Renda</span>
+                                <input type="text" value={receita} onChange={(e) => setReceita(e.target.value)}></input>
+                            </div>
+
+                            <div className="form-box">
+                                <span className="details">Email</span>
+                                <input type="text" value={email} disabled={true} />
+                            </div>
+
+                        </div>
+
+                        <button className="btn-submit" type="submit">Salvar</button>
                     </form>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     )
 }
 
