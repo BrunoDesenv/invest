@@ -50,6 +50,7 @@ function Debits() {
     setSituacao(item.situacao)
     setValor(item.valor)
     setId(item.key)
+    setData(item.dataVencimento)
     setSituacaoIsOpen(true);
   }
 
