@@ -18,40 +18,140 @@ import { toast } from 'react-toastify';
 
 function Debits() {
 
-  const { user } = useContext(AuthContext);
-  const { saveDebitos, updateDebitsValues, excluirDebits, debitos, getDebitos } = useContext(DebitosContext);
+  const { updateMesesReferencia, user } = useContext(AuthContext);
+  const { saveDebitos, updateDebitsValues, excluirDebits, debitos, getDebitosByMesReferencia } = useContext(DebitosContext);
   const [modalIsOpen, setIsOpen] = useState(false);
+  const [modalVirarMesIsOpen, setModalVirarMesIsOpen] = useState(false);
   const [situacaoIsOpen, setSituacaoIsOpen] = useState(false);
   const [id, setId] = useState();
-
 
   const [categoria, setCategoria] = useState('Casa');
   const [descricao, setDescricao] = useState('');
   const [valor, setValor] = useState();
   const [situacao, setSituacao] = useState(1);
+  const [contaFixa, setContaFixa] = useState(1);
   const [pagar, setPagar] = useState();
   const [pago, setPago] = useState();
   const [essencial, setEssencial] = useState();
   const [vdata, setData] = useState();
+  const [qtdParcela, setQtdParcela] = useState();
 
   const [listSituacao, SetlistSituacao] = useState([]);
   const [listCategoria, SetListCategoria] = useState([]);
   const [showGastoGategoria, setShowGastoGategoria] = useState(false);
   const [categoriaSum, setCategoriaSum] = useState([]);
   const [info, setInfo] = useState([])
+  const [mesReferencia, setMesReferencia] = useState() 
+
+  const mesAtual = new Date().toLocaleString("pt-BR", { month: "long" });
+
+  const Fixo = 0
+  const Variavel = 1
+  const Parcelado = 2
+                
+  function openModalVirarMesIsOpen(){
+    setModalVirarMesIsOpen(true);
+  }
+
+  function closeModalVirarMesIsOpen() {
+    setModalVirarMesIsOpen(false);
+  }
+
+  function virarMes() {
+    SalvarMesUsuario();
+    SalvarMesDebitos();
+    
+    setModalVirarMesIsOpen(false);
+  }
+
+  function SalvarMesUsuario(){
+    let mesesReferencia = [];
+
+    if(user.mesesReferencia === undefined || 
+      user.mesesReferencia === null) {
+        mesesReferencia.push({ mes: mesAtual });
+      }
+
+    if(user.mesesReferencia !== undefined && 
+      user.mesesReferencia[user.mesesReferencia.length - 1].mes !== mesAtual) { 
+        user.mesesReferencia.map((userMesReferencia, index)=> {
+          mesesReferencia.push({ mes: userMesReferencia.mes });
+          mesesReferencia.push({ mes: mesAtual });
+        });  
+      }
+
+    if(mesesReferencia.length > 0){
+      user.mesesReferencia = mesesReferencia;
+      updateMesesReferencia(user);
+    }
+  }
+
+  function SalvarMesDebitos(){
+    let debitosFixos = [];
+    getDebitosByMesReferencia(user.uid, mesReferencia).then(() => {
+      debitosFixos = debitos.filter(x => x.contaFixa == Fixo || x.contaFixa == Parcelado);
+      debitosFixos.forEach((debito) => {
+        if(debito.contaFixa == Fixo ||
+          (debito.contaFixa == Parcelado && debito.quantidadeParcela !== 0)) {
+          
+          let deveInserir = DeveInserir(debito);
+          if(deveInserir) {
+            let debitoFixo = {
+              usuario: user.uid,
+              categoria: debito.categoria,
+              descricao: debito.descricao,
+              valor: debito.valor,
+              quantidadeParcela: ObterQuantidadeParcela(debito),
+              situacao: 'Pendente', 
+              contaFixa: debito.contaFixa, 
+              dataVencimento: ObterDataVencimento(debito),
+              dataReferencia: mesReferencia
+            };
+            saveDebitos(debitoFixo, false);
+          }   
+        }
+      });
+    });
+  }
+
+  function ObterDataVencimento(debito){
+    let dataVencimento = null;
+    if(debito.dataVencimento !== null && debito.dataVencimento !== ''){
+      dataVencimento = new Date(debito.dataVencimento);
+      dataVencimento = new Date(dataVencimento.setMonth(dataVencimento.getMonth() + 1))
+    }
+    return dataVencimento;
+  }
+
+  function ObterQuantidadeParcela(debito){
+    if(debito.quantidadeParcela !== undefined && 
+       debito.quantidadeParcela !== null){
+        return debito.quantidadeParcela - 1;
+    }
+    return 0;
+  }
+
+  function DeveInserir(debito){
+    if(parseInt(debito.contaFixa) == Parcelado &&
+       ObterQuantidadeParcela(debito) === 0) {
+        return false;
+    }
+    return true;
+  }
 
   function openModal() {
     setIsOpen(true);
   }
 
   function openSituacaoModal(item) {
-    setCategoria(item.categoria)
-    setDescricao(item.descricao)
-    setSituacao(item.situacao)
-    setValor(item.valor)
-    setId(item.key)
-    setData(item.dataVencimento)
+    setCategoria(item.categoria);
+    setDescricao(item.descricao);
+    setSituacao(item.situacao);
+    setValor(item.valor);
+    setQtdParcela(item.quantidadeParcela);
+    setId(item.key);
     setSituacaoIsOpen(true);
+    setContaFixa(item.contaFixa);
   }
 
   function closeSituacaoModal() {
@@ -60,6 +160,8 @@ function Debits() {
     setDescricao();
     setValor();
     setSituacao();
+    setQtdParcela();
+    setContaFixa(1);
   }
 
   function closeModal() {
@@ -68,19 +170,22 @@ function Debits() {
     setDescricao();
     setValor();
     setSituacao();
+    setQtdParcela();
+    setContaFixa(1);
   }
 
   function saveValues() {
-
     let data = {
       usuario: user.uid,
       categoria: categoria,
       descricao: descricao,
       valor: valor,
       situacao: 'Pendente', 
-      dataVencimento: vdata
+      contaFixa: contaFixa, 
+      dataVencimento: vdata === undefined ? null : vdata,
+      quantidadeParcela: qtdParcela === undefined ? null : qtdParcela,
+      dataReferencia: mesReferencia
     }
-
     saveDebitos(data);
     closeModal();
   }
@@ -93,9 +198,10 @@ function Debits() {
       descricao: descricao,
       valor: valor,
       situacao: situacao,
-      dataVencimento: vdata
+      contaFixa: parseInt(contaFixa),
+      dataVencimento: vdata === undefined ? null : vdata,
+      quantidadeParcela: qtdParcela
     }
-
     updateDebitsValues(data);
     closeSituacaoModal();
   }
@@ -106,15 +212,28 @@ function Debits() {
 
     SetlistSituacao(situacao);
     SetListCategoria(categorias);
-
-    getDebitos(user.uid);
+    ObterMesReferencia();
   }, [])
+
+  function ObterMesReferencia(){
+    if(user.mesesReferencia !== undefined &&
+      user.mesesReferencia !== null) {
+      let mes = moment().month(user.mesesReferencia[user.mesesReferencia.length - 1].mes).format("MM");
+      let dataReferencia = moment(Date()).format("01/" + mes + "/YYYY");
+      setMesReferencia(dataReferencia);
+      return;
+    } 
+    setMesReferencia(moment(Date()).format("01/MM/YYYY"));
+  }
+
+  useEffect(() => {
+    getDebitosByMesReferencia(user.uid, mesReferencia);
+  }, [mesReferencia])
 
   useEffect(() => {
     let rPagar = 0;
     let rPago = 0;
     let rEssencial = 0;
-
 
     debitos.forEach((item) => {
       rPagar = parseFloat(item.valor) + parseFloat(rPagar);
@@ -152,8 +271,13 @@ function Debits() {
     }, {});
 
     setCategoriaSum(result);
-    
+  }
 
+  function MudarMesComboBox(mes){
+    let mesMoment = moment().month(mes).format("MM");
+    let mesReferenciaSelecionado = moment(Date()).format("01/" + mesMoment + "/YYYY");
+
+    getDebitosByMesReferencia(user.uid, mesReferenciaSelecionado);
   }
 
   const limparTudo = () => {
@@ -229,25 +353,40 @@ function Debits() {
           </div>
 
           <div className='card-info-categoria'>
-          { showGastoGategoria && 
-            Object.values(categoriaSum).map((categoria,index)=> {
-              return (
-                  <Card 
-                  classCol={''} 
-                  categoria={categoria.Id} 
-                  essencial={categoria.valor} 
-                  classBorderLeft={'info'} 
-                  calssRow={''}
-                  classComment={'fa-comments'}
-                />
-            )
-            })
-          } 
+            {showGastoGategoria && 
+              Object.values(categoriaSum).map((categoria,index)=> {
+                return (
+                    <Card 
+                    classCol={''} 
+                    categoria={categoria.Id} 
+                    essencial={categoria.valor} 
+                    classBorderLeft={'info'} 
+                    calssRow={''}
+                    classComment={'fa-comments'}
+                  />
+              )
+              })} 
           </div>
         
+        <div>
+          
+        Meses
+        {user.mesesReferencia !== undefined ?
+          (<select onChange={e => MudarMesComboBox(e.target.value)}>
+            {user.mesesReferencia.map((item, index) => (
+              <option key={item.mes} value={item.mes}>{item.mes}</option>
+            ))}
+          </select>) : (
+            <select onChange={e => MudarMesComboBox(e.target.value)}>
+              <option key={mesAtual} value={mesAtual}>{mesAtual}</option>
+            </select>
+          )}
+
+        </div>
           <div className="actionsArea">
-            <button className="ReactModal__Submit" onClick={openModal}>+ Novo</button>
-            <button className="ReactModal__Clear" onClick={()=> limparTudo() }>Limpar tudo</button>
+          <button className="ReactModal__Submit" onClick={openModalVirarMesIsOpen}>Virar Mês</button>
+          <button className="ReactModal__Submit" onClick={openModal}>+ Novo</button>
+            <button className="ReactModal__Clear" onClick={()=>{}}>Limpar tudo</button>
           </div>
           
 
@@ -268,16 +407,40 @@ function Debits() {
                 </select>
                 <input value={descricao} placeholder="Descrição" onChange={(e) => setDescricao(e.target.value.replace(',', '.'))} />
                 <input value={valor} placeholder="Valor" onChange={(e) => setValor(e.target.value.replace(',', '.'))} />
-
                 <input type="date" value={vdata} placeholder="Data de vencimento" onChange={(e) => setData(e.target.value)} />
 
-                
-              </div>
-              <div className='ReactModal_style'>
+                <select value={contaFixa} onChange={e => setContaFixa(e.target.value)}>
+                    <option value={Fixo}>Fixo</option>
+                    <option value={Variavel}>Variavel</option>
+                    <option value={Parcelado}>Parcelado</option>
+                </select>
+
+                {parseInt(contaFixa) === Parcelado ? (
+                     <input type="number" value={qtdParcela} placeholder="Quantidade de Parcelas" onChange={(e) => setQtdParcela(e.target.value)} />
+                  ) : (
+                      null
+                )} 
+
                 <button className="ReactModal__save" type="button" onClick={() => { saveValues() }}>Salvar Gasto</button>
                 <button className="ReactModal__Cancel" onClick={closeModal}>Cancelar</button>
               </div>
                 
+            </div>
+          </ReactModal>
+
+          <ReactModal
+            isOpen={modalVirarMesIsOpen}
+            ariaHideApp={false}
+            className={
+              "ReactModal__Content"}>
+            <div>
+              <div className="ReactModal__form">
+                <h2>Essa ação irá virar o mês levando as contas fixas para o próximo mês. Deseja continuar ?</h2>
+              </div>
+              <div className="actionsArea">
+                <button className="ReactModal__save"   onClick={() => { virarMes() }}>Sim</button>
+                <button className="ReactModal__Cancel" onClick={closeModalVirarMesIsOpen}>Não</button>
+              </div>
             </div>
           </ReactModal>
 
@@ -304,6 +467,18 @@ function Debits() {
                   ))}
                 </select>
 
+                <select value={contaFixa} onChange={e => setContaFixa(e.target.value)}>
+                    <option value={Fixo}>Fixo</option>
+                    <option value={Variavel}>Variavel</option>
+                    <option value={Parcelado}>Parcelado</option>
+                </select>
+
+                {parseInt(contaFixa) === Parcelado ? (
+                     <input type="number" value={qtdParcela} placeholder="Quantidade de Parcelas" onChange={(e) => setQtdParcela(e.target.value)} />
+                  ) : (
+                      null
+                )} 
+
                 <button className="ReactModal__save" type="button" onClick={() => { updateValues() }}>Atualizar Gasto</button>
               </div>
               <button className="ReactModal__Cancel" onClick={closeSituacaoModal}>Cancelar</button>
@@ -320,6 +495,7 @@ function Debits() {
                     <th>Valor</th>
                     <th>Vencimento</th>
                     <th>Situação</th>
+                    <th>Conta Fixa</th>
                     <th>Editar</th>
                     <th>Excluir</th>
                   </tr>
@@ -331,10 +507,15 @@ function Debits() {
                         <td>{item.categoria}</td>
                         <td>{item.descricao}</td>
                         <td>R$ {item.valor}</td>
-                        <td>{item.dataVencimento ? moment(item.dataVencimento).format("DD/MM/YYYY") : ''}</td>
+                        <td>{item.dataVencimento !== null && 
+                             item.dataVencimento !== undefined && 
+                             item.dataVencimento !== '' ? moment(item.dataVencimento).format("DD/MM/YYYY") : ''}</td>
                         {item.situacao === "Pendente" && <td className="status-pending">{item.situacao}</td>}
                         {item.situacao === "Pago" && <td className="status-paid">{item.situacao}</td>}
                         {item.situacao === "Atrasado" && <td className="status--unpaid">{item.situacao}</td>}
+                        {parseInt(item.contaFixa) === Fixo && <td className="status-pending">Fixa</td>}
+                        {parseInt(item.contaFixa) === Variavel  && <td className="status-pending">Variavel</td>}
+                        {parseInt(item.contaFixa) === Parcelado  && <td className="status--unpaid">Parcelado</td>}
                         <td><FiEdit onClick={() => { openSituacaoModal(item) }} className="optIcon" /></td>
                         <td><FiX onClick={() => { excluirDebits(item.key, item.usuario) }} className="optIcon" /></td>
                       </tr>

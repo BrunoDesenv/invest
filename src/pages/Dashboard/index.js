@@ -97,7 +97,6 @@ function Dashboard() {
   }
 
   function CalculoPagamentos(pagamentos, debito) {
-    debugger;
     if (debito.situacao == "Pendente" || debito.situacao == "Atrasado" ||debito.situacao == undefined) {
       pagamentos.pagar = parseFloat(debito.valor) + parseFloat(pagamentos.pagar)
     }
