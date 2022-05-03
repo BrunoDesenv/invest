@@ -43,7 +43,6 @@ function DebitosProvider({ children }) {
         getDebitos(data.usuario);
     }
     async function updateDebitsValues(data) {
-        debugger;
         await firebase.firestore().collection('debits')
             .doc(data.key)
             .update({
