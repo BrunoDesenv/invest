@@ -58,9 +58,15 @@ function Debits() {
   }
 
   function virarMes() {
-    SalvarMesUsuario();
-    SalvarMesDebitos();
-    
+    let mes = ObterMes(mesAtual);
+    let dataAtual = FormatarDataTual(mes);
+    const dataUsuario = user.mesesReferencia[user.mesesReferencia.length - 1].mes;
+    if(dataUsuario !== dataAtual){
+      SalvarMesUsuario();
+      SalvarMesDebitos(dataUsuario, dataAtual);
+      getDebitosByMesReferencia(user.uid, dataAtual);
+    }
+ 
     setModalVirarMesIsOpen(false);
   }
 
@@ -72,13 +78,20 @@ function Debits() {
         mesesReferencia.push({ mes: mesAtual });
       }
 
-    if(user.mesesReferencia !== undefined && 
-      user.mesesReferencia[user.mesesReferencia.length - 1].mes !== mesAtual) { 
+    //Aqui precisa verificar pois não e para pegar o mês atual e sim o próximo mês
+    if(user.mesesReferencia !== undefined) {
+      
+      const mesUsuario = user.mesesReferencia[user.mesesReferencia.length - 1].mes;
+      const dataUsuario = FormatarDataTual(mesUsuario);
+      const dataAtual = FormatarDataTual(mesAtual);
+
+     if(dataUsuario !== dataAtual) { 
         user.mesesReferencia.map((userMesReferencia, index)=> {
           mesesReferencia.push({ mes: userMesReferencia.mes });
           mesesReferencia.push({ mes: mesAtual });
         });  
       }
+    }
 
     if(mesesReferencia.length > 0){
       user.mesesReferencia = mesesReferencia;
@@ -86,9 +99,9 @@ function Debits() {
     }
   }
 
-  function SalvarMesDebitos(){
+  function SalvarMesDebitos(dataUsuario, dataAtual){
     let debitosFixos = [];
-    getDebitosByMesReferencia(user.uid, mesReferencia).then(() => {
+    getDebitosByMesReferencia(user.uid, dataUsuario).then(() => {
       debitosFixos = debitos.filter(x => x.contaFixa == Fixo || x.contaFixa == Parcelado);
       debitosFixos.forEach((debito) => {
         if(debito.contaFixa == Fixo ||
@@ -105,7 +118,7 @@ function Debits() {
               situacao: 'Pendente', 
               contaFixa: debito.contaFixa, 
               dataVencimento: ObterDataVencimento(debito),
-              dataReferencia: mesReferencia
+              dataReferencia: dataAtual
             };
             saveDebitos(debitoFixo, false);
           }   
@@ -187,6 +200,7 @@ function Debits() {
       dataReferencia: mesReferencia
     }
     saveDebitos(data);
+    getDebitosByMesReferencia(user.uid, mesReferencia);
     closeModal();
   }
 
@@ -215,11 +229,17 @@ function Debits() {
     ObterMesReferencia();
   }, [])
 
+  ///
+  //Se o usuario não tiver data de referencia irá pegar a atual
+  //caso ao contrario pega do propio usuario
+  ///
   function ObterMesReferencia(){
-    if(user.mesesReferencia !== undefined &&
-      user.mesesReferencia !== null) {
-      let mes = moment().month(user.mesesReferencia[user.mesesReferencia.length - 1].mes).format("MM");
-      let dataReferencia = moment(Date()).format("01/" + mes + "/YYYY");
+    let mesesReferencia = user.mesesReferencia;
+    if(mesesReferencia !== undefined &&
+       mesesReferencia !== null) {
+      const mes = ObterMes(mesesReferencia[mesesReferencia.length - 1].mes);
+      const dataReferencia = moment(Date()).format("01/" + mes + "/YYYY");
+
       setMesReferencia(dataReferencia);
       return;
     } 
@@ -227,7 +247,10 @@ function Debits() {
   }
 
   useEffect(() => {
-    getDebitosByMesReferencia(user.uid, mesReferencia);
+    if(mesReferencia !== undefined)
+    {
+      getDebitosByMesReferencia(user.uid, mesReferencia);
+    }
   }, [mesReferencia])
 
   useEffect(() => {
@@ -274,10 +297,21 @@ function Debits() {
   }
 
   function MudarMesComboBox(mes){
-    let mesMoment = moment().month(mes).format("MM");
-    let mesReferenciaSelecionado = moment(Date()).format("01/" + mesMoment + "/YYYY");
-
+    let mesMoment = ObterMes(mes);
+    let mesReferenciaSelecionado = FormatarDataTual(mesMoment);
+    setMesReferencia(mesReferenciaSelecionado);
     getDebitosByMesReferencia(user.uid, mesReferenciaSelecionado);
+  }
+
+  function ObterMes(mes){
+    return moment().month(mes).format("MM");
+  }
+
+  function FormatarDataTual(mes){
+    if(mes.length > 2){
+      mes =  moment().month(mes).format("MM");
+    }
+    return moment(Date()).format("01/" + mes + "/YYYY");
   }
 
   const limparTudo = () => {
@@ -517,7 +551,8 @@ function Debits() {
                         {parseInt(item.contaFixa) === Variavel  && <td className="status-pending">Variavel</td>}
                         {parseInt(item.contaFixa) === Parcelado  && <td className="status--unpaid">Parcelado</td>}
                         <td><FiEdit onClick={() => { openSituacaoModal(item) }} className="optIcon" /></td>
-                        <td><FiX onClick={() => { excluirDebits(item.key, item.usuario) }} className="optIcon" /></td>
+                        <td><FiX onClick={() => { excluirDebits(item.key, item.usuario); 
+                                                  getDebitosByMesReferencia(user.uid, mesReferencia); }} className="optIcon" /></td>
                       </tr>
                     )
                   })}

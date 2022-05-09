@@ -39,8 +39,6 @@ function DebitosProvider({ children }) {
                 console.log(err)
                 toast.error('Algo deu errado')
             })
-
-        getDebitos(data.usuario);
     }
     async function updateDebitsValues(data) {
         await firebase.firestore().collection('debits')
@@ -105,7 +103,6 @@ function DebitosProvider({ children }) {
             .catch((error) => {
                 console.log(error)
             })
-
     }
 
     async function updateState(snapshot) {
