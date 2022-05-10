@@ -60,11 +60,13 @@ function Debits() {
   function virarMes() {
     let mes = ObterMes(mesAtual);
     let dataAtual = FormatarDataTual(mes);
-    const dataUsuario = user.mesesReferencia[user.mesesReferencia.length - 1].mes;
-    if(dataUsuario !== dataAtual){
+    const dataUsuario = ObterUltimoMesUsuario();
+    if(dataUsuario !== dataAtual) {
+      debugger;
       SalvarMesUsuario();
       SalvarMesDebitos(dataUsuario, dataAtual);
       getDebitosByMesReferencia(user.uid, dataAtual);
+      setMesReferencia(dataAtual);
     }
  
     setModalVirarMesIsOpen(false);
@@ -81,7 +83,7 @@ function Debits() {
     //Aqui precisa verificar pois não e para pegar o mês atual e sim o próximo mês
     if(user.mesesReferencia !== undefined) {
       
-      const mesUsuario = user.mesesReferencia[user.mesesReferencia.length - 1].mes;
+      const mesUsuario = ObterUltimoMesUsuario() ;
       const dataUsuario = FormatarDataTual(mesUsuario);
       const dataAtual = FormatarDataTual(mesAtual);
 
@@ -106,7 +108,7 @@ function Debits() {
       debitosFixos.forEach((debito) => {
         if(debito.contaFixa == Fixo ||
           (debito.contaFixa == Parcelado && debito.quantidadeParcela !== 0)) {
-          
+
           let deveInserir = DeveInserir(debito);
           if(deveInserir) {
             let debitoFixo = {
@@ -217,6 +219,7 @@ function Debits() {
       quantidadeParcela: qtdParcela
     }
     updateDebitsValues(data);
+    getDebitosByMesReferencia(user.uid, mesReferencia);
     closeSituacaoModal();
   }
 
@@ -313,6 +316,10 @@ function Debits() {
     }
     return moment(Date()).format("01/" + mes + "/YYYY");
   }
+  
+  function ObterUltimoMesUsuario() {
+    return user.mesesReferencia[user.mesesReferencia.length - 1].mes;
+  }
 
   const limparTudo = () => {
 
@@ -406,7 +413,8 @@ function Debits() {
           
         Meses
         {user.mesesReferencia !== undefined ?
-          (<select onChange={e => MudarMesComboBox(e.target.value)}>
+          (<select
+             onChange={e => MudarMesComboBox(e.target.value)}>
             {user.mesesReferencia.map((item, index) => (
               <option key={item.mes} value={item.mes}>{item.mes}</option>
             ))}

@@ -36,7 +36,6 @@ function DebitosProvider({ children }) {
                 }
             })
             .catch(err => {
-                console.log(err)
                 toast.error('Algo deu errado')
             })
     }
@@ -59,13 +58,9 @@ function DebitosProvider({ children }) {
             .catch((err) => {
                 toast.success('Erro')
             })
-
-        getDebitos(data.usuario);
-
     }
 
     async function excluirDebits(idDebit, userId, mensagem = true) {
-
         await firebase.firestore().collection('debits')
             .doc(idDebit)
             .delete()
@@ -77,7 +72,6 @@ function DebitosProvider({ children }) {
             .catch(() => {
                 console.log('erro ao atualizar')
             })
-        getDebitos(userId);
     }
 
     async function getDebitos(userID) {
