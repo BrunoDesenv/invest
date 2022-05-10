@@ -479,6 +479,22 @@ function Debits() {
           </ReactModal>
 
           <ReactModal
+            isOpen={modalVirarMesIsOpen}
+            ariaHideApp={false}
+            className={
+              "ReactModal__Content"}>
+            <div>
+              <div className="ReactModal__form">
+                <h2>Essa ação irá virar o mês levando as contas fixas para o próximo mês. Deseja continuar ?</h2>
+              </div>
+              <div className="actionsArea">
+                <button className="ReactModal__save"   onClick={() => { virarMes() }}>Sim</button>
+                <button className="ReactModal__Cancel" onClick={closeModalVirarMesIsOpen}>Não</button>
+              </div>
+            </div>
+          </ReactModal>
+
+          <ReactModal
             isOpen={situacaoIsOpen}
             ariaHideApp={false}
             className={
