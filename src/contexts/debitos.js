@@ -12,10 +12,9 @@ function DebitosProvider({ children }) {
     const [lastDocs, setLastDocs] = useState();
     const [isEmpty, setIsEmpty] = useState(false);
 
-    async function saveDebitos(data) {
+    async function saveDebitos(data, mostrarMensagem = true) {
 
         let id = uuidv4();
-
         await firebase.firestore().collection('debits')
             .doc(id).set({
                 key: id,
@@ -24,21 +23,23 @@ function DebitosProvider({ children }) {
                 descricao: data.descricao,
                 valor: data.valor,
                 situacao: data.situacao, 
-                dataVencimento: data.dataVencimento
+                dataVencimento: data.dataVencimento,
+                contaFixa: data.contaFixa,
+                quantidadeParcela: data.quantidadeParcela,
+                dataCadastro: new Date(),
+                dataReferencia: data.dataReferencia
             })
             .then(() => {
-                toast.success('Simulação cadastrada')
+                if(mostrarMensagem)
+                {
+                    toast.success('Débito cadastrado')
+                }
             })
             .catch(err => {
-                console.log(err)
                 toast.error('Algo deu errado')
             })
-
-        getDebitos(data.usuario);
     }
-
     async function updateDebitsValues(data) {
-
         await firebase.firestore().collection('debits')
             .doc(data.key)
             .update({
@@ -47,7 +48,9 @@ function DebitosProvider({ children }) {
                 descricao: data.descricao,
                 valor: data.valor,
                 situacao: data.situacao, 
-                dataVencimento: data.dataVencimento
+                dataVencimento: data.dataVencimento,
+                contaFixa: data.contaFixa,
+                quantidadeParcela: data.quantidadeParcela,
             })
             .then(() => {
                 toast.success('Alterado com sucesso')
@@ -55,13 +58,9 @@ function DebitosProvider({ children }) {
             .catch((err) => {
                 toast.success('Erro')
             })
-
-        getDebitos(data.usuario);
-
     }
 
     async function excluirDebits(idDebit, userId, mensagem = true) {
-
         await firebase.firestore().collection('debits')
             .doc(idDebit)
             .delete()
@@ -73,7 +72,6 @@ function DebitosProvider({ children }) {
             .catch(() => {
                 console.log('erro ao atualizar')
             })
-        getDebitos(userId);
     }
 
     async function getDebitos(userID) {
@@ -82,7 +80,6 @@ function DebitosProvider({ children }) {
             .get()
             .then((snapshot) => {
                 updateState(snapshot);
-
             })
             .catch((error) => {
                 console.log(error)
@@ -90,12 +87,23 @@ function DebitosProvider({ children }) {
 
     }
 
+    async function getDebitosByMesReferencia(userID, dataReferencia) {
+        setDebitos([])
+        await firebase.firestore().collection('debits').where("usuario", "==" ,userID).where("dataReferencia", "==", dataReferencia)
+            .get()
+            .then((snapshot) => {
+                updateState(snapshot);
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
+
     async function updateState(snapshot) {
         const isCollectionEmpty = snapshot.size === 0;
 
         if (!isCollectionEmpty) {
             let lista = [];
-
             snapshot.forEach((doc) => {
                 lista.push({
                     key: doc.data().key,
@@ -104,7 +112,9 @@ function DebitosProvider({ children }) {
                     descricao: doc.data().descricao,
                     valor: doc.data().valor,
                     situacao: doc.data().situacao, 
-                    dataVencimento: doc.data().dataVencimento
+                    dataVencimento: doc.data().dataVencimento,
+                    quantidadeParcela: doc.data().quantidadeParcela,
+                    contaFixa: doc.data().contaFixa,
                 })
             })
 
@@ -134,7 +144,8 @@ function DebitosProvider({ children }) {
             debitos,
             setDebitos,
             updateDebitsValues,
-            excluirDebits
+            excluirDebits,
+            getDebitosByMesReferencia
         }}>
             {children}
         </DebitosContext.Provider>
