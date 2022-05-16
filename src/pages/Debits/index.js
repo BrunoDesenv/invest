@@ -8,6 +8,7 @@ import moment from 'moment'
 
 import ReactModal from 'react-modal'
 import { listarDebitos, listarSituacao } from '../../services/lists'
+import { listarMeses } from '../../services/lists'
 import { FiShoppingCart, FiEdit, FiX } from 'react-icons/fi'
 
 import Card from '../../components/Card';
@@ -21,7 +22,6 @@ function Debits() {
   const { updateMesesReferencia, user } = useContext(AuthContext);
   const { saveDebitos, updateDebitsValues, excluirDebits, debitos, getDebitosByMesReferencia } = useContext(DebitosContext);
   const [modalIsOpen, setIsOpen] = useState(false);
-  const [modalVirarMesIsOpen, setModalVirarMesIsOpen] = useState(false);
   const [situacaoIsOpen, setSituacaoIsOpen] = useState(false);
   const [id, setId] = useState();
 
@@ -42,34 +42,20 @@ function Debits() {
   const [categoriaSum, setCategoriaSum] = useState([]);
   const [info, setInfo] = useState([])
   const [mesReferencia, setMesReferencia] = useState() 
+  const [mesComboBox, setMesComboBox] = useState() 
 
   const mesAtual = new Date().toLocaleString("pt-BR", { month: "long" });
 
   const Fixo = 0
   const Variavel = 1
   const Parcelado = 2
-                
-  function openModalVirarMesIsOpen(){
-    setModalVirarMesIsOpen(true);
-  }
 
-  function closeModalVirarMesIsOpen() {
-    setModalVirarMesIsOpen(false);
-  }
-
-  function virarMes() {
-    let mes = ObterMes(mesAtual);
-    let dataAtual = FormatarDataTual(mes);
-    const dataUsuario = ObterUltimoMesUsuario();
-    if(dataUsuario !== dataAtual) {
-      debugger;
-      SalvarMesUsuario();
-      SalvarMesDebitos(dataUsuario, dataAtual);
-      getDebitosByMesReferencia(user.uid, dataAtual);
-      setMesReferencia(dataAtual);
-    }
- 
-    setModalVirarMesIsOpen(false);
+  function virarMes(dataAtual, dataUsuario) {
+    SalvarMesUsuario();
+    SalvarMesDebitos(dataUsuario, dataAtual);
+    getDebitosByMesReferencia(user.uid, dataAtual);
+    setMesReferencia(dataAtual);
+    setMesComboBox(mesAtual);
   }
 
   function SalvarMesUsuario(){
@@ -229,7 +215,7 @@ function Debits() {
 
     SetlistSituacao(situacao);
     SetListCategoria(categorias);
-    ObterMesReferencia();
+    ObterMesReferencia(); 
   }, [])
 
   ///
@@ -244,6 +230,8 @@ function Debits() {
       const dataReferencia = moment(Date()).format("01/" + mes + "/YYYY");
 
       setMesReferencia(dataReferencia);
+      let mesUsuario = ObterUltimoMesUsuario();
+      setMesComboBox(mesUsuario);
       return;
     } 
     setMesReferencia(moment(Date()).format("01/MM/YYYY"));
@@ -304,6 +292,7 @@ function Debits() {
     let mesReferenciaSelecionado = FormatarDataTual(mesMoment);
     setMesReferencia(mesReferenciaSelecionado);
     getDebitosByMesReferencia(user.uid, mesReferenciaSelecionado);
+    setMesComboBox(mes);
   }
 
   function ObterMes(mes){
@@ -322,7 +311,7 @@ function Debits() {
   }
 
   const limparTudo = () => {
-
+    debugger;
     if(debitos.length === 0 ){
       return toast.error("Não existe registro a serem excluido")
     }
@@ -337,8 +326,24 @@ function Debits() {
      return toast.success("Dados excluído");
 
     }
-
   }
+
+  const CriarNovoMes = () => {
+    let mes = ObterMes(mesAtual);
+    let dataAtual = FormatarDataTual(mes);
+    const dataUsuario = FormatarDataTual(ObterUltimoMesUsuario());
+
+    if(dataUsuario === dataAtual) {
+      return toast.error("Você já possui o mês vigente cadastrado.")
+    }
+
+    const confirme = window.confirm("Essa ação irá virar o mês levando as contas fixas para o próximo mês. Deseja continuar ?");
+    if(confirme){
+      virarMes(dataAtual, dataUsuario);
+      return toast.success("Mês criado com sucesso.");
+    };  
+  }
+
   return (
     <div className="App">
       <Header />
@@ -414,21 +419,24 @@ function Debits() {
         Meses
         {user.mesesReferencia !== undefined ?
           (<select
-             onChange={e => MudarMesComboBox(e.target.value)}>
+              value={mesComboBox}
+              onChange={e => MudarMesComboBox(e.target.value)}>
             {user.mesesReferencia.map((item, index) => (
               <option key={item.mes} value={item.mes}>{item.mes}</option>
             ))}
           </select>) : (
-            <select onChange={e => MudarMesComboBox(e.target.value)}>
+            <select
+                value={mesComboBox} 
+                onChange={e => MudarMesComboBox(e.target.value)}>
               <option key={mesAtual} value={mesAtual}>{mesAtual}</option>
             </select>
           )}
 
         </div>
           <div className="actionsArea">
-          <button className="ReactModal__Submit" onClick={openModalVirarMesIsOpen}>Virar Mês</button>
+          <button className="ReactModal__Submit" onClick={CriarNovoMes}>Virar Mês</button>
           <button className="ReactModal__Submit" onClick={openModal}>+ Novo</button>
-            <button className="ReactModal__Clear" onClick={()=>{}}>Limpar tudo</button>
+            <button className="ReactModal__Clear" onClick={limparTudo}>Limpar tudo</button>
           </div>
           
 
@@ -467,38 +475,6 @@ function Debits() {
                 <button className="ReactModal__Cancel" onClick={closeModal}>Cancelar</button>
               </div>
                 
-            </div>
-          </ReactModal>
-
-          <ReactModal
-            isOpen={modalVirarMesIsOpen}
-            ariaHideApp={false}
-            className={
-              "ReactModal__Content"}>
-            <div>
-              <div className="ReactModal__form">
-                <h2>Essa ação irá virar o mês levando as contas fixas para o próximo mês. Deseja continuar ?</h2>
-              </div>
-              <div className="actionsArea">
-                <button className="ReactModal__save"   onClick={() => { virarMes() }}>Sim</button>
-                <button className="ReactModal__Cancel" onClick={closeModalVirarMesIsOpen}>Não</button>
-              </div>
-            </div>
-          </ReactModal>
-
-          <ReactModal
-            isOpen={modalVirarMesIsOpen}
-            ariaHideApp={false}
-            className={
-              "ReactModal__Content"}>
-            <div>
-              <div className="ReactModal__form">
-                <h2>Essa ação irá virar o mês levando as contas fixas para o próximo mês. Deseja continuar ?</h2>
-              </div>
-              <div className="actionsArea">
-                <button className="ReactModal__save"   onClick={() => { virarMes() }}>Sim</button>
-                <button className="ReactModal__Cancel" onClick={closeModalVirarMesIsOpen}>Não</button>
-              </div>
             </div>
           </ReactModal>
 
