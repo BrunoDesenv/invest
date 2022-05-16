@@ -311,7 +311,6 @@ function Debits() {
   }
 
   const limparTudo = () => {
-    debugger;
     if(debitos.length === 0 ){
       return toast.error("Não existe registro a serem excluido")
     }
