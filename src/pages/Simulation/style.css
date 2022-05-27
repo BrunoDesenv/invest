@@ -155,6 +155,10 @@ tr:nth-child(even) {
     margin-left: 1rem;
 
 }
+.actionsArea{
+  display: flex;
+  justify-content: flex-end;
+}
 
 .ReactModal__form label{
     width: 100%;
@@ -163,19 +167,7 @@ tr:nth-child(even) {
     font-weight: 400;
     font-size: 1rem;
 }
-
-.ReactModal__Submit{
-  width: 90%;
-  padding: 0 1.5rem;
-  height: 3rem;
-  background: rgb(1, 173, 1);
-  color: #fff;
-  border-radius: 0.25rem;
-  border: 0;
-  font-size: 1rem;
-  margin: 1rem auto;
-}   
-    
+   
 
 .ReactModal__Submit:hover{
     background:#07bc0c;
@@ -390,4 +382,23 @@ tr:nth-child(even) {
     margin-top:.5rem;
     font-weight: 600;
     color: #5a5c69;
+  }
+
+  .ReactModal_style{
+    display: flex;
+
+    justify-content: right;
+    align-items: center;
+  }
+
+  .ReactModal_style > .ReactModal__save{
+    margin: 0px;
+    width: 200px;
+    margin-right: 20px;
+  }
+
+  .ReactModal_style > .ReactModal__Cancel{
+    margin: 0px;
+    width: 200px;
+    margin-right: 4rem;
   }

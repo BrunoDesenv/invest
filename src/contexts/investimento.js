@@ -71,20 +71,31 @@ function InvestimentosProvider({ children }) {
             })
 
             const lastDoc = snapshot.docs[snapshot.docs.length - 1]; //Pegando o ultimo documento buscado
-            setInvestimentos(lista);
+            
+            setInvestimentos(lista.sort(function (a,b) {
+                if(a.invest < b.invest){
+                    return -1;
+                }
+                else {
+                    return true;
+                }
+            }));
+
             setLastDocs(lastDoc);
         } else {
             setIsEmpty(true);
         }
     }
 
-    async function excluirInvestimento(idInvestimento, userId) {
+    async function excluirInvestimento(idInvestimento, userId, mensagem = true) {
 
         await firebase.firestore().collection('Investimentos')
             .doc(idInvestimento)
             .delete()
             .then(() => {
-                toast.success('Dados excluidos')
+                if(mensagem){
+                    toast.success('Dados excluidos')
+                }                
             })
             .catch(() => {
                 toast.success('Não foi possível excluir o registro, tente novamente mais tarde')

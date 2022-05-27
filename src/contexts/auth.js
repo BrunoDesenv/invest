@@ -77,13 +77,13 @@ function AuthProvider({ children }) {
 
                 const userProfile = await firebase.firestore().collection('users')
                     .doc(uid).get();
-
                 let data = {
                     uid: uid,
                     nome: userProfile.data().nome,
                     avatarUrl: userProfile.data().avatarUrl,
                     email: value.user.email, 
-                    receita: userProfile.data().receita
+                    receita: userProfile.data().receita,
+                    mesesReferencia: userProfile.data().mesesReferencia,
                 };
 
                 setUser(data);
@@ -111,6 +111,20 @@ function AuthProvider({ children }) {
         });
     }
 
+    async function updateMesesReferencia(user) {
+        await firebase.firestore().collection('users')
+            .doc(user.uid)
+            .update({
+                mesesReferencia: user.mesesReferencia, 
+            })
+            .then(() => {
+                toast.success('Alterado com sucesso');
+            })
+            .catch(() => {
+                toast.success('Erro');
+            })
+    }
+
     return (
         <AuthContext.Provider value={{
             signed: !!user,
@@ -122,7 +136,8 @@ function AuthProvider({ children }) {
             loadingAuth, 
             setUser, 
             storageUser,
-            forgot
+            forgot,
+            updateMesesReferencia
         }}>
             {children}
         </AuthContext.Provider>

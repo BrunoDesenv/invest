@@ -83,20 +83,31 @@ function SimulationProvider({ children }) {
 
             const lastDoc = snapshot.docs[snapshot.docs.length - 1]; //Pegando o ultimo documento buscado
 
-            setSimularion(simulation => [...simulation, ...lista]);
+
+            setSimularion(lista.sort(function (a,b) {
+                if(a.categoria < b.categoria){
+                    return -1;
+                }
+                else {
+                    return true;
+                }
+            }));
+            
             setLastDocs(lastDoc);
         } else {
             setIsEmpty(true);
         }
     }
 
-    async function excluirSimulacao(idSimulacao, userId) {
+    async function excluirSimulacao(idSimulacao, userId, mensagem = true) {
 
         await firebase.firestore().collection('simulations')
             .doc(idSimulacao)
             .delete()
             .then(() => {
-                toast.success('Dados excluidos')
+                if(mensagem){
+                    toast.success('Dados excluidos')
+                }                
             })
             .catch(() => {
                 toast.success('Não foi possível excluir o registro, tente novamente mais tarde')
