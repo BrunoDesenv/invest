@@ -98,6 +98,7 @@ function DebitosProvider({ children }) {
                 console.log(error)
             })
     }
+    
 
     async function updateState(snapshot) {
         const isCollectionEmpty = snapshot.size === 0;
@@ -134,6 +135,20 @@ function DebitosProvider({ children }) {
         } else {
             setIsEmpty(true);
         }
+
+        async function getDebitos(userID) {
+            setDebitos([])
+            await firebase.firestore().collection('debits').where("usuario", "==" ,userID)
+                .get()
+                .then((snapshot) => {
+                    updateState(snapshot);
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+    
+        }
+    
     }
 
 

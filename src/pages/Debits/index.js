@@ -8,7 +8,6 @@ import moment from 'moment'
 
 import ReactModal from 'react-modal'
 import { listarDebitos, listarSituacao } from '../../services/lists'
-import { listarMeses } from '../../services/lists'
 import { FiShoppingCart, FiEdit, FiX } from 'react-icons/fi'
 
 import Card from '../../components/Card';
@@ -19,8 +18,8 @@ import { toast } from 'react-toastify';
 
 function Debits() {
 
-  const { updateMesesReferencia, user } = useContext(AuthContext);
-  const { saveDebitos, updateDebitsValues, excluirDebits, debitos, getDebitosByMesReferencia } = useContext(DebitosContext);
+  const {updateMesesReferencia, user} = useContext(AuthContext);
+  const {saveDebitos, updateDebitsValues, excluirDebits, debitos, getDebitos, getDebitosByMesReferencia } = useContext(DebitosContext);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [situacaoIsOpen, setSituacaoIsOpen] = useState(false);
   const [id, setId] = useState();
@@ -40,11 +39,10 @@ function Debits() {
   const [listCategoria, SetListCategoria] = useState([]);
   const [showGastoGategoria, setShowGastoGategoria] = useState(false);
   const [categoriaSum, setCategoriaSum] = useState([]);
-  const [info, setInfo] = useState([])
   const [mesReferencia, setMesReferencia] = useState() 
   const [mesComboBox, setMesComboBox] = useState() 
-
   const mesAtual = new Date().toLocaleString("pt-BR", { month: "long" });
+  const [qtdShowMensagemDadosIncompletos, setQtdShowMensagemDadosIncompletos] = useState(0)
 
   const Fixo = 0
   const Variavel = 1
@@ -238,9 +236,20 @@ function Debits() {
   }
 
   useEffect(() => {
-    if(mesReferencia !== undefined)
+    if(mesReferencia !== undefined && user.mesesReferencia !== undefined) 
     {
       getDebitosByMesReferencia(user.uid, mesReferencia);
+    }
+
+    if(user.mesesReferencia === undefined) 
+    {
+      getDebitos(user.uid);
+      setQtdShowMensagemDadosIncompletos(1)
+    }
+
+    if(qtdShowMensagemDadosIncompletos > 0){
+      toast.error("No momento alguns dos seus dados de débito estão incompletos. Por gentileza verifique.");
+      setQtdShowMensagemDadosIncompletos(2)
     }
   }, [mesReferencia])
 
@@ -549,6 +558,7 @@ function Debits() {
                         {parseInt(item.contaFixa) === Fixo && <td className="status-pending">Fixa</td>}
                         {parseInt(item.contaFixa) === Variavel  && <td className="status-pending">Variavel</td>}
                         {parseInt(item.contaFixa) === Parcelado  && <td className="status--unpaid">Parcelado</td>}
+                        {item.contaFixa === undefined  && <td className="status--unpaid">Não Informado</td>}
                         <td><FiEdit onClick={() => { openSituacaoModal(item) }} className="optIcon" /></td>
                         <td><FiX onClick={() => { excluirDebits(item.key, item.usuario); 
                                                   getDebitosByMesReferencia(user.uid, mesReferencia); }} className="optIcon" /></td>
