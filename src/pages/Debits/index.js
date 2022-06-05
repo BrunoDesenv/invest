@@ -52,6 +52,10 @@ function Debits() {
 
   function virarMes(dataAtual, dataUsuario) {
     SalvarMesUsuario();
+    if(dataUsuario == null){
+      dataUsuario = FormatarDataTual(ObterUltimoMesUsuario());
+    }
+    
     SalvarMesDebitos(dataUsuario, dataAtual);
     getDebitosByMesReferencia(user.uid, dataAtual);
     setMesReferencia(dataAtual);
@@ -61,10 +65,9 @@ function Debits() {
   function SalvarMesUsuario(){
     let mesesReferencia = [];
 
-    if(user.mesesReferencia === undefined || 
-      user.mesesReferencia === null) {
-        mesesReferencia.push({ mes: mesAtual });
-      }
+    if(VerificarSeMesReferenciaVazio()) {
+      mesesReferencia.push({ mes: mesAtual });
+    }
 
     //Aqui precisa verificar pois não e para pegar o mês atual e sim o próximo mês
     if(user.mesesReferencia !== undefined) {
@@ -87,6 +90,15 @@ function Debits() {
     }
   }
 
+
+  function VerificarSeMesReferenciaVazio(){
+    if(user.mesesReferencia === undefined || 
+      user.mesesReferencia === null) {
+        return true;
+      }
+    return false;
+  }    
+  
   function SalvarMesDebitos(dataUsuario, dataAtual){
     let debitosFixos = [];
     getDebitosByMesReferencia(user.uid, dataUsuario).then(() => {
@@ -307,7 +319,15 @@ function Debits() {
   }
   
   function ObterUltimoMesUsuario() {
-    return user.mesesReferencia[user.mesesReferencia.length - 1].mes;
+    if(VerificarSeMesReferenciaVazio()) {
+      user.mesesReferencia = [];
+      user.mesesReferencia.push({ mes: mesAtual });
+      return user.mesesReferencia[user.mesesReferencia.length - 1].mes;
+    }
+    
+    if(user.mesesReferencia !== undefined){
+      return user.mesesReferencia[user.mesesReferencia.length - 1].mes;
+    }
   }
 
   const limparTudo = () => {
@@ -330,10 +350,12 @@ function Debits() {
   const CriarNovoMes = () => {
     let mes = ObterMes(mesAtual);
     let dataAtual = FormatarDataTual(mes);
-    const dataUsuario = FormatarDataTual(ObterUltimoMesUsuario());
-
-    if(dataUsuario === dataAtual) {
-      return toast.error("Você já possui o mês vigente cadastrado.")
+    let dataUsuario;
+    if(!VerificarSeMesReferenciaVazio()){
+      dataUsuario = FormatarDataTual(ObterUltimoMesUsuario());
+      if(dataUsuario === dataAtual) {
+        return toast.error("Você já possui o mês vigente cadastrado.")
+      }  
     }
 
     const confirme = window.confirm("Essa ação irá virar o mês levando as contas fixas para o próximo mês. Deseja continuar ?");
