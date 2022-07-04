@@ -424,10 +424,11 @@ function Debits() {
         
         <div>
           
-        Meses
+        <span className='tMes'>Mês</span>
         {user.mesesReferencia !== undefined ?
           (<select
               value={mesComboBox}
+              className="cmbMes"
               onChange={e => MudarMesComboBox(e.target.value)}>
             {user.mesesReferencia.map((item, index) => (
               <option key={item.mes} value={item.mes}>{item.mes}</option>
