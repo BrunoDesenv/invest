@@ -6,6 +6,7 @@ import InvestimentosnProvider from './contexts/investimento'
 import DebitosProvider from './contexts/debitos'
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
+import DividendosProvider from './contexts/dividendos'
 
 function App() {
   return (
@@ -13,10 +14,12 @@ function App() {
       <SimulationProvider>
         <InvestimentosnProvider>
           <DebitosProvider>
-            <BrowserRouter>
-              <ToastContainer autoClose={3000} />
-              <Rotas />
-            </BrowserRouter>
+            <DividendosProvider>
+              <BrowserRouter>
+                <ToastContainer autoClose={3000} />
+                <Rotas />
+              </BrowserRouter>
+            </DividendosProvider>
           </DebitosProvider>
         </InvestimentosnProvider>
       </SimulationProvider>

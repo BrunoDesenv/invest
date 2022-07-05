@@ -41,7 +41,9 @@ function AuthProvider({ children }) {
                             uid: uid,
                             nome: nome,
                             email: value.user.email,
-                            avatarUrl: null, 
+                            avatarUrl: null,
+                            mesesReferencia: { mes: new Date().toLocaleString("pt-BR", { month: "long" }) },
+                            enviaEmail: true
                         }
                         setUser(data);
                         storageUser(data);

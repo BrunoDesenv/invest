@@ -8,7 +8,6 @@ import moment from 'moment'
 
 import ReactModal from 'react-modal'
 import { listarDebitos, listarSituacao } from '../../services/lists'
-import { listarMeses } from '../../services/lists'
 import { FiShoppingCart, FiEdit, FiX } from 'react-icons/fi'
 
 import Card from '../../components/Card';
@@ -118,7 +117,8 @@ function Debits() {
               situacao: 'Pendente', 
               contaFixa: debito.contaFixa, 
               dataVencimento: ObterDataVencimento(debito),
-              dataReferencia: dataAtual
+              dataReferencia: dataAtual,
+              token: token()
             };
             saveDebitos(debitoFixo, false);
           }   
@@ -127,6 +127,14 @@ function Debits() {
     });
   }
 
+  const token = () => {
+    return rand() + rand();
+  };
+  
+  const rand = () => {
+    return Math.random().toString(36).slice(2);
+  };
+  
   function ObterDataVencimento(debito){
     let dataVencimento = null;
     if(debito.dataVencimento !== null && debito.dataVencimento !== ''){

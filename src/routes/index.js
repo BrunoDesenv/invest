@@ -9,9 +9,11 @@ import Debits from '../pages/Debits'
 import Simulation from '../pages/Simulation'
 import Investimento from '../pages/Investimentos'
 import Forgot from '../pages/Forgot';
-
+import ContaPaga from '../pages/ContaPaga';
 
 import RequireAuth from './requireAuth'
+import Dividendos from '../pages/Dividendos';
+
 
 
 export default function Rotas() {
@@ -79,6 +81,14 @@ export default function Rotas() {
         }
       />
       <Route
+        path="/dividendos"
+        element={
+          <RequireAuth redirectTo="/" isPrivate>
+            <Dividendos />
+          </RequireAuth>
+        }
+      />
+      <Route
         path="/debitos"
         element={
           <RequireAuth redirectTo="/" isPrivate>
@@ -86,6 +96,11 @@ export default function Rotas() {
           </RequireAuth>
         }
       />
+      <Route 
+        path="/contaPaga/:token" 
+        element={
+          <ContaPaga />
+        } />
 
     </Routes>
   )

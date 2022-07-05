@@ -18,6 +18,7 @@ function Header() {
             <Link to="/dashboard"><FiHome color="FFF" size={24} />Dashboard</Link>
             <Link to="/simulacoes"><FiTrendingUp color="FFF" size={24} />Simular Objetivos</Link>
             <Link to="/investimentos"><FiDollarSign color="FFF" size={24} />Meus Investimentos</Link>
+            <Link to="/dividendos"><FiDollarSign color="FFF" size={24} />Meus Dividendos</Link>
             <Link to="/debitos"><FiShoppingCart color="FFF" size={24} />Meus Gastos</Link>  
             <Link to="/perfil"><FiSettings color="FFF" size={24} />Configurações</Link>
             <a className="logout-btn-menu" onClick={() => { signOut() }}>
