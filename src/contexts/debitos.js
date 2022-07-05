@@ -151,6 +151,31 @@ function DebitosProvider({ children }) {
     
     }
 
+    async function getDebitoByToken(token) {
+        await firebase.firestore().collection('debits').where("token", "==" , token)
+            .get()
+            .then((debito) => {  
+                if(!debito.empty){
+                    return setDebitos(debito.docs[0].data());
+                };
+                return setDebitos([]);
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
+
+    async function payDebito(key) {
+        await firebase.firestore().collection('debits').doc(key)
+            .update('situacao', 'Pago')
+            .then(() => {
+                return true;
+            })
+            .catch((err) => {             
+                console.log(err);
+                return false;
+            })
+    }
 
     return (
         <DebitosContext.Provider value={{
@@ -160,7 +185,9 @@ function DebitosProvider({ children }) {
             setDebitos,
             updateDebitsValues,
             excluirDebits,
-            getDebitosByMesReferencia
+            getDebitosByMesReferencia,
+            getDebitoByToken,
+            payDebito
         }}>
             {children}
         </DebitosContext.Provider>
