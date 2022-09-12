@@ -148,9 +148,6 @@ function Dividendos() {
   }
 
   function AplicarFiltro(){
-    debugger;
-    console.log(dataInicial);
-    console.log(dataFinal);
     getDividendosByDataPagamento(user.uid, dataInicial);
   }
 
