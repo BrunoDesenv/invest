@@ -365,7 +365,7 @@ function Debits() {
 
   function FormatarDataTual(mes) {
     if (mes.length > 2) {
-      mes = moment().month(mes).format("MM");
+      mes = ObterMes(mes);
     }
     return moment(Date()).format("01/" + mes + "/YYYY");
   }
@@ -403,6 +403,7 @@ function Debits() {
     let mes = ObterMes(mesAtual);
     let dataAtual = FormatarDataTual(mes);
     let dataUsuario;
+
     if (!VerificarSeMesReferenciaVazio()) {
       dataUsuario = FormatarDataTual(ObterUltimoMesUsuario());
       if (dataUsuario === dataAtual) {
