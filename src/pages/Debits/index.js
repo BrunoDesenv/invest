@@ -314,9 +314,15 @@ function Debits() {
     let mesMoment = ObterMes(mes);
     let mesReferenciaSelecionado = FormatarDataTual(mesMoment);
 
+    console.log(mesMoment)
+    console.log(mesReferenciaSelecionado)
+
+
     setMesReferencia(mesReferenciaSelecionado);
     getDebitosByMesReferencia(user.uid, mesReferenciaSelecionado);
     setMesComboBox(mes);
+
+
   }
 
   function ObterMes(mes) {
@@ -367,7 +373,7 @@ function Debits() {
     if (mes.length > 2) {
       mes = ObterMes(mes);
     }
-    return moment(Date()).format("01/" + mes + "/YYYY");
+    return moment(Date()).format("01/" + mes + "/2022");
   }
 
   function ObterUltimoMesUsuario() {
