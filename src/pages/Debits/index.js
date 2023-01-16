@@ -247,7 +247,7 @@ function Debits() {
     if (mesesReferencia !== undefined &&
       mesesReferencia !== null) {
       const mes = ObterMes(mesesReferencia[mesesReferencia.length - 1].mes);
-      const dataReferencia = moment(Date()).format("01/" + mes + "/YYYY");
+      const dataReferencia = moment(Date()).format("01/" + mes + "/2022");
 
       setMesReferencia(dataReferencia);
       let mesUsuario = ObterUltimoMesUsuario();
