@@ -1,25 +1,47 @@
+//LIBS
 import { useEffect, useState, useContext } from 'react'
+import moment from 'moment'
+import ReactModal from 'react-modal'
+import { FiShoppingCart} from 'react-icons/fi'
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+import { Toolbar } from 'primereact/toolbar';
+import { toast } from 'react-toastify';
 
+
+//COMPONENTS
 import { AuthContext } from '../../contexts/auth'
 import { DebitosContext } from '../../contexts/debitos';
 import Header from '../../components/Header'
 import Title from '../../components/Title'
-import moment, { locale } from 'moment'
-
-import ReactModal from 'react-modal'
-import { listarDebitos, listarSituacao } from '../../services/lists'
-import { FiShoppingCart, FiEdit, FiX } from 'react-icons/fi'
-
+import { listarCategoria, listarDebitos, listarSituacao } from '../../services/lists'
 import Card from '../../components/Card';
+import useFormDataTable from '../../Hooks/useFormDataTable';
 
+//CSS
 import './style.css';
-import { toast } from 'react-toastify';
+import 'primeicons/primeicons.css';
+import 'primereact/resources/themes/lara-light-indigo/theme.css';
+import 'primereact/resources/primereact.css';
+import 'primeflex/primeflex.css';
 
+//List/functions
+import { listTipoConta, onRowEditComplete, _listCategoria, _listSituacao } from '../../services/Debit/DebitServices';
+
+//Utils
+import { bodyTemplateListByLabel, bodyTemplateListByValue, listTemplateEdit, textTemplateEditor } from '../../Utils';
 
 function Debits() {
 
   const { updateMesesReferencia, user } = useContext(AuthContext);
   const { saveDebitos, updateDebitsValues, excluirDebits, debitos, getDebitosByMesReferencia } = useContext(DebitosContext);
+  const [selecionarItemGrid, setSelecionarItemGrid] = useState()
+  const [form, handleInputChange, clear] = useFormDataTable({})
+
+
+
+
+
   const [modalIsOpen, setIsOpen] = useState(false);
   const [situacaoIsOpen, setSituacaoIsOpen] = useState(false);
   const [id, setId] = useState();
@@ -41,9 +63,11 @@ function Debits() {
   const [categoriaSum, setCategoriaSum] = useState([]);
   const [mesReferencia, setMesReferencia] = useState(null)
   const [mesComboBox, setMesComboBox] = useState()
-  const mesAtual = new Date().toLocaleString("pt-BR", { month: "long" });
+  const mesAtual = new Date().toLocaleString("pt-BR", { month: "long",year: 'numeric' });
   const [qtdShowMensagemDadosIncompletos, setQtdShowMensagemDadosIncompletos] = useState(0)
 
+  //Necessário mudar esse item para buscar a informação da lista do DebitService
+  //ListTipoConta
   const Fixo = 0
   const Variavel = 1
   const Parcelado = 2
@@ -204,7 +228,8 @@ function Debits() {
       contaFixa: contaFixa,
       dataVencimento: vdata === undefined ? null : vdata,
       quantidadeParcela: qtdParcela === undefined ? null : qtdParcela,
-      dataReferencia: mesReferencia
+      dataReferencia: mesReferencia,
+      dataCadastro: Date()
     }
     saveDebitos(data);
     getDebitosByMesReferencia(user.uid, mesReferencia);
@@ -245,9 +270,9 @@ function Debits() {
     let mesesReferencia = user.mesesReferencia;
 
     if (mesesReferencia !== undefined &&
-      mesesReferencia !== null) {
-      const mes = ObterMes(mesesReferencia[mesesReferencia.length - 1].mes);
-      const dataReferencia = moment(Date()).format("01/" + mes + "/YYYY");
+      mesesReferencia !== null && mesesReferencia.length > 0 ) {
+      const mes = ObterMes(mesesReferencia[mesesReferencia.length - 1]?.mes);
+      const dataReferencia = moment(Date()).format("01/" + mes + "/2022");
 
       setMesReferencia(dataReferencia);
       let mesUsuario = ObterUltimoMesUsuario();
@@ -314,9 +339,15 @@ function Debits() {
     let mesMoment = ObterMes(mes);
     let mesReferenciaSelecionado = FormatarDataTual(mesMoment);
 
+    console.log(mesMoment)
+    console.log(mesReferenciaSelecionado)
+
+
     setMesReferencia(mesReferenciaSelecionado);
     getDebitosByMesReferencia(user.uid, mesReferenciaSelecionado);
     setMesComboBox(mes);
+
+
   }
 
   function ObterMes(mes) {
@@ -367,7 +398,7 @@ function Debits() {
     if (mes.length > 2) {
       mes = ObterMes(mes);
     }
-    return moment(Date()).format("01/" + mes + "/YYYY");
+    return moment(Date()).format("01/" + mes + "/2022");
   }
 
   function ObterUltimoMesUsuario() {
@@ -426,7 +457,6 @@ function Debits() {
           <FiShoppingCart size={25} />
         </Title>
         <div className="container-dash">
-          {/* Card superior */}
 
           <div className="row">
 
@@ -488,7 +518,7 @@ function Debits() {
               })}
           </div>
 
-          <div>
+          {/* <div>
 
             <span className='tMes'>Mês</span>
             {user.mesesReferencia !== undefined ?
@@ -507,9 +537,9 @@ function Debits() {
                 </select>
               )}
 
-          </div>
+          </div> */}
           <div className="actionsArea">
-            <button className="ReactModal__Submit" onClick={CriarNovoMes}>Virar Mês</button>
+            {/* <button className="ReactModal__Submit" onClick={CriarNovoMes}>Virar Mês</button> */}
             <button className="ReactModal__Submit" onClick={openModal}>+ Novo</button>
             <button className="ReactModal__Clear" onClick={limparTudo}>Limpar tudo</button>
           </div>
@@ -593,50 +623,42 @@ function Debits() {
               <button className="ReactModal__Cancel" onClick={closeSituacaoModal}>Cancelar</button>
             </div>
           </ReactModal>
-          <div className="container-dash">
-            <div className="containerTable">
 
-              <table className="table1">
-                <thead>
-                  <tr>
-                    <th>Categoria</th>
-                    <th>Descrição</th>
-                    <th>Valor</th>
-                    <th>Vencimento</th>
-                    <th>Situação</th>
-                    <th>Conta Fixa</th>
-                    <th>Editar</th>
-                    <th>Excluir</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {debitos.map((item) => {
-                    return (
-                      <tr key={item.key}>
-                        <td>{item.categoria}</td>
-                        <td>{item.descricao}</td>
-                        <td>R$ {item.valor}</td>
-                        <td>{item.dataVencimento !== null &&
-                          item.dataVencimento !== undefined &&
-                          item.dataVencimento !== '' ? moment(item.dataVencimento).format("DD/MM/YYYY") : ''}</td>
-                        {item.situacao === "Pendente" && <td className="status-pending">{item.situacao}</td>}
-                        {item.situacao === "Pago" && <td className="status-paid">{item.situacao}</td>}
-                        {item.situacao === "Atrasado" && <td className="status--unpaid">{item.situacao}</td>}
-                        {parseInt(item.contaFixa) === Fixo && <td className="status-pending">Fixa</td>}
-                        {parseInt(item.contaFixa) === Variavel && <td className="status-pending">Variavel</td>}
-                        {parseInt(item.contaFixa) === Parcelado && <td className="status--unpaid">Parcelado</td>}
-                        {item.contaFixa === undefined && <td className="status--unpaid">Não Informado</td>}
-                        <td><FiEdit onClick={() => { openSituacaoModal(item) }} className="optIcon" /></td>
-                        <td><FiX onClick={() => {
-                          excluirDebits(item.key, item.usuario);
-                          getDebitosByMesReferencia(user.uid, mesReferencia);
-                        }} className="optIcon" /></td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
+
+          <div className="card p-fluid">
+            <Toolbar className="mb-4 toolbar-main-header" id="toolbar-main-header" ></Toolbar>
+            <DataTable className="datatable-main" id="datatable-main" value={debitos} editMode="row" dataKey="key" 
+                onRowEditComplete={onRowEditComplete}
+                globalFilterFields={['categoria', 'descricao']} responsiveLayout="scroll"
+                // filters={"filters1"}
+                // header={"header1"}
+                paginator
+                paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+                currentPageReportTemplate="Exibindo {first} até {last} de {totalRecords}" rows={10} rowsPerPageOptions={[5, 10, 20, 50]}
+                selection={selecionarItemGrid} onSelectionChange={e => setSelecionarItemGrid(e.value)}
+                >
+                <Column selectionMode="multiple" headerStyle={{ width: '5%' }}></Column>
+                <Column field="categoria" header="Categoria"
+                  body={(dataRow)=> bodyTemplateListByLabel(dataRow, "categoria", _listCategoria )} 
+                  editor={(options)=> listTemplateEdit(options, _listCategoria, "Seleciona uma Categoria")}
+                  style={{ width: '5%' }} >                  
+                </Column>
+                <Column field="descricao" header="Descrição" editor={textTemplateEditor} style={{ width: '5%' }} ></Column>
+                <Column field="valor" header="Valor" style={{ width: '5%' }} ></Column>
+                <Column field="dataVencimento" header="Vencimento" editor={textTemplateEditor} style={{ width: '5%' }} ></Column>
+                <Column field="situacao" header="Situação" 
+                 body={(dataRow)=> bodyTemplateListByLabel(dataRow, "situacao", _listSituacao )} 
+                 editor={(options)=> listTemplateEdit(options, _listSituacao, "Seleciona a Situação")}
+
+                style={{ width: '5%' }} ></Column>
+                <Column field="contaFixa" header="Tipo de Conta" 
+                  body={(dataRow)=> bodyTemplateListByValue(dataRow, "contaFixa", listTipoConta )} 
+                  editor={(options)=> listTemplateEdit(options, listTipoConta, "Seleciona o Tipo de Conta")}
+                  style={{ width: '5%' }} >
+                </Column>                
+                <Column field="quantidadeParcela" header="Quantidade de Parcelas" style={{ width: '5%' }} ></Column>
+                <Column rowEditor headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
+            </DataTable>
           </div>
         </div>
       </div>

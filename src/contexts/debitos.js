@@ -89,7 +89,7 @@ function DebitosProvider({ children }) {
 
     async function getDebitosByMesReferencia(userID, dataReferencia) {
         setDebitos([])
-        await firebase.firestore().collection('debits').where("usuario", "==" ,userID).where("dataReferencia", "==", dataReferencia)
+        await firebase.firestore().collection('debits').where("usuario", "==" ,userID)
             .get()
             .then((snapshot) => {
                 updateState(snapshot);
@@ -114,7 +114,7 @@ function DebitosProvider({ children }) {
                     valor: doc.data().valor,
                     situacao: doc.data().situacao, 
                     dataVencimento: doc.data().dataVencimento,
-                    quantidadeParcela: doc.data().quantidadeParcela,
+                    quantidadeParcela: doc.data().quantidadeParcela? doc.data().quantidadeParcela : 0,
                     contaFixa: doc.data().contaFixa,
                 })
             })
