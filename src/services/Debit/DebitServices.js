@@ -23,5 +23,4 @@ export const _listCategoria = [
 
 export const onRowEditComplete = (rowEdit) =>{
     const {newData, index } = rowEdit
-    console.log(rowEdit);
 }

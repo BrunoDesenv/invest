@@ -1,8 +1,7 @@
 //LIBS
 import { useEffect, useState, useContext } from 'react'
-import moment from 'moment'
 import ReactModal from 'react-modal'
-import { FiShoppingCart} from 'react-icons/fi'
+import { FiShoppingCart } from 'react-icons/fi'
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Toolbar } from 'primereact/toolbar';
@@ -14,9 +13,8 @@ import { AuthContext } from '../../contexts/auth'
 import { DebitosContext } from '../../contexts/debitos';
 import Header from '../../components/Header'
 import Title from '../../components/Title'
-import { listarCategoria, listarDebitos, listarSituacao } from '../../services/lists'
+import { listarDebitos, listarSituacao } from '../../services/lists'
 import Card from '../../components/Card';
-import useFormDataTable from '../../Hooks/useFormDataTable';
 
 //CSS
 import './style.css';
@@ -33,13 +31,9 @@ import { bodyTemplateListByLabel, bodyTemplateListByValue, listTemplateEdit, tex
 
 function Debits() {
 
-  const { updateMesesReferencia, user } = useContext(AuthContext);
-  const { saveDebitos, updateDebitsValues, excluirDebits, debitos, getDebitosByMesReferencia } = useContext(DebitosContext);
+  const { user } = useContext(AuthContext);
+  const { saveDebitos, updateDebitsValues, excluirDebits, debitos, getDebitos } = useContext(DebitosContext);
   const [selecionarItemGrid, setSelecionarItemGrid] = useState()
-  const [form, handleInputChange, clear] = useFormDataTable({})
-
-
-
 
 
   const [modalIsOpen, setIsOpen] = useState(false);
@@ -62,9 +56,6 @@ function Debits() {
   const [showGastoGategoria, setShowGastoGategoria] = useState(false);
   const [categoriaSum, setCategoriaSum] = useState([]);
   const [mesReferencia, setMesReferencia] = useState(null)
-  const [mesComboBox, setMesComboBox] = useState()
-  const mesAtual = new Date().toLocaleString("pt-BR", { month: "long",year: 'numeric' });
-  const [qtdShowMensagemDadosIncompletos, setQtdShowMensagemDadosIncompletos] = useState(0)
 
   //Necessário mudar esse item para buscar a informação da lista do DebitService
   //ListTipoConta
@@ -72,130 +63,9 @@ function Debits() {
   const Variavel = 1
   const Parcelado = 2
 
-  function virarMes(dataAtual, dataUsuario) {
-    SalvarMesUsuario();
-    if (dataUsuario == null) {
-      dataUsuario = FormatarDataTual(ObterUltimoMesUsuario());
-    }
-
-    SalvarMesDebitos(dataUsuario, dataAtual);
-    getDebitosByMesReferencia(user.uid, dataAtual);
-    setMesReferencia(dataAtual);
-    setMesComboBox(mesAtual);
-  }
-
-  function SalvarMesUsuario() {
-    let mesesReferencia = [];
-
-    if (VerificarSeMesReferenciaVazio()) {
-      mesesReferencia.push({ mes: mesAtual });
-    }
-
-    //Aqui precisa verificar pois não e para pegar o mês atual e sim o próximo mês
-    if (user.mesesReferencia !== undefined) {
-
-      const mesUsuario = ObterUltimoMesUsuario();
-      const dataUsuario = FormatarDataTual(mesUsuario);
-      const dataAtual = FormatarDataTual(mesAtual);
-
-      if (dataUsuario !== dataAtual) {
-        user.mesesReferencia.map((userMesReferencia, index) => {
-          mesesReferencia.push({ mes: userMesReferencia.mes });
-          mesesReferencia.push({ mes: mesAtual });
-        });
-      }
-    }
-
-    if (mesesReferencia.length > 0) {
-      user.mesesReferencia = mesesReferencia;
-      updateMesesReferencia(user);
-    }
-  }
-
-
-  function VerificarSeMesReferenciaVazio() {
-    if (user.mesesReferencia === undefined ||
-      user.mesesReferencia === null) {
-      return true;
-    }
-    return false;
-  }
-
-  function SalvarMesDebitos(dataUsuario, dataAtual) {
-    let debitosFixos = [];
-    getDebitosByMesReferencia(user.uid, dataUsuario).then(() => {
-      debitosFixos = debitos.filter(x => x.contaFixa == Fixo || x.contaFixa == Parcelado);
-      debitosFixos.forEach((debito) => {
-        if (debito.contaFixa == Fixo ||
-          (debito.contaFixa == Parcelado && debito.quantidadeParcela !== 0)) {
-
-          let deveInserir = DeveInserir(debito);
-          if (deveInserir) {
-            let debitoFixo = {
-              usuario: user.uid,
-              categoria: debito.categoria,
-              descricao: debito.descricao,
-              valor: debito.valor,
-              quantidadeParcela: ObterQuantidadeParcela(debito),
-              situacao: 'Pendente',
-              contaFixa: debito.contaFixa,
-              dataVencimento: ObterDataVencimento(debito),
-              dataReferencia: dataAtual,
-              token: token()
-            };
-            saveDebitos(debitoFixo, false);
-          }
-        }
-      });
-    });
-  }
-
-  const token = () => {
-    return rand() + rand();
-  };
-
-  const rand = () => {
-    return Math.random().toString(36).slice(2);
-  };
-
-  function ObterDataVencimento(debito) {
-    let dataVencimento = null;
-    if (debito.dataVencimento !== null && debito.dataVencimento !== '') {
-      dataVencimento = new Date(debito.dataVencimento);
-      dataVencimento = new Date(dataVencimento.setMonth(dataVencimento.getMonth() + 1))
-    }
-    return dataVencimento;
-  }
-
-  function ObterQuantidadeParcela(debito) {
-    if (debito.quantidadeParcela !== undefined &&
-      debito.quantidadeParcela !== null) {
-      return debito.quantidadeParcela - 1;
-    }
-    return 0;
-  }
-
-  function DeveInserir(debito) {
-    if (parseInt(debito.contaFixa) == Parcelado &&
-      ObterQuantidadeParcela(debito) === 0) {
-      return false;
-    }
-    return true;
-  }
 
   function openModal() {
     setIsOpen(true);
-  }
-
-  function openSituacaoModal(item) {
-    setCategoria(item.categoria);
-    setDescricao(item.descricao);
-    setSituacao(item.situacao);
-    setValor(item.valor);
-    setQtdParcela(item.quantidadeParcela);
-    setId(item.key);
-    setSituacaoIsOpen(true);
-    setContaFixa(item.contaFixa);
   }
 
   function closeSituacaoModal() {
@@ -232,7 +102,6 @@ function Debits() {
       dataCadastro: Date()
     }
     saveDebitos(data);
-    getDebitosByMesReferencia(user.uid, mesReferencia);
     closeModal();
   }
 
@@ -249,7 +118,6 @@ function Debits() {
       quantidadeParcela: qtdParcela
     }
     updateDebitsValues(data);
-    getDebitosByMesReferencia(user.uid, mesReferencia);
     closeSituacaoModal();
   }
 
@@ -259,38 +127,10 @@ function Debits() {
 
     SetlistSituacao(situacao);
     SetListCategoria(categorias);
-    ObterMesReferencia();
+
+    getDebitos(user.uid)
   }, [])
 
-  ///
-  //Se o usuario não tiver data de referencia irá pegar a atual
-  //caso ao contrario pega do propio usuario
-  ///
-  function ObterMesReferencia() {
-    let mesesReferencia = user.mesesReferencia;
-
-    if (mesesReferencia !== undefined &&
-      mesesReferencia !== null && mesesReferencia.length > 0 ) {
-      const mes = ObterMes(mesesReferencia[mesesReferencia.length - 1]?.mes);
-      const dataReferencia = moment(Date()).format("01/" + mes + "/2022");
-
-      setMesReferencia(dataReferencia);
-      let mesUsuario = ObterUltimoMesUsuario();
-      setMesComboBox(mesUsuario);
-      return;
-    }
-    setMesReferencia(moment(Date()).format("01/MM/YYYY"));
-  }
-
-  useEffect(() => {
-    if (mesReferencia !== undefined && user.mesesReferencia !== undefined) {
-      getDebitosByMesReferencia(user.uid, mesReferencia);
-    }
-    else {
-      toast.error("No momento alguns dos seus dados de débito estão incompletos. Por gentileza verifique.");
-      setQtdShowMensagemDadosIncompletos(2)
-    }
-  }, [mesReferencia])
 
   useEffect(() => {
     let rPagar = 0;
@@ -335,118 +175,23 @@ function Debits() {
     setCategoriaSum(result);
   }
 
-  function MudarMesComboBox(mes) {
-    let mesMoment = ObterMes(mes);
-    let mesReferenciaSelecionado = FormatarDataTual(mesMoment);
-
-    console.log(mesMoment)
-    console.log(mesReferenciaSelecionado)
-
-
-    setMesReferencia(mesReferenciaSelecionado);
-    getDebitosByMesReferencia(user.uid, mesReferenciaSelecionado);
-    setMesComboBox(mes);
-
-
-  }
-
-  function ObterMes(mes) {
-
-    switch (mes) {
-      case 'janeiro':
-        mes = 'January ';
-        break
-      case 'fevereiro':
-        mes = 'February';
-        break
-      case 'março':
-        mes = 'March';
-        break
-      case 'abril':
-        mes = 'April';
-        break
-      case 'maio':
-        mes = 'May';
-        break
-      case 'junho':
-        mes = 'June';
-        break
-      case 'julho':
-        mes = 'July';
-        break
-      case 'agosto':
-        mes = 'August';
-        break
-      case 'setembro':
-        mes = 'September';
-        break
-      case 'outubro':
-        mes = 'October';
-        break
-      case 'novembro':
-        mes = 'November';
-        break
-      case 'dezembro':
-        mes = 'December';
-        break
-    }
-
-    return moment().month(mes).format("MM");
-  }
-
-  function FormatarDataTual(mes) {
-    if (mes.length > 2) {
-      mes = ObterMes(mes);
-    }
-    return moment(Date()).format("01/" + mes + "/2022");
-  }
-
-  function ObterUltimoMesUsuario() {
-    if (VerificarSeMesReferenciaVazio()) {
-      user.mesesReferencia = [];
-      user.mesesReferencia.push({ mes: mesAtual });
-      return user.mesesReferencia[user.mesesReferencia.length - 1].mes;
-    }
-
-    if (user.mesesReferencia !== undefined) {
-      return user.mesesReferencia[user.mesesReferencia.length - 1].mes;
-    }
-  }
 
   const limparTudo = () => {
     if (debitos.length === 0) {
       return toast.error("Não existe registro a serem excluido")
     }
 
+    let _itens = [...selecionarItemGrid]
     const confirme = window.confirm("Tem certeza que deseja exluir todos os registro?");
 
     if (confirme) {
-      debitos.forEach(debito => {
+      _itens.forEach(debito => {
         excluirDebits(debito.key, debito.usuario, false);
       });
 
       return toast.success("Dados excluído");
 
     }
-  }
-
-  const CriarNovoMes = () => {
-    let mes = ObterMes(mesAtual);
-    let dataAtual = FormatarDataTual(mes);
-    let dataUsuario;
-
-    if (!VerificarSeMesReferenciaVazio()) {
-      dataUsuario = FormatarDataTual(ObterUltimoMesUsuario());
-      if (dataUsuario === dataAtual) {
-        return toast.error("Você já possui o mês vigente cadastrado.")
-      }
-    }
-
-    const confirme = window.confirm("Essa ação irá virar o mês levando as contas fixas para o próximo mês. Deseja continuar ?");
-    if (confirme) {
-      virarMes(dataAtual, dataUsuario);
-      return toast.success("Mês criado com sucesso.");
-    };
   }
 
   return (
@@ -518,30 +263,10 @@ function Debits() {
               })}
           </div>
 
-          {/* <div>
-
-            <span className='tMes'>Mês</span>
-            {user.mesesReferencia !== undefined ?
-              (<select
-                value={mesComboBox}
-                className="cmbMes"
-                onChange={e => MudarMesComboBox(e.target.value)}>
-                {user.mesesReferencia.map((item, index) => (
-                  <option key={item.mes} value={item.mes}>{item.mes}</option>
-                ))}
-              </select>) : (
-                <select
-                  value={mesComboBox}
-                  onChange={e => MudarMesComboBox(e.target.value)}>
-                  <option key={mesAtual} value={mesAtual}>{mesAtual}</option>
-                </select>
-              )}
-
-          </div> */}
           <div className="actionsArea">
             {/* <button className="ReactModal__Submit" onClick={CriarNovoMes}>Virar Mês</button> */}
             <button className="ReactModal__Submit" onClick={openModal}>+ Novo</button>
-            <button className="ReactModal__Clear" onClick={limparTudo}>Limpar tudo</button>
+            <button className="ReactModal__Clear" onClick={limparTudo}>- Remover</button>
           </div>
 
 
@@ -627,37 +352,36 @@ function Debits() {
 
           <div className="card p-fluid">
             <Toolbar className="mb-4 toolbar-main-header" id="toolbar-main-header" ></Toolbar>
-            <DataTable className="datatable-main" id="datatable-main" value={debitos} editMode="row" dataKey="key" 
-                onRowEditComplete={onRowEditComplete}
-                globalFilterFields={['categoria', 'descricao']} responsiveLayout="scroll"
-                // filters={"filters1"}
-                // header={"header1"}
-                paginator
-                paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-                currentPageReportTemplate="Exibindo {first} até {last} de {totalRecords}" rows={10} rowsPerPageOptions={[5, 10, 20, 50]}
-                selection={selecionarItemGrid} onSelectionChange={e => setSelecionarItemGrid(e.value)}
-                >
-                <Column selectionMode="multiple" headerStyle={{ width: '5%' }}></Column>
-                <Column field="categoria" header="Categoria"
-                  body={(dataRow)=> bodyTemplateListByLabel(dataRow, "categoria", _listCategoria )} 
-                  editor={(options)=> listTemplateEdit(options, _listCategoria, "Seleciona uma Categoria")}
-                  style={{ width: '5%' }} >                  
-                </Column>
-                <Column field="descricao" header="Descrição" editor={textTemplateEditor} style={{ width: '5%' }} ></Column>
-                <Column field="valor" header="Valor" style={{ width: '5%' }} ></Column>
-                <Column field="dataVencimento" header="Vencimento" editor={textTemplateEditor} style={{ width: '5%' }} ></Column>
-                <Column field="situacao" header="Situação" 
-                 body={(dataRow)=> bodyTemplateListByLabel(dataRow, "situacao", _listSituacao )} 
-                 editor={(options)=> listTemplateEdit(options, _listSituacao, "Seleciona a Situação")}
+            <DataTable className="datatable-main" id="datatable-main" value={debitos} editMode="row" dataKey="key"
+              onRowEditComplete={onRowEditComplete}
+              globalFilterFields={['categoria', 'descricao']} responsiveLayout="scroll"
+              paginator
+              sortMode="multiple"
+              paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+              currentPageReportTemplate="Exibindo {first} até {last} de {totalRecords}" rows={50} rowsPerPageOptions={[5, 10, 20, 50]}
+              selection={selecionarItemGrid} onSelectionChange={e => setSelecionarItemGrid(e.value)}
+            >
+              <Column selectionMode="multiple" headerStyle={{ width: '5%' }}></Column>
+              <Column field="categoria" header="Categoria"
+                body={(dataRow) => bodyTemplateListByLabel(dataRow, "categoria", _listCategoria)}
+                editor={(options) => listTemplateEdit(options, _listCategoria, "Seleciona uma Categoria")}
+                style={{ width: '5%' }} >
+              </Column>
+              <Column field="descricao" header="Descrição" editor={textTemplateEditor} style={{ width: '5%' }} sortable></Column>
+              <Column field="valor" header="Valor" style={{ width: '5%' }} ></Column>
+              {/* <Column field="dataVencimento" header="Vencimento" editor={textTemplateEditor} style={{ width: '5%' }} ></Column> */}
+              <Column field="situacao" header="Situação"
+                body={(dataRow) => bodyTemplateListByLabel(dataRow, "situacao", _listSituacao)}
+                editor={(options) => listTemplateEdit(options, _listSituacao, "Seleciona a Situação")}
 
-                style={{ width: '5%' }} ></Column>
-                <Column field="contaFixa" header="Tipo de Conta" 
-                  body={(dataRow)=> bodyTemplateListByValue(dataRow, "contaFixa", listTipoConta )} 
-                  editor={(options)=> listTemplateEdit(options, listTipoConta, "Seleciona o Tipo de Conta")}
-                  style={{ width: '5%' }} >
-                </Column>                
-                <Column field="quantidadeParcela" header="Quantidade de Parcelas" style={{ width: '5%' }} ></Column>
-                <Column rowEditor headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
+                style={{ width: '5%' }} sortable></Column>
+              <Column field="contaFixa" header="Tipo de Conta"
+                body={(dataRow) => bodyTemplateListByValue(dataRow, "contaFixa", listTipoConta)}
+                editor={(options) => listTemplateEdit(options, listTipoConta, "Seleciona o Tipo de Conta")}
+                style={{ width: '5%' }} >
+              </Column>
+              {/* <Column field="quantidadeParcela" header="Quantidade de Parcelas" style={{ width: '5%' }} ></Column> */}
+              <Column rowEditor headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
             </DataTable>
           </div>
         </div>

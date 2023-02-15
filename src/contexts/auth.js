@@ -104,7 +104,6 @@ function AuthProvider({ children }) {
     function forgot(email){
         firebase.auth().sendPasswordResetEmail(email)
         .then((response)=>{ 
-            console.log("response", response);
             toast.success('Verifique seu e-mail para alterar a senha');
         })
         .catch((error)=>{
