@@ -32,7 +32,7 @@ import { bodyTemplateListByLabel, bodyTemplateListByValue, listTemplateEdit, tex
 function Debits() {
 
   const { user } = useContext(AuthContext);
-  const { saveDebitos, updateDebitsValues, excluirDebits, debitos, getDebitos } = useContext(DebitosContext);
+  const { saveDebitos, updateDebitsValues, excluirDebits, debitos, getDebitos} = useContext(DebitosContext);
   const [selecionarItemGrid, setSelecionarItemGrid] = useState()
 
 
@@ -194,6 +194,24 @@ function Debits() {
     }
   }
 
+  const alterar = () => {
+    if (debitos.length === 0) {
+      return toast.error("Não existe registro a serem excluido")
+    }
+
+    let _itens = [...selecionarItemGrid]
+    const confirme = window.confirm("Tem certeza que deseja exluir todos os registro?");
+
+    console.log(_itens)
+
+    if (confirme) {
+      _itens.forEach(debito => {
+        updateDebitsValues(debito);
+      });
+
+    }
+  }
+
   return (
     <div className="App">
       <Header />
@@ -267,6 +285,7 @@ function Debits() {
             {/* <button className="ReactModal__Submit" onClick={CriarNovoMes}>Virar Mês</button> */}
             <button className="ReactModal__Submit" onClick={openModal}>+ Novo</button>
             <button className="ReactModal__Clear" onClick={limparTudo}>- Remover</button>
+            <button className="ReactModal__Clear" onClick={alterar}>Alterar Status</button>
           </div>
 
 

@@ -22,7 +22,7 @@ function DebitosProvider({ children }) {
                 categoria: data.categoria,
                 descricao: data.descricao,
                 valor: data.valor,
-                situacao: data.situacao, 
+                situacao: data.situacao,
                 dataVencimento: data.dataVencimento,
                 contaFixa: data.contaFixa,
                 quantidadeParcela: data.quantidadeParcela,
@@ -30,8 +30,7 @@ function DebitosProvider({ children }) {
                 dataReferencia: data.dataReferencia
             })
             .then(() => {
-                if(mostrarMensagem)
-                {
+                if (mostrarMensagem) {
                     toast.success('Débito cadastrado')
                 }
             })
@@ -40,6 +39,8 @@ function DebitosProvider({ children }) {
             })
     }
     async function updateDebitsValues(data) {
+
+        console.log(data)
         await firebase.firestore().collection('debits')
             .doc(data.key)
             .update({
@@ -47,7 +48,7 @@ function DebitosProvider({ children }) {
                 categoria: data.categoria,
                 descricao: data.descricao,
                 valor: data.valor,
-                situacao: data.situacao, 
+                situacao: (data.situacao === 'Pago') ? 'Pendente' : 'Pago',
                 dataVencimento: data.dataVencimento,
                 contaFixa: data.contaFixa,
                 quantidadeParcela: data.quantidadeParcela,
@@ -65,9 +66,9 @@ function DebitosProvider({ children }) {
             .doc(idDebit)
             .delete()
             .then(() => {
-                if(mensagem){
-                   toast.success("Dado exclído")
-                }               
+                if (mensagem) {
+                    toast.success("Dado exclído")
+                }
             })
             .catch(() => {
                 console.log('erro ao atualizar')
@@ -76,7 +77,7 @@ function DebitosProvider({ children }) {
 
     async function getDebitos(userID) {
         setDebitos([])
-        await firebase.firestore().collection('debits').where("usuario", "==" ,userID)
+        await firebase.firestore().collection('debits').where("usuario", "==", userID)
             .get()
             .then((snapshot) => {
                 updateState(snapshot);
@@ -89,7 +90,7 @@ function DebitosProvider({ children }) {
 
     async function getDebitosByMesReferencia(userID, dataReferencia) {
         setDebitos([])
-        await firebase.firestore().collection('debits').where("usuario", "==" ,userID)
+        await firebase.firestore().collection('debits').where("usuario", "==", userID)
             .get()
             .then((snapshot) => {
                 updateState(snapshot);
@@ -98,7 +99,7 @@ function DebitosProvider({ children }) {
                 console.log(error)
             })
     }
-    
+
 
     async function updateState(snapshot) {
         const isCollectionEmpty = snapshot.size === 0;
@@ -112,17 +113,17 @@ function DebitosProvider({ children }) {
                     categoria: doc.data().categoria,
                     descricao: doc.data().descricao,
                     valor: doc.data().valor,
-                    situacao: doc.data().situacao, 
+                    situacao: doc.data().situacao,
                     dataVencimento: doc.data().dataVencimento,
-                    quantidadeParcela: doc.data().quantidadeParcela? doc.data().quantidadeParcela : 0,
+                    quantidadeParcela: doc.data().quantidadeParcela ? doc.data().quantidadeParcela : 0,
                     contaFixa: doc.data().contaFixa,
                 })
             })
 
             const lastDoc = snapshot.docs[snapshot.docs.length - 1]; //Pegando o ultimo documento buscado
 
-            setDebitos(lista.sort(function (a,b) {
-                if(a.categoria < b.categoria){
+            setDebitos(lista.sort(function (a, b) {
+                if (a.categoria < b.categoria) {
                     return -1;
                 }
                 else {
@@ -138,7 +139,7 @@ function DebitosProvider({ children }) {
 
         async function getDebitos(userID) {
             setDebitos([])
-            await firebase.firestore().collection('debits').where("usuario", "==" ,userID)
+            await firebase.firestore().collection('debits').where("usuario", "==", userID)
                 .get()
                 .then((snapshot) => {
                     updateState(snapshot);
@@ -146,16 +147,16 @@ function DebitosProvider({ children }) {
                 .catch((error) => {
                     console.log(error)
                 })
-    
+
         }
-    
+
     }
 
     async function getDebitoByToken(token) {
-        await firebase.firestore().collection('debits').where("token", "==" , token)
+        await firebase.firestore().collection('debits').where("token", "==", token)
             .get()
-            .then((debito) => {  
-                if(!debito.empty){
+            .then((debito) => {
+                if (!debito.empty) {
                     return setDebitos(debito.docs[0].data());
                 };
                 return setDebitos([]);
@@ -171,7 +172,7 @@ function DebitosProvider({ children }) {
             .then(() => {
                 return true;
             })
-            .catch((err) => {             
+            .catch((err) => {
                 console.log(err);
                 return false;
             })
