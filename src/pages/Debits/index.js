@@ -32,7 +32,7 @@ import { bodyTemplateListByLabel, bodyTemplateListByValue, listTemplateEdit, tex
 function Debits() {
 
   const { user } = useContext(AuthContext);
-  const { saveDebitos, updateDebitsValues, excluirDebits, debitos, getDebitos} = useContext(DebitosContext);
+  const { saveDebitos, updateDebitsValues, excluirDebits, debitos, getDebitos } = useContext(DebitosContext);
   const [selecionarItemGrid, setSelecionarItemGrid] = useState()
 
 
@@ -388,7 +388,7 @@ function Debits() {
               </Column>
               <Column field="descricao" header="Descrição" editor={textTemplateEditor} style={{ width: '5%' }} sortable></Column>
               <Column field="valor" header="Valor" style={{ width: '5%' }} ></Column>
-              {/* <Column field="dataVencimento" header="Vencimento" editor={textTemplateEditor} style={{ width: '5%' }} ></Column> */}
+              <Column field="dataVencimento" header="Vencimento" editor={textTemplateEditor} style={{ width: '5%' }} ></Column>
               <Column field="situacao" header="Situação"
                 body={(dataRow) => bodyTemplateListByLabel(dataRow, "situacao", _listSituacao)}
                 editor={(options) => listTemplateEdit(options, _listSituacao, "Seleciona a Situação")}

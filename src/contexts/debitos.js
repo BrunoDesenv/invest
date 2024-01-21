@@ -39,8 +39,6 @@ function DebitosProvider({ children }) {
             })
     }
     async function updateDebitsValues(data) {
-
-        console.log(data)
         await firebase.firestore().collection('debits')
             .doc(data.key)
             .update({
