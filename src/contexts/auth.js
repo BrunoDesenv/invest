@@ -1,6 +1,7 @@
 import { useState, useEffect, createContext } from 'react'
-import firebase from '../services/firebaseConnection'
+import { login, register } from '../api/auth'
 import { toast } from 'react-toastify'
+import api from '../api/axios'
 
 export const AuthContext = createContext({})
 
@@ -23,107 +24,55 @@ function AuthProvider({ children }) {
 
     }, [])
 
-
     async function signUp(email, password, nome) {
-        setLoadingAuth(true);
-        await firebase.auth().createUserWithEmailAndPassword(email, password)
-            .then(async (value) => {
-                let uid = value.user.uid;
+        setLoadingAuth(true)
+        try {
+            const { user, token } = await register(nome, email, password)
 
-                await firebase.firestore().collection('users')
-                    .doc(uid).set({
-                        nome: nome,
-                        avatarUrl: null, 
-                        receita: 0
-                    })
-                    .then(() => {
-                        let data = {
-                            uid: uid,
-                            nome: nome,
-                            email: value.user.email,
-                            avatarUrl: null,
-                            mesesReferencia: { mes: new Date().toLocaleString("pt-BR", { month: "long" }) },
-                            enviaEmail: true
-                        }
-                        setUser(data);
-                        storageUser(data);
-                        setLoadingAuth(false);
-                        toast.success('Usuario cadastrado')
+            setUser(user)
+            storageUser(user, token)
 
-
-                    })
-            })
-            .catch(err => {
-                console.log(err)
-                toast.error('Algo deu errado')
-                setLoadingAuth(false)
-            })
+            toast.success('Usuário cadastrado com sucesso!')
+        } catch (err) {
+            console.error(err)
+            toast.error('Erro no cadastro. Tente novamente.')
+        } finally {
+            setLoadingAuth(false)
+        }
     }
 
-    function storageUser(data) {
-        localStorage.setItem('SistemaUser', JSON.stringify(data))
+    function storageUser(user, token) {
+        localStorage.setItem('SistemaUser', JSON.stringify(user))
+        localStorage.setItem('token', token)
+        api.defaults.headers.common['Authorization'] = `Bearer ${token}`
     }
 
-    async function signOut() {
-        await firebase.auth().signOut();
-        localStorage.removeItem('SistemaUser');
-        toast.success('Desconectado')
+    function signOut() {
         setUser(null);
+
+        localStorage.removeItem('SistemaUser');
+        localStorage.removeItem('token');
+
+        delete api.defaults.headers.common['Authorization'];
+
+        toast.success('Desconectado');
     }
 
     async function signIn(email, password) {
-        setLoadingAuth(true);
-        await firebase.auth().signInWithEmailAndPassword(email, password)
-            .then(async (value) => {
-                let uid = value.user.uid;
+        setLoadingAuth(true)
+        try {
+            const { user, token } = await login(email, password)
+            console.log('AuthContext user:', user)
+            setUser(user)
+            storageUser(user, token)
 
-                const userProfile = await firebase.firestore().collection('users')
-                    .doc(uid).get();
-                let data = {
-                    uid: uid,
-                    nome: userProfile.data().nome,
-                    avatarUrl: userProfile.data().avatarUrl,
-                    email: value.user.email, 
-                    receita: userProfile.data().receita,
-                    mesesReferencia: userProfile.data().mesesReferencia,
-                };
-
-                setUser(data);
-                storageUser(data);
-                setLoadingAuth(false);
-                toast.success('Bem vindo de volta')
-
-            })
-            .catch((err) => {
-                console.log(err)
-                toast.error('Algo deu errado')
-                setLoadingAuth(false);
-            })
-    }
-    
-    function forgot(email){
-        firebase.auth().sendPasswordResetEmail(email)
-        .then((response)=>{ 
-            toast.success('Verifique seu e-mail para alterar a senha');
-        })
-        .catch((error)=>{
-            console.log("error", error) 
-            toast.error('Ocorreu um erro, tente novamente mais tarde');    
-        });
-    }
-
-    async function updateMesesReferencia(user) {
-        await firebase.firestore().collection('users')
-            .doc(user.uid)
-            .update({
-                mesesReferencia: user.mesesReferencia, 
-            })
-            .then(() => {
-                toast.success('Alterado com sucesso');
-            })
-            .catch(() => {
-                toast.success('Erro');
-            })
+            toast.success('Bem vindo de volta')
+        } catch (err) {
+            console.error(err)
+            toast.error('Erro ao entrar. Tente novamente.')
+        } finally {
+            setLoadingAuth(false)
+        }
     }
 
     return (
@@ -136,9 +85,7 @@ function AuthProvider({ children }) {
             signIn,
             loadingAuth, 
             setUser, 
-            storageUser,
-            forgot,
-            updateMesesReferencia
+            storageUser
         }}>
             {children}
         </AuthContext.Provider>

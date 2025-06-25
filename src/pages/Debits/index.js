@@ -90,7 +90,7 @@ function Debits() {
 
   function saveValues() {
     let data = {
-      usuario: user.uid,
+      userId: user.id,
       categoria: categoria,
       descricao: descricao,
       valor: valor,
@@ -101,6 +101,7 @@ function Debits() {
       dataReferencia: mesReferencia,
       dataCadastro: Date()
     }
+    console.log(data);
     saveDebitos(data);
     closeModal();
   }
@@ -117,6 +118,7 @@ function Debits() {
       dataVencimento: vdata === undefined ? null : vdata,
       quantidadeParcela: qtdParcela
     }
+    console.log("updateValues", data);
     updateDebitsValues(data);
     closeSituacaoModal();
   }
