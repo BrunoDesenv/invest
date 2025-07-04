@@ -75,11 +75,12 @@ function Dividendos() {
 
   function saveValues() {    
     let data = {
-      usuario: user.uid,
+      userId: user.id,
       ativo: ativo,
       valor: valor,
       dataPagamento: moment(dataPagamento).format("DD/MM/YYYY")
-    }
+    };
+    console.log(data);
     saveDividendos(data);
     closeModal();
   }
