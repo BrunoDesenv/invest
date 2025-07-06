@@ -188,7 +188,7 @@ function Debits() {
 
     if (confirme) {
       _itens.forEach(debito => {
-        excluirDebits(debito.key, debito.usuario, false);
+        excluirDebits(debito._id, debito.usuario, false);
       });
 
       return toast.success("Dados excluído");
@@ -373,7 +373,7 @@ function Debits() {
 
           <div className="card p-fluid">
             <Toolbar className="mb-4 toolbar-main-header" id="toolbar-main-header" ></Toolbar>
-            <DataTable className="datatable-main" id="datatable-main" value={debitos} editMode="row" dataKey="key"
+            <DataTable className="datatable-main" id="datatable-main" value={debitos} editMode="row" dataKey="_id"
               onRowEditComplete={onRowEditComplete}
               globalFilterFields={['categoria', 'descricao']} responsiveLayout="scroll"
               paginator
