@@ -32,7 +32,7 @@ import { bodyTemplateListByLabel, bodyTemplateListByValue, listTemplateEdit, tex
 function Debits() {
 
   const { user } = useContext(AuthContext);
-  const { saveDebitos, updateDebitsValues, excluirDebits, debitos, getDebitos } = useContext(DebitosContext);
+  const { saveDebitos, updateDebitsValues, excluirDebits, debitos, getDebitos, payDebito } = useContext(DebitosContext);
   const [selecionarItemGrid, setSelecionarItemGrid] = useState()
 
 
@@ -101,14 +101,13 @@ function Debits() {
       dataReferencia: mesReferencia,
       dataCadastro: Date()
     }
-    console.log(data);
     saveDebitos(data);
     closeModal();
   }
 
   async function updateValues() {
     let data = {
-      key: id,
+      _id: id,
       usuario: user.uid,
       categoria: categoria,
       descricao: descricao,
@@ -118,7 +117,7 @@ function Debits() {
       dataVencimento: vdata === undefined ? null : vdata,
       quantidadeParcela: qtdParcela
     }
-    console.log("updateValues", data);
+
     updateDebitsValues(data);
     closeSituacaoModal();
   }
@@ -204,11 +203,9 @@ function Debits() {
     let _itens = [...selecionarItemGrid]
     const confirme = window.confirm("Tem certeza que deseja exluir todos os registro?");
 
-    console.log(_itens)
-
     if (confirme) {
       _itens.forEach(debito => {
-        updateDebitsValues(debito);
+        payDebito(debito._id);
       });
 
     }
@@ -401,8 +398,29 @@ function Debits() {
                 editor={(options) => listTemplateEdit(options, listTipoConta, "Seleciona o Tipo de Conta")}
                 style={{ width: '5%' }} >
               </Column>
+              <Column
+                header="Ações"
+                body={(rowData) => (
+                  <button
+                    onClick={() => {
+                      setId(rowData._id); 
+                      setCategoria(rowData.categoria);
+                      setDescricao(rowData.descricao);
+                      setValor(rowData.valor);
+                      setSituacao(rowData.situacao);
+                      setContaFixa(rowData.contaFixa);
+                      setData(rowData.dataVencimento);
+                      setQtdParcela(rowData.quantidadeParcela);
+                      setSituacaoIsOpen(true);
+                    }}
+                  >
+                    ✏️
+                  </button>
+                )}
+                style={{ width: '8rem' }}
+              />
               {/* <Column field="quantidadeParcela" header="Quantidade de Parcelas" style={{ width: '5%' }} ></Column> */}
-              <Column rowEditor headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
+              {/* <Column rowEditor headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column> */}
             </DataTable>
           </div>
         </div>
