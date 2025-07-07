@@ -62,7 +62,6 @@ function AuthProvider({ children }) {
         setLoadingAuth(true)
         try {
             const { user, token } = await login(email, password)
-            console.log('AuthContext user:', user)
             setUser(user)
             storageUser(user, token)
 

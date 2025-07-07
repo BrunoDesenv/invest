@@ -22,7 +22,7 @@ function ContaPaga() {
   useEffect(() => {
     const statusCTX = ValidaSePodePagar();
     if(statusCTX == PagamentoPendente){
-      const pagoComSucesso = payDebito(debitos.key);
+      const pagoComSucesso = payDebito(debitos._id);
       if(pagoComSucesso) {
         setStatus(PagamentoPendente);
         return;
