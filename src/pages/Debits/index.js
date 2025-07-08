@@ -128,8 +128,7 @@ function Debits() {
 
     SetlistSituacao(situacao);
     SetListCategoria(categorias);
-
-    getDebitos(user.uid)
+    getDebitos(user.id)
   }, [])
 
 
