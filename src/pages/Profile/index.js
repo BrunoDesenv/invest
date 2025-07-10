@@ -1,177 +1,126 @@
-import React from 'react';
+// src/pages/Profile/index.js
+import React, { useState, useEffect, useContext } from 'react';
 import './profile.css';
 
-import { useState, useContext } from 'react';
-import { AuthContext } from '../../contexts/auth';
-import Header from '../../components/Header'
-import Title from '../../components/Title'
-import avatar from '../../assets/avatar.png'
+import { AuthContext }      from '../../contexts/auth';
+import Header               from '../../components/Header';
+import Title                from '../../components/Title';
+import avatarPlaceholder    from '../../assets/avatar.png';
 
-import firebase from '../../services/firebaseConnection'
-import { toast } from 'react-toastify'
+import { toast }            from 'react-toastify';
+import { FiSettings, FiUpload } from 'react-icons/fi';
 
-import { FiSettings, FiUpload } from 'react-icons/fi'
-
+import { getProfile, updateProfile } from '../../api/profile';
+// import firebase from '../../services/firebaseConnection'; // TODO: revisit storage strategy
 
 function Profile() {
+  const { user, setUser, storageUser } = useContext(AuthContext);
 
-    const { user, signOut, setUser, storageUser } = useContext(AuthContext);
+  const [nome,      setNome]      = useState('');
+  const [profissao, setProfissao] = useState('');
+  const [idade,     setIdade]     = useState('');
+  const [receita,   setReceita]   = useState('');
+  const [email]                   = useState(user.email);
+  const [avatarURL, setAvatarURL] = useState('');
 
-    const [nome, setNome] = useState(user && user.nome);
-    const [profissao, setProfissao] = useState(user && user.profissao);
-    const [idade, setIdade] = useState(user && user.idade);
-    const [receita, setReceita] = useState(user && user.receita);
-    const [email, setEmail] = useState(user && user.email);
+  const [imageFile, setImageFile] = useState(null);
 
-    const [avatarURL, setAvatarURL] = useState(user && user.avatarUrl);
+  useEffect(() => {
+    if (!user?.id) return;
+    getProfile(user.id)
+      .then(u => {
+        setNome(u.nome);
+        setProfissao(u.profissao || '');
+        setIdade(u.idade || '');
+        setReceita(u.receita || '');
+        setAvatarURL(u.avatarUrl || '');
+      })
+      .catch(() => toast.error('Erro ao carregar perfil'));
+  }, [user.id]);
 
-    const [imageAvatar, setImageAvatar] = useState(null);
-
-
-    function HandleFile(e) {
-
-        if (e.target.files[0]) {
-            const image = e.target.files[0]
-
-            if (image.type === 'image/jpeg' || image.type === 'image/png') {
-                setImageAvatar(image);
-                setAvatarURL(URL.createObjectURL(e.target.files[0]))
-            }
-            else {
-                toast.error('Envie uma imagem do tipo PNG')
-                setImageAvatar(null)
-                return null
-            }
-        }
+  // Preview selected image
+  function handleFile(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!['image/png','image/jpeg'].includes(file.type)) {
+      toast.error('Envie PNG ou JPEG');
+      return;
     }
+    setImageFile(file);
+    setAvatarURL(URL.createObjectURL(file));
+  }
 
+  // TODO: Implement actual upload (e.g. S3, Firebase, etc.)
+  async function uploadAvatarAndSave(dataToSave) {
+    // if (imageFile) {
+    //   // TODO: upload to your storage and get back a URL
+    //   const storageRef = firebase.storage().ref(`images/${user.uid}/${imageFile.name}`);
+    //   await storageRef.put(imageFile);
+    //   const url = await storageRef.getDownloadURL();
+    //   dataToSave.avatarUrl = url;
+    // }
+    return updateProfile(user.id, dataToSave);
+  }
 
-
-    async function handleUpload() {
-        const currentUid = user.uid;
-
-        const uploadTask = await firebase.storage()
-            .ref(`images/${currentUid}/${imageAvatar.name}`)
-            .put(imageAvatar)
-            .then(async () => {
-
-                await firebase.storage().ref(`images/${currentUid}`)
-                    .child(imageAvatar.name).getDownloadURL()
-                    .then(async (url) => {
-                        let urlFoto = url;
-
-                        await firebase.firestore().collection('users')
-                            .doc(user.uid)
-                            .update({
-                                avatarUrl: urlFoto,
-                                nome: nome,
-                                receita: receita
-                            })
-                            .then(() => {
-                                let data = {
-                                    ...user,
-                                    avatarUrl: urlFoto,
-                                    nome: nome,
-                                    receita: receita
-                                };
-                                setUser(data);
-                                storageUser(data);
-
-                            })
-
-                    })
-
-            })
-
+  // Handle form submit
+  async function handleSave(e) {
+    e.preventDefault();
+    try {
+      const payload = { nome, profissao, idade, receita };
+      const updatedUser = await uploadAvatarAndSave(payload);
+      setUser(updatedUser);
+      storageUser(updatedUser);
+      toast.success('Perfil atualizado');
+    } catch {
+      toast.error('Erro ao salvar perfil');
     }
+  }
 
-    async function handleSave(e) {
-        e.preventDefault();
+  return (
+    <div>
+      <Header />
+      <div className="content">
+        <Title nome="Meu Perfil"><FiSettings size={25}/></Title>
+        <div className="container">
+          <form className="form-profile" onSubmit={handleSave}>
+            <label className="label-avatar">
+              <span><FiUpload color="#fff" size={25}/></span>
+              <input type="file" accept="image/*" onChange={handleFile}/>
+              <img
+                src={avatarURL || avatarPlaceholder}
+                width={250} height={250}
+                alt="Avatar"/>
+            </label>
 
-
-        if (imageAvatar === null && nome !== '') {
-            await firebase.firestore().collection('users')
-                .doc(user.uid)
-                .update({
-                    nome: nome,
-                    receita: receita
-                })
-                .then(() => {
-                    let data = {
-                        ...user,
-                        nome: nome,
-                        receita: receita
-                    }
-                    setUser(data)
-                    storageUser(data)
-                    toast.success('Alterado com sucesso')
-                })
-                .catch(() => {
-                    toast.success('Erro')
-                })
-        }
-        else if (nome !== '' && imageAvatar !== null) {
-            handleUpload()
-        }
-
-    }
-
-
-
-    return (
-        <div>
-            <Header />
-            <div className="content">
-                <Title nome="Meu Perfil">
-                    <FiSettings size={25} />
-                </Title>
-
-                <div className="container">
-                    <form className="form-profile" onSubmit={handleSave}>
-                        <label className="label-avatar">
-                            <span>
-                                <FiUpload color="#fff" size={25} />
-                            </span>
-                            <input type="file" accept="image/*" onChange={HandleFile} /><br />
-                            {avatarURL === null ?
-                                <img src={avatar} width={250} height={250} alt="Foto Perfil" />
-                                :
-                                <img src={avatarURL} width={250} height={250} alt="Foto Perfil" />}
-                        </label>
-                        <div className="form-container">
-                            <div className="form-box">
-                                <span className="details">Nome</span>
-                                <input type="text" value={nome} onChange={(e) => setNome(e.target.value)}></input>
-                            </div>
-
-                            <div className="form-box">
-                                <span className="details">Profissão</span>
-                                <input type="text" value={profissao} onChange={(e) => setProfissao(e.target.value)}></input>
-                            </div>
-
-                            <div className="form-box">
-                                <span className="details">Idade</span>
-                                <input type="text" value={idade} onChange={(e) => setIdade(e.target.value)}></input>
-                            </div>
-
-                            <div className="form-box">
-                                <span className="details">Renda</span>
-                                <input type="text" value={receita} onChange={(e) => setReceita(e.target.value)}></input>
-                            </div>
-
-                            <div className="form-box">
-                                <span className="details">Email</span>
-                                <input type="text" value={email} disabled={true} />
-                            </div>
-
-                        </div>
-
-                        <button className="btn-submit" type="submit">Salvar</button>
-                    </form>
+            <div className="form-container">
+              {[
+                ['Nome',      nome,      setNome],
+                ['Profissão', profissao, setProfissao],
+                ['Idade',     idade,     setIdade],
+                ['Receita',   receita,   setReceita],
+              ].map(([label, val, setter]) => (
+                <div className="form-box" key={label}>
+                  <span className="details">{label}</span>
+                  <input
+                    type="text"
+                    value={val}
+                    onChange={e => setter(e.target.value)}
+                  />
                 </div>
-            </div >
-        </div >
-    )
+              ))}
+
+              <div className="form-box">
+                <span className="details">Email</span>
+                <input type="text" value={email} disabled />
+              </div>
+            </div>
+
+            <button className="btn-submit" type="submit">Salvar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default Profile;

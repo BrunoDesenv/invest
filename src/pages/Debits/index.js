@@ -108,7 +108,7 @@ function Debits() {
   async function updateValues() {
     let data = {
       _id: id,
-      usuario: user.uid,
+      usuario: user.id,
       categoria: categoria,
       descricao: descricao,
       valor: valor,

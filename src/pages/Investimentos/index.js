@@ -18,7 +18,8 @@ import { toast } from 'react-toastify';
 function Simulation() {
 
   const { user } = useContext(AuthContext);
-  const { saveInvestimentos, investimento, getInvestimentos, excluirInvestimento, updateInvestimentoValues } = useContext(InvestimentosContext);
+  const { saveInvestimentos, investimentos, getInvestimentos, excluirInvestimento, updateInvestimentoValues } = useContext(InvestimentosContext);
+
   const [modalIsOpen, setIsOpen] = useState(false);
   const [isSimulate, SetIsSimulate] = useState(false);
 
@@ -80,7 +81,7 @@ function Simulation() {
 
   const countCaterory = () => {
     let result = [];
-    result = investimento.reduce(function (res, value) {
+    result = investimentos.reduce(function (res, value) {
       if (!res[value.invest]) {
         res[value.invest] = { Id: value.invest, valorinvestido: 0 };
         result.push(res[value.invest])
@@ -108,18 +109,19 @@ function Simulation() {
     setInvest('FII');
   }
 
-  function saveValues() {
-    let data = {
-      usuario: user.uid,
-      ativo: ativo,
-      valorinvestido: capital,
-      taxaam: rendimentoM,
-      retornomensal: mensal,
-      retornoanual: rentabilidadeAno,
-      invest: invest
-    }
 
-    saveInvestimentos(data);
+  function saveValues() {
+    const payload = {
+      userId:         user.id,
+      category:       invest,
+      asset:          ativo,
+      investedAmount: parseFloat(capital),
+      monthlyRate:    parseFloat(rendimentoM),
+      monthlyReturn:  parseFloat(mensal), 
+      annualReturn:   parseFloat(rentabilidadeAno)
+    };
+
+    saveInvestimentos(payload);
     closeModal();
   }
 
@@ -150,7 +152,7 @@ function Simulation() {
   async function updateValues() {
     let data = {
       key: id,
-      usuario: user.uid,
+      usuario: user.id,
       ativo: ativo,
       valorinvestido: capital,
       taxaam: rendimentoM,
@@ -164,44 +166,41 @@ function Simulation() {
   }
 
   useEffect(() => {
-    let rtotalInvestido = 0;
-    let rtotalTaxaMedia = 0;
-    let rtotalRendimentoMensal = 0;
-    let rtotalRendimentoAnual = 0;
+    let totalInvested = 0;
+    let totalRate = 0;
+    let totalMonthlyReturn = 0;
+    let totalAnnualReturn = 0;
 
+    investimentos.forEach(item => {
+      totalInvested         += item.investedAmount;
+      totalMonthlyReturn    += item.monthlyReturn;
+      totalAnnualReturn     += item.annualReturn;
+      totalRate             += item.monthlyRate;
+    });
 
-    investimento.forEach((item) => {
-      rtotalInvestido = parseFloat(item.valorinvestido) + parseFloat(rtotalInvestido);
-      rtotalRendimentoMensal = parseFloat(item.retornomensal) + parseFloat(rtotalRendimentoMensal);
-      rtotalRendimentoAnual = parseFloat(item.retornoanual) + parseFloat(rtotalRendimentoAnual);
-      rtotalTaxaMedia = parseFloat(item.taxaam) + parseFloat(rtotalTaxaMedia);
-    })
+    const avgRate = investimentos.length ? totalRate / investimentos.length : 0;
 
-    let ctaxamedia = rtotalTaxaMedia / investimento.length;
-
-    setTotalInvestido(rtotalInvestido);
-    setTotalTaxaMedia(ctaxamedia);
-    setTotalRendimentoMensal(rtotalRendimentoMensal);
-    setTotalRendimentoAnual(rtotalRendimentoAnual);
-
-  }, [investimento]);
-
+    setTotalInvestido(totalInvested);
+    setTotalTaxaMedia(avgRate);
+    setTotalRendimentoMensal(totalMonthlyReturn);
+    setTotalRendimentoAnual(totalAnnualReturn);
+  }, [investimentos]);
 
   useEffect(() => {
     let listaCategoria = listarCategoria();
     setListaCategoria(listaCategoria);
-    getInvestimentos(user.uid);
+    getInvestimentos(user.id);
   }, [])
 
   const limparTudo = () => {
-    if(investimento.length === 0 ){
+    if(investimentos.length === 0 ){
       return toast.error("Não existe registro a serem excluido")
     }
 
     const confirme = window.confirm("Tem certeza que deseja exluir todos os registro?");
 
     if(confirme){
-      investimento.forEach(inves => {
+      investimentos.forEach(inves => {
         excluirInvestimento(inves.key, inves.usuario, false);
      });
 
@@ -475,19 +474,19 @@ function Simulation() {
                   </tr>
                 </thead>
                 <tbody>
-                  {investimento.map((item) => {
-                    return (
-                      <tr key={item.key}>
-                        <td>{item?.invest}</td>
-                        <td>{item.ativo}</td>
-                        <td>R$ {item.valorinvestido}</td>
-                        <td className="amount">{item.taxaam} %</td>
-                        <td className="amount">R$ {item.retornomensal}</td>
-                        <td className="amount">R$ {item.retornoanual}</td>
-                        <td><FiEdit onClick={() => { openInvestimentoModal(item) }} className="optIcon" /></td>
-                        <td><FiX onClick={() => { excluirInvestimento(item.key, item.usuario) }} className="optIcon" /></td>
-                      </tr>
-                    )
+                   {investimentos.map((item) => {
+                      return (
+                        <tr key={item._id}>
+                          <td>{item.category}</td>
+                          <td>{item.asset}</td>
+                          <td>R$ {item.investedAmount.toFixed(2)}</td>
+                          <td className="amount">{item.monthlyRate.toFixed(2)}%</td>
+                          <td className="amount">R$ {item.monthlyReturn.toFixed(2)}</td>
+                          <td className="amount">R$ {item.annualReturn.toFixed(2)}</td>
+                          <td><FiEdit onClick={() => { openInvestimentoModal(item) }} className="optIcon" /></td>
+                          <td><FiX onClick={() => excluirInvestimento(item._id, item.userId)} className="optIcon" /></td>
+                        </tr>
+                      )
                   })}
                 </tbody>
               </table>

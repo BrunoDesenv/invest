@@ -55,6 +55,7 @@ function DividendosProvider({ children }) {
     try {
       const lista = await listDividendos(usuario);
       setDividendosTotais(lista);
+      setDividendos(lista);
     } catch {
       console.log('Erro ao buscar dividendos');
     }

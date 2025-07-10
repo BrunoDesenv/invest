@@ -100,7 +100,7 @@ function Simulation() {
   async function updateValues() {
     let data = {
       key: id,
-      usuario: user.uid,
+      usuario: user.id,
       objetivo: objetivo,
       valorinicial: capital,
       aportemensal: quantidade,
@@ -135,7 +135,7 @@ function Simulation() {
 
   function saveValues() {
     let data = {
-      usuario: user.uid,
+      usuario: user.id,
       objetivo: objetivo,
       valorinicial: capital,
       aportemensal: quantidade,
@@ -179,7 +179,7 @@ function Simulation() {
   useEffect(() => {
     let listaCategoria = listarCategoria();
     setListaCategoria(listaCategoria);
-    getSimulations(user.uid);
+    getSimulations(user.id);
   }, []);
 
   const limparTudo = () => {

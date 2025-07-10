@@ -27,7 +27,7 @@ function Dashboard() {
   const { user } = useContext(AuthContext);
 
   const { debitos, getDebitos } = useContext(DebitosContext);
-  const { investimento, getInvestimentos } = useContext(InvestimentosContext);
+  const { investimentos, getInvestimentos } = useContext(InvestimentosContext);
 
   const [dataCategoriasAgrupadas, setDataCategoriasAgrupadas] = useState([]);
   const [dataContasPagoTotal, setContasPagoTotal] = useState([]);
@@ -39,8 +39,8 @@ function Dashboard() {
     "#00FF00", "#008000", "#00FFFF", "#008080", "#0000FF", "#000080", "#FF00FF", "#800080"]
 
   useEffect(() => {
-    getDebitos(user.uid);
-    getInvestimentos(user.uid);
+    getDebitos(user.id);
+    getInvestimentos(user.id);
   }, [])
 
   useEffect(() => {
@@ -49,13 +49,13 @@ function Dashboard() {
 
   useEffect(() => {
     CalculaInvestimento();
-  }, [investimento])
+  }, [investimentos])
 
   function CalculaInvestimento() {
     let investimentosLocal = [];
     let valorTotalInvestimentos = 0;
 
-    investimento.forEach((investimento) => {
+    investimentos.forEach((investimento) => {
       valorTotalInvestimentos += parseFloat(investimento.valorinvestido);
       CalculoCategoriasInvestimento(investimentosLocal, investimento);
     });

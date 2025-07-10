@@ -14,7 +14,7 @@ export function listDividendos(usuario, paymentDate) {
 
 export function listDividendosByDataPagamento(usuario, dataPagamento) {
   return api
-    .get('/dividendos', { params: { usuario, dataPagamento } })
+    .get('/dividends', { params: { usuario, dataPagamento } })
     .then(res => res.data);
 }
 

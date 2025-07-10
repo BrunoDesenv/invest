@@ -26,7 +26,6 @@ import {
 } from "recharts";
 
 
-
 function Dividendos() {
 
   const { user } = useContext(AuthContext);
@@ -110,7 +109,7 @@ function Dividendos() {
 
     let data = {
       key: id,
-      usuario: user.uid,
+      usuario: user.id,
       ativo: ativo,
       valor: valor,
       dataPagamento: dataPagamentoCTX,
@@ -149,7 +148,7 @@ function Dividendos() {
   }
 
   function AplicarFiltro(){
-    getDividendosByDataPagamento(user.uid, dataInicial);
+    getDividendosByDataPagamento(user.id, dataInicial);
   }
 
   useEffect(() => {
@@ -169,8 +168,8 @@ function Dividendos() {
   }, [dividendosTotais]);
 
   useEffect(() => {
-    getDividendosByDataPagamento(user.uid, DataFormatada());
-    getDividendos(user.uid);
+    // getDividendosByDataPagamento(user.id, DataFormatada());
+    getDividendos(user.id);
   }, [])
 
   const limparTudo = () => {
