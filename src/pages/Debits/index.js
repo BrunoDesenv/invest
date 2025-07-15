@@ -226,7 +226,7 @@ function Debits() {
               categoria={'Receita (Mês)'}
               essencial={user.receita}
               classBorderLeft={'primary'}
-              calssRow={''}
+              classRow={''}
               classComment={'fa-calendar'}
             />
 
@@ -235,7 +235,7 @@ function Debits() {
               categoria={'A Pagar (Mensal)'}
               essencial={pagar}
               classBorderLeft={'success'}
-              calssRow={'no-gutters'}
+              classRow={'no-gutters'}
               classComment={'fa-dollar-sign'}
             />
 
@@ -244,7 +244,7 @@ function Debits() {
               categoria={'Pago'}
               essencial={pago}
               classBorderLeft={'info'}
-              calssRow={'no-gutters'}
+              classRow={'no-gutters'}
               classComment={'fa-clipboard-list'}
             />
 
@@ -253,7 +253,7 @@ function Debits() {
               categoria={'Total Essencial'}
               essencial={essencial}
               classBorderLeft={'warning'}
-              calssRow={'no-gutters'}
+              classRow={'no-gutters'}
               classComment={'fa-comments'}
             />
 
@@ -272,7 +272,7 @@ function Debits() {
                     categoria={categoria.Id}
                     essencial={categoria.valor}
                     classBorderLeft={'info'}
-                    calssRow={''}
+                    classRow={''}
                     classComment={'fa-comments'}
                   />
                 )
