@@ -2,13 +2,13 @@ import React from "react";
 
 import './style.css';
 
-const Card = ({ essencial, categoria, classCol, classBorderLeft, calssRow, classComment}) => {
+const Card = ({ essencial, categoria, classCol, classBorderLeft, classRow, classComment}) => {
     return(
     // <div className="container-dash">
         <div className={`col-xl-3 ${classCol? classCol : '' }`} >
             <div className={`card border-left-${classBorderLeft}`} >
                 <div className="card-body">
-                    <div className={`row ${calssRow? calssRow : '' }`} >
+                    <div className={`row ${classRow ? classRow : '' }`} >
                         <div className="col mr-2">
                              <div className="text-xs">
                              {categoria}</div>
